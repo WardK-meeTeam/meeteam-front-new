@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# meeTeam Frontend
 
-## Getting Started
+meeTeam 프론트엔드 프로젝트입니다.  
+Next.js(App Router) + TypeScript 기반으로 개발합니다.
 
-First, run the development server:
+## 기술 스택
+
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- ESLint
+- Prettier
+
+## 코드 포맷팅
+
+- 프로젝트에는 Prettier 설정이 포함되어 있습니다: `.prettierrc.json`, `.prettierignore`
+- VSCode 사용 시 워크스페이스 설정(`.vscode/settings.json`)으로 저장 시 자동 포맷됩니다.
+- 권장 확장 프로그램: `Prettier - Code formatter` (`esbenp.prettier-vscode`)
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run format        # 전체 파일 포맷
+npm run format:check  # 포맷 검사(변경 없음)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 폴더 구조
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+.
+|-- app/            # 라우팅, layout, page, route handler
+|-- components/
+|   |-- feature/    # 도메인(기능) 단위 컴포넌트
+|   |-- shared/     # 여러 화면에서 재사용되는 공통 컴포넌트
+|-- constants/      # 상수
+|-- contexts/       # React Context
+|-- hooks/          # 커스텀 훅
+|-- utils/          # 유틸 함수
+|-- assets/         # import해서 사용하는 에셋
+|-- public/         # 정적 파일(직접 URL 접근)
+|-- api/            # API 관련 코드(클라이언트 로직 등)
+`-- ...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+구조 원칙:
 
-## Learn More
+- `app/`에는 라우팅 관련 코드만 둡니다.
+- `components/feature`: 특정 기능(도메인)에 종속된 UI를 둡니다.
+- `components/shared`: 버튼, 모달, 입력 컴포넌트 등 범용 UI를 둡니다.
+- 정적 리소스는 용도에 따라 분리합니다.
+- `public/`: `/images/logo.png`처럼 URL로 직접 접근할 파일
+- `assets/`: 컴포넌트에서 `import`해서 사용하는 파일
 
-To learn more about Next.js, take a look at the following resources:
+## 네이밍 규칙
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 컴포넌트: `PascalCase` (`UserCard.tsx`)
+- 훅: `camelCase` + `use` 접두어 (`useAuth.ts`)
+- 상수: `UPPER_SNAKE_CASE` (`API_BASE_URL`)
+- 파일/폴더: 가능하면 의미 중심으로 명확하게 작성
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 커밋 컨벤션 (Angular)
 
-## Deploy on Vercel
+형식:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```text
+type: subject
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `type`: 커밋 종류
+- `subject`: 한 줄 요약
+
+### type 목록
+
+- `feat`: 새로운 기능
+- `fix`: 버그 수정
+- `docs`: 문서 수정
+- `style`: 포맷팅, 세미콜론 등 비기능 변경
+- `refactor`: 리팩터링(동작 변화 없음)
+- `test`: 테스트 추가/수정
+- `chore`: 빌드/설정/패키지 등 기타 작업
+- `build`: 빌드 시스템/의존성 변경
+
+### 커밋 메시지 예시
+
+```text
+feat: 소셜 로그인 버튼 구현
+docs: README 작성
+chore: 린트 규칙 변경
+```
+
+## 브랜치 전략 (권장)
+
+- `main`: 운영 배포 브랜치
+- `develop`: 통합 개발 브랜치
+- `feature/*`: 기능 개발
+- `fix/*`: 버그 수정
+- `hotfix/*`: 긴급 수정
