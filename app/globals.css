@@ -4,12 +4,14 @@
   --color-brand-400: #6366f1;
   --color-brand-500: #4f46e5;
   --color-danger-500: #e12e2e;
+  --color-error-red: #e12e2e;
   --color-project-recruiting-bg: #d4fde7;
   --color-role-leader-bg: #fef9c3;
   --color-role-leader-text: #a16207;
   --color-project-status-closed: #475569;
   --color-project-status-progress: #16a34a;
   --color-muted-gray: #94a3b8;
+  --color-border-gray: #e2e8f0;
   --color-text-black: #0f172a;
   --color-text-gray: #64748b;
 }
