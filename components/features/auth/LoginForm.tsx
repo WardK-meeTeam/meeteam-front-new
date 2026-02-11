@@ -4,7 +4,7 @@ import { Mail, Lock } from 'lucide-react';
 
 export default function LoginForm() {
   return (
-    <form className="flex flex-col gap-5 items-stretch w-91.5">
+    <form className="flex flex-col gap-5 items-stretch w-91.5 mb-0">
       <div className="flex flex-col gap-1.5">
         <label htmlFor="emal" className="font-bold">
           이메일
