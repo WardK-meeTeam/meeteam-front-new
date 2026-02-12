@@ -1,5 +1,8 @@
+'use client';
+
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import SignupForm from '@/components/features/auth/SignupForm';
 
 export default function Page() {
   return (
@@ -14,6 +17,7 @@ export default function Page() {
           MeeTeam과 함께 멋진 프로젝트를 시작해보세요.
         </h2>
       </div>
+      <SignupForm />
     </section>
   );
 }
