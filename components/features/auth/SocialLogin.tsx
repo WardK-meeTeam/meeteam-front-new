@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export default function SocialLogin() {
   return (
-    <section className="flex flex-col gap-8 w-full mb-0">
+    <section className="flex flex-col gap-8 w-full">
       <div className="flex items-center gap-4">
         <hr className="h-px border-[#F1F5F9] grow" />
         <span className="font-normal text-[12px] leading-4 text-muted-gray">간편 로그인</span>
