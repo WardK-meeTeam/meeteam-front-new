@@ -6,7 +6,7 @@ export const OPTIONS = [
   },
   {
     major: '프론트엔드',
-    minor: ['웹프론트엔드', 'iOS', '안드로이드', '크로스플랫폼'],
+    minor: ['웹 프론트엔드', 'iOS', '안드로이드', '크로스플랫폼'],
   },
   { major: '백엔드', minor: ['웹서버', 'AI'] },
   { major: '기타', minor: ['기타'] },

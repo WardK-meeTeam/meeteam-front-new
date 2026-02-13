@@ -1,12 +1,22 @@
 import { useState } from 'react';
 import BaseButton from '@/components/shared/BaseButton';
-import AuthSection from './AuthSection';
-import ProfileSection from './ProfileSection';
-import InterestSection from './InterestSection';
+import AuthSection from '@/components/features/auth/AuthSection';
+import ProfileSection from '@/components/features/auth/ProfileSection';
+import InterestSection from '@/components/features/auth/InterestSection';
+import { Interest } from '@/components/features/auth/InterestRow';
 
 export default function SignupForm() {
-  const [major, setMajor] = useState<string>('');
-  const [minor, setMinor] = useState<string>('');
+  const [interests, setInterests] = useState<Interest[]>([
+    { major: '', minor: '' },
+  ]);
+
+  const addInterest = () => {
+    setInterests((prev) => [...prev, { major: '', minor: '' }]);
+  };
+
+  const updateInterest = (index: number, next: Interest) => {
+    setInterests((prev) => prev.map((it, i) => (i === index ? next : it)));
+  };
 
   return (
     <form className="flex flex-col gap-5 w-full">
@@ -14,12 +24,7 @@ export default function SignupForm() {
 
       <ProfileSection />
 
-      <InterestSection
-        major={major}
-        minor={minor}
-        onChangeMajor={setMajor}
-        onChangeMinor={setMinor}
-      />
+      <InterestSection interests={interests} onAdd={addInterest} onChange={updateInterest} />
 
       <BaseButton size="L" full={true} type="submit">
         <span className="font-bold">가입하기</span>
