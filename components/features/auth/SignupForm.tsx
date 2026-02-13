@@ -10,11 +10,15 @@ export default function SignupForm() {
   const [interests, setInterests] = useState<Interest[]>([{ major: '', minor: '' }]);
 
   const addInterest = () => {
-    setInterests((prev) => [...prev, { major: '', minor: '' }]);
+    setInterests((prev) => [{ major: '', minor: '' }, ...prev]);
   };
 
   const updateInterest = (index: number, next: Interest) => {
     setInterests((prev) => prev.map((it, i) => (i === index ? next : it)));
+  };
+
+  const removeInterest = (index: number) => {
+    setInterests((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -23,7 +27,12 @@ export default function SignupForm() {
 
       <ProfileSection />
 
-      <InterestSection interests={interests} onAdd={addInterest} onChange={updateInterest} />
+      <InterestSection
+        interests={interests}
+        onAdd={addInterest}
+        onChange={updateInterest}
+        onRemove={removeInterest}
+      />
 
       <TechStackSection />
 

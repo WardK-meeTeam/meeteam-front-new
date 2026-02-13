@@ -4,9 +4,15 @@ type InterestSectionProps = {
   interests: Interest[];
   onAdd: () => void;
   onChange: (index: number, next: Interest) => void;
+  onRemove: (index: number) => void;
 };
 
-export default function InterestSection({ interests, onAdd, onChange }: InterestSectionProps) {
+export default function InterestSection({
+  interests,
+  onAdd,
+  onChange,
+  onRemove,
+}: InterestSectionProps) {
   return (
     <div className="flex w-full flex-col gap-2">
       <div className="flex justify-between items-center">
@@ -26,6 +32,8 @@ export default function InterestSection({ interests, onAdd, onChange }: Interest
             key={`${i}-${it.major}-${it.minor}`}
             value={it}
             onChange={(next) => onChange(i, next)}
+            onRemove={() => onRemove(i)}
+            length={interests.length}
           />
         ))}
       </div>
