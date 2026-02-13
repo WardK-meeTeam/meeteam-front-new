@@ -4,11 +4,10 @@ import AuthSection from '@/components/features/auth/AuthSection';
 import ProfileSection from '@/components/features/auth/ProfileSection';
 import InterestSection from '@/components/features/auth/InterestSection';
 import { Interest } from '@/components/features/auth/InterestRow';
+import TechStackSection from './TechStackSection';
 
 export default function SignupForm() {
-  const [interests, setInterests] = useState<Interest[]>([
-    { major: '', minor: '' },
-  ]);
+  const [interests, setInterests] = useState<Interest[]>([{ major: '', minor: '' }]);
 
   const addInterest = () => {
     setInterests((prev) => [...prev, { major: '', minor: '' }]);
@@ -25,6 +24,8 @@ export default function SignupForm() {
       <ProfileSection />
 
       <InterestSection interests={interests} onAdd={addInterest} onChange={updateInterest} />
+
+      <TechStackSection />
 
       <BaseButton size="L" full={true} type="submit">
         <span className="font-bold">가입하기</span>
