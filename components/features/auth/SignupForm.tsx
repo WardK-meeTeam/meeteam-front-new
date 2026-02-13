@@ -1,81 +1,17 @@
 import BaseButton from '@/components/shared/BaseButton';
-import BaseInput from '@/components/shared/BaseInput';
-import BaseField from '@/components/shared/BaseField';
+import AuthSection from './AuthSection';
+import ProfileSection from './ProfileSection';
 
 export default function SignupForm() {
   return (
     <form className="flex flex-col gap-5 w-full">
-      <BaseField label="이메일" htmlFor="email">
-        <div className="flex gap-2">
-          <BaseInput id="email" type="email" placeholder="example@email.com" />
-          <button
-            type="button"
-            className="flex items-center justify-center rounded-xl cursor-pointer text-brand-500 text-sm pl-4 pr-4 bg-[#eef2ff] leading-5 whitespace-nowrap"
-          >
-            <span className="font-bold">중복 확인</span>
-          </button>
-        </div>
-      </BaseField>
+      <AuthSection />
 
-      <div className="flex gap-4">
-        <BaseField label="비밀번호" htmlFor="password">
-          <BaseInput id="password" type="password" placeholder="8자 이상 입력" />
-        </BaseField>
-        <BaseField label="비밀번호 확인" htmlFor="password">
-          <BaseInput id="password" type="password" placeholder="비밀번호 재입력" />
-        </BaseField>
-      </div>
+      <ProfileSection />
 
-      <div className="flex gap-4">
-        <BaseField label="이름" htmlFor="name">
-          <BaseInput id="name" type="text" placeholder="실명 입력" />
-        </BaseField>
-        <BaseField label="생년월일" htmlFor="birth">
-          <BaseInput id="birth" type="text" placeholder="연도 - 월 - 일" />
-        </BaseField>
-      </div>
-
-      <div>
-        <BaseField label="성별" htmlFor="gender">
-          <div className="flex bg-[#f8fafc] p-1 rounded-xl h-13 justify-center">
-            <div className="flex-1">
-              <input
-                type="radio"
-                id="male"
-                value="male"
-                name="gender"
-                className="peer hidden"
-                defaultChecked
-              />
-              <label
-                htmlFor="male"
-                className="flex items-center justify-center rounded-lg font-bold cursor-pointer h-11
-                   text-muted-gray
-                   peer-checked:border peer-checked:border-border-gray peer-checked:text-brand-500 peer-checked:bg-white peer-checked:shadow-sm"
-              >
-                남성
-              </label>
-            </div>
-            <div className="flex-1">
-              <input
-                type="radio"
-                id="female"
-                value="female"
-                name="gender"
-                className="peer hidden"
-              />
-              <label
-                htmlFor="female"
-                className="flex items-center justify-center rounded-lg font-bold cursor-pointer h-11
-                   text-muted-gray
-                   peer-checked:border peer-checked:border-border-gray peer-checked:text-brand-500 peer-checked:bg-white peer-checked:shadow-sm"
-              >
-                여성
-              </label>
-            </div>
-          </div>
-        </BaseField>
-      </div>
+      <BaseButton size="L" full={true} type="submit">
+        <span className="font-bold">가입하기</span>
+      </BaseButton>
     </form>
   );
 }
