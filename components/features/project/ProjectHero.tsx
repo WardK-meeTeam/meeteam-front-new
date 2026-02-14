@@ -1,8 +1,10 @@
-import Image from "next/image";
-import CalendarIcon from "@/assets/icons/Calendar.svg";
-import SettingsIcon from "@/assets/icons/Settings.svg";
+import Image from 'next/image';
+import CalendarIcon from '@/assets/icons/Calendar.svg';
+import SettingsIcon from '@/assets/icons/Settings.svg';
+import Link from 'next/link';
 
 interface ProjectHeroProps {
+  projectId: string;
   title: string;
   description: string;
   category: string;
@@ -12,6 +14,7 @@ interface ProjectHeroProps {
 }
 
 export default function ProjectHero({
+  projectId,
   title,
   description,
   category,
@@ -39,42 +42,28 @@ export default function ProjectHero({
         </div>
 
         {/* Title */}
-        <h1 className="mb-3 text-5xl font-extrabold leading-tight text-white">
-          {title}
-        </h1>
+        <h1 className="mb-3 text-5xl font-extrabold leading-tight text-white">{title}</h1>
 
         {/* Description */}
-        <p className="mb-8 max-w-2xl text-lg font-medium text-slate-300">
-          {description}
-        </p>
+        <p className="mb-8 max-w-2xl text-lg font-medium text-slate-300">{description}</p>
 
         {/* Deadline */}
         <div className="inline-flex items-center gap-2.5 self-start rounded-full border border-white/10 bg-white/5 px-4 py-2.5 backdrop-blur-sm">
-          <Image
-            src={CalendarIcon}
-            alt=""
-            width={20}
-            height={20}
-            className="shrink-0"
-          />
+          <Image src={CalendarIcon} alt="" width={20} height={20} className="shrink-0" />
           <span className="text-sm font-bold text-white">{deadline}</span>
         </div>
       </div>
 
       {/* Manage button (only for owner) */}
       {isOwner && (
-        <button className="absolute right-10 top-8 flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-3 backdrop-blur-md transition-colors hover:bg-white/20">
-          <Image
-            src={SettingsIcon}
-            alt=""
-            width={16}
-            height={16}
-            className="shrink-0"
-          />
+        <Link
+          href={`/projects/${projectId}/manage`}
+          className="absolute right-10 top-8 flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-3 backdrop-blur-md transition-colors hover:bg-white/20"
+        >
+          <Image src={SettingsIcon} alt="" width={16} height={16} className="shrink-0" />
           <span className="text-sm font-bold text-white">프로젝트 관리</span>
-        </button>
+        </Link>
       )}
     </div>
   );
 }
-
