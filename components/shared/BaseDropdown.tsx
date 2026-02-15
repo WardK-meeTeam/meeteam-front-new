@@ -1,4 +1,5 @@
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import SelectMenu from '@/components/shared/SelectMenu';
 
 type BaseDropdownProps = {
   value?: string;
@@ -11,8 +12,7 @@ type BaseDropdownProps = {
   containerClassName?: string;
   buttonClassName?: string;
   textClassName?: string;
-  dropdownClassName?: string;
-  itemClassName?: string;
+  selectMenuClassName?: string;
 };
 
 export default function BaseDropdown({
@@ -26,8 +26,7 @@ export default function BaseDropdown({
   containerClassName = '',
   buttonClassName = '',
   textClassName = '',
-  dropdownClassName = '',
-  itemClassName = '',
+  selectMenuClassName = '',
 }: BaseDropdownProps) {
   const label = value || placeholder;
 
@@ -48,19 +47,7 @@ export default function BaseDropdown({
         )}
       </button>
       {open && items.length > 0 && (
-        <ul
-          className={`absolute top-full w-full bg-white border border-border-gray rounded-xl shadow-sm z-10 ${dropdownClassName}`}
-        >
-          {items.map((item) => (
-            <li
-              key={item}
-              className={`px-4 py-2 hover:bg-gray-100 cursor-pointer font-normal text-sm rounded-xl ${itemClassName}`}
-              onClick={() => onSelect(item)}
-            >
-              {item}
-            </li>
-          ))}
-        </ul>
+        <SelectMenu items={items} onSelect={onSelect} className={selectMenuClassName} />
       )}
     </div>
   );
