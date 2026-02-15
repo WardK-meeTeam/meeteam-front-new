@@ -3,7 +3,7 @@ import BaseButton from '@/components/shared/BaseButton';
 import AuthSection from '@/components/features/auth/AuthSection';
 import ProfileSection from '@/components/features/auth/ProfileSection';
 import InterestSection from '@/components/features/auth/InterestSection';
-import { Interest } from '@/components/features/auth/InterestRow';
+import { Interest } from '@/types/auth';
 import TechStackSection from './TechStackSection';
 
 export default function SignupForm() {
@@ -34,7 +34,7 @@ export default function SignupForm() {
         onRemove={removeInterest}
       />
 
-      <TechStackSection />
+      <TechStackSection interests={interests} />
 
       <BaseButton size="L" full={true} type="submit">
         <span className="font-bold">가입하기</span>

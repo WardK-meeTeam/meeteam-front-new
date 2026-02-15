@@ -1,4 +1,5 @@
-import InterestRow, { Interest } from '@/components/features/auth/InterestRow';
+import InterestRow from '@/components/features/auth/InterestRow';
+import { Interest } from '@/types/auth';
 
 type InterestSectionProps = {
   interests: Interest[];

@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
-import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { OPTIONS } from '@/constants/interest';
-import Dropdown from '@/components/shared/Dropdown';
-
-export type Interest = { major: string; minor: string };
+import { Interest } from '@/types/auth';
+import BaseDropdown from '@/components/shared/BaseDropdown';
 
 type OpenDropdown = 'major' | 'minor' | null;
 
@@ -39,39 +38,30 @@ export default function InterestRow({ value, onChange, onRemove, length }: Inter
 
   return (
     <div className="flex gap-2">
-      <div className="relative max-w-30 flex-1">
-        <button
-          type="button"
-          onClick={() => toggleDropdown('major')}
-          className="flex flex-1 justify-evenly rounded-xl border border-border-gray text-[#334155] pt-3.5 pb-3.5 w-full"
-        >
-          <span className="font-medium text-sm whitespace-nowrap">{value.major || '직군'}</span>
-          {openDropdown === 'major' ? (
-            <ChevronUp width={16} height={16} color="#94a3b8" />
-          ) : (
-            <ChevronDown width={16} height={16} color="#94a3b8" />
-          )}
-        </button>
-        {openDropdown === 'major' && <Dropdown items={majors} onSelect={handleSelectMajor} />}
-      </div>
+      <BaseDropdown
+        value={value.major}
+        placeholder="직군"
+        open={openDropdown === 'major'}
+        items={majors}
+        onToggle={() => toggleDropdown('major')}
+        onSelect={handleSelectMajor}
+        containerClassName="max-w-30 flex-1"
+        buttonClassName="flex-1 justify-evenly pt-3.5 pb-3.5"
+        textClassName="font-medium text-sm whitespace-nowrap"
+      />
 
-      <div className="relative max-w-78 flex-1">
-        <button
-          type="button"
-          disabled={!value.major}
-          onClick={() => value.major && toggleDropdown('minor')}
-          className="flex justify-between rounded-xl border border-border-gray text-[#334155] pt-3.5 pb-3.5 pl-4 pr-4 w-full
-          disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-gray"
-        >
-          <span className="font-normal text-sm">{value.minor || '상세 분야'}</span>
-          {openDropdown === 'minor' ? (
-            <ChevronUp width={16} height={16} color="#94a3b8" />
-          ) : (
-            <ChevronDown width={16} height={16} color="#94a3b8" />
-          )}
-        </button>
-        {openDropdown === 'minor' && <Dropdown items={minors} onSelect={handleSelectMinor} />}
-      </div>
+      <BaseDropdown
+        value={value.minor}
+        placeholder="상세 분야"
+        open={openDropdown === 'minor'}
+        items={minors}
+        onToggle={() => value.major && toggleDropdown('minor')}
+        onSelect={handleSelectMinor}
+        disabled={!value.major}
+        containerClassName="max-w-78 flex-1"
+        buttonClassName="justify-between pt-3.5 pb-3.5 pl-4 pr-4"
+        textClassName="font-normal text-sm"
+      />
 
       {length > 1 && value.major && value.minor && (
         <button
