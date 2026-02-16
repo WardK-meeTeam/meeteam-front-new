@@ -1,5 +1,8 @@
 import ProjectHero from '@/components/features/project/ProjectHero';
 import ProjectLeaderCard from '@/components/features/project/ProjectLeaderCard';
+import ProjectExternalLinks from '@/components/features/project/ProjectExternalLinks';
+import BaseButton from '@/components/shared/BaseButton';
+import { Heart, Share2 } from 'lucide-react';
 
 export default async function Page({ params }: { params: Promise<{ projectId: string }> }) {
   const { projectId } = await params;
@@ -32,6 +35,16 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
         isOwner={projectData.isOwner}
       />
       <ProjectLeaderCard leader={projectData.leader} />
+      <ProjectExternalLinks
+        githubUrl="github.com/meeteam/meeteam-web"
+        chatUrl="open.kakao.com/o/meeteam_main"
+      />
+      <div className="flex gap-3">
+        <BaseButton variant="secondary" size="XL" leftIcon={<Heart className="h-5 w-5" />}>
+          24
+        </BaseButton>
+        <BaseButton variant="secondary" size="XL" leftIcon={<Share2 className="h-5 w-5" />} />
+      </div>
     </section>
   );
 }
