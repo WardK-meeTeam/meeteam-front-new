@@ -1,6 +1,7 @@
 import ProjectHero from '@/components/features/project/ProjectHero';
 import ProjectLeaderCard from '@/components/features/project/ProjectLeaderCard';
 import ProjectExternalLinks from '@/components/features/project/ProjectExternalLinks';
+import ProjectTabContent from '@/components/features/project/ProjectTabContent';
 import BaseButton from '@/components/shared/BaseButton';
 import { Heart, Share2 } from 'lucide-react';
 
@@ -15,6 +16,12 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
     type: 'WEB',
     deadline: '2026-01-23 마감',
     isOwner: true,
+    detailContent:
+      '바쁜 현대인을 위한 3줄 뉴스 요약 서비스입니다. AI를 활용해 뉴스 본문을 요약하고, 사용자 맞춤 피드를 제공합니다.',
+    techStack: [
+      { domain: '프론트엔드', subdomain: '웹프론트엔드', skills: ['React', 'TypeScript'] },
+      { domain: '백엔드', subdomain: 'AI', skills: ['Python', 'FastAPI'] },
+    ],
     leader: {
       name: '정연준',
       profile_img:
@@ -34,16 +41,32 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
         deadline={projectData.deadline}
         isOwner={projectData.isOwner}
       />
-      <ProjectLeaderCard leader={projectData.leader} />
-      <ProjectExternalLinks
-        githubUrl="github.com/meeteam/meeteam-web"
-        chatUrl="open.kakao.com/o/meeteam_main"
-      />
-      <div className="flex gap-3">
-        <BaseButton variant="secondary" size="XL" leftIcon={<Heart className="h-5 w-5" />}>
-          24
-        </BaseButton>
-        <BaseButton variant="secondary" size="XL" leftIcon={<Share2 className="h-5 w-5" />} />
+      <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
+        <ProjectTabContent
+          detailContent={projectData.detailContent}
+          techStack={projectData.techStack}
+        />
+        <aside className="space-y-6">
+          <ProjectLeaderCard leader={projectData.leader} />
+          <ProjectExternalLinks
+            githubUrl="github.com/meeteam/meeteam-web"
+            chatUrl="open.kakao.com/o/meeteam_main"
+          />
+          <div className="flex gap-3">
+            <BaseButton
+              variant="secondary"
+              size="XL"
+              leftIcon={<Heart className="h-5 w-5 text-text-gray" />}
+            >
+              24
+            </BaseButton>
+            <BaseButton
+              variant="secondary"
+              size="XL"
+              leftIcon={<Share2 className="h-5 w-5 text-text-gray" />}
+            />
+          </div>
+        </aside>
       </div>
     </section>
   );
