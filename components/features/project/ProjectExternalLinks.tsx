@@ -33,7 +33,9 @@ export default function ProjectExternalLinks({ githubUrl, chatUrl }: ProjectExte
               className="flex items-center gap-3 rounded-xl border border-border-gray bg-white p-4 transition-colors hover:bg-slate-50"
             >
               <Github className="h-5 w-5 shrink-0 text-text-black" />
-              <span className="flex-1 text-xs leading-4 text-text-gray">{githubUrl}</span>
+              <span className="min-w-0 flex-1 truncate text-xs leading-4 text-text-gray">
+                {githubUrl}
+              </span>
               <ExternalLink className="h-3 w-3 shrink-0 text-muted-gray" />
             </a>
           </div>
@@ -55,7 +57,9 @@ export default function ProjectExternalLinks({ githubUrl, chatUrl }: ProjectExte
               className="flex items-center gap-3 rounded-xl border border-border-gray bg-white p-4 transition-colors hover:bg-slate-50"
             >
               <LinkIcon className="h-4 w-4 shrink-0 text-brand-400" />
-              <span className="flex-1 text-xs leading-4 text-text-gray">{chatUrl}</span>
+              <span className="min-w-0 flex-1 truncate text-xs leading-4 text-text-gray">
+                {chatUrl}
+              </span>
               <ExternalLink className="h-3 w-3 shrink-0 text-muted-gray" />
             </a>
           </div>
