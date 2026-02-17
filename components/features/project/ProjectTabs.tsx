@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 const TABS = [
   { id: 'intro', label: '프로젝트 소개' },
@@ -10,23 +10,15 @@ const TABS = [
 
 export type ProjectTabId = (typeof TABS)[number]['id'];
 
-export interface ProjectTabsProps {
-  /** 현재 선택된 탭 (제어 모드). 없으면 내부 state 사용 */
-  value?: ProjectTabId;
-  /** 탭 변경 시 호출 (제어 모드에서 사용) */
-  onChange?: (tabId: ProjectTabId) => void;
-}
-
-export default function ProjectTabs({ value, onChange }: ProjectTabsProps) {
-  const [internalValue, setInternalValue] = useState<ProjectTabId>('intro');
-  const activeId = value ?? internalValue;
+export default function ProjectTabs() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const activeId = (searchParams.get('tab') as ProjectTabId) || 'intro';
 
   const handleClick = (tabId: ProjectTabId) => {
-    if (onChange) {
-      onChange(tabId);
-    } else {
-      setInternalValue(tabId);
-    }
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tabId);
+    router.push(`?${params.toString()}`, { scroll: false });
   };
 
   return (
@@ -41,7 +33,7 @@ export default function ProjectTabs({ value, onChange }: ProjectTabsProps) {
             role="tab"
             aria-selected={isActive}
             onClick={() => handleClick(tab.id)}
-            className={`relative pb-3 text-sm font-semibold transition-colors ${
+            className={`relative py-4 text-sm font-semibold transition-colors ${
               isActive ? 'text-brand-500' : 'text-text-gray hover:text-text-black'
             }`}
           >
