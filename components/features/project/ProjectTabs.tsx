@@ -33,7 +33,7 @@ export default function ProjectTabs() {
             role="tab"
             aria-selected={isActive}
             onClick={() => handleClick(tab.id)}
-            className={`relative pb-3 text-sm font-semibold transition-colors ${
+            className={`relative py-4 text-sm font-semibold transition-colors ${
               isActive ? 'text-brand-500' : 'text-text-gray hover:text-text-black'
             }`}
           >

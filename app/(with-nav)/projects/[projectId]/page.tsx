@@ -99,7 +99,7 @@ export default async function Page({
         deadline={projectData.deadline}
         isOwner={projectData.isOwner}
       />
-      <div className="sticky top-0 z-10 bg-white">
+      <div className="sticky top-0 z-100 bg-white">
         <Suspense fallback={<div className="h-10" />}>
           <ProjectTabs />
         </Suspense>
@@ -110,7 +110,7 @@ export default async function Page({
           detailContent={projectData.detailContent}
           techStack={projectData.techStack}
         />
-        <aside className="space-y-6 lg:sticky lg:top-24">
+        <aside className="space-y-6 lg:sticky lg:top-22">
           <ProjectLeaderCard leader={projectData.leader} />
           <ProjectExternalLinks
             githubUrl="github.com/meeteam/meeteam-web"
@@ -132,8 +132,8 @@ export default async function Page({
             />
           </div>
         </aside>
+        <RelatedProjects projects={relatedProjects} />
       </div>
-      <RelatedProjects projects={relatedProjects} />
     </section>
   );
 }
