@@ -5,6 +5,7 @@ import ProfileSection from '@/components/features/auth/ProfileSection';
 import InterestSection from '@/components/features/auth/InterestSection';
 import { Interest } from '@/types/auth';
 import TechStackSection from './TechStackSection';
+import ProfileExtraSection from './ProfileExtraSection';
 
 export default function SignupForm() {
   const [interests, setInterests] = useState<Interest[]>([{ major: '', minor: '' }]);
@@ -40,6 +41,8 @@ export default function SignupForm() {
         value={techStacksByInterest}
         onChange={setTechStacksByInterest}
       />
+
+      <ProfileExtraSection />
 
       <BaseButton size="L" full={true} type="submit">
         <span className="font-bold">가입하기</span>
