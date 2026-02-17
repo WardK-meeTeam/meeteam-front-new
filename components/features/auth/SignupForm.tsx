@@ -8,6 +8,7 @@ import TechStackSection from './TechStackSection';
 
 export default function SignupForm() {
   const [interests, setInterests] = useState<Interest[]>([{ major: '', minor: '' }]);
+  const [techStacksByInterest, setTechStacksByInterest] = useState<Record<string, string[]>>({});
 
   const addInterest = () => {
     setInterests((prev) => [{ major: '', minor: '' }, ...prev]);
@@ -34,7 +35,11 @@ export default function SignupForm() {
         onRemove={removeInterest}
       />
 
-      <TechStackSection interests={interests} />
+      <TechStackSection
+        interests={interests}
+        value={techStacksByInterest}
+        onChange={setTechStacksByInterest}
+      />
 
       <BaseButton size="L" full={true} type="submit">
         <span className="font-bold">가입하기</span>
