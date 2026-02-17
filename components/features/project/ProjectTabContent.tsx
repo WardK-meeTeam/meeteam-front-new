@@ -28,7 +28,7 @@ export default function ProjectTabContent({
       )}
       {activeTab === 'qa' && (
         <div className="rounded-xl border border-border-gray bg-white p-8 text-center">
-          <p className="text-text-gray">Q&A 기능 추비 중입니다.</p>
+          <p className="text-text-gray">Q&A 기능 준비 중입니다.</p>
         </div>
       )}
     </div>
