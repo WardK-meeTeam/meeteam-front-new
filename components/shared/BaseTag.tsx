@@ -19,7 +19,7 @@ const BASE_MAP: string =
   'border border-border-gray bg-white text-text-gray/90 hover:border-brand-500/45 hover:bg-brand-400/18 hover:text-brand-500';
 
 const SELECTED_MAP: string =
-  'border-brand-500 bg-brand-500 text-white hover:bg-brand-500/92 hover:text-white shadow-sm shadow-brand-500/30';
+  'border-brand-400 bg-brand-50 text-brand-500 hover:border-brand-500 hover:bg-brand-50';
 
 export default function BaseTag({
   size = 'M',

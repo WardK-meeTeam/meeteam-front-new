@@ -17,6 +17,7 @@ export default function Page() {
   const [recruitDeadline, setRecruitDeadline] = useState('');
   const [isRecruitUntilComplete, setIsRecruitUntilComplete] = useState(false);
   const [projectCategoryId, setProjectCategoryId] = useState('');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['웹']);
 
   const projectCategories = [
     { id: 'ai-tech', label: 'AI/테크', icon: '🤖' },
@@ -29,8 +30,18 @@ export default function Page() {
     { id: 'etc', label: '기타', icon: '⚙️' },
   ];
 
+  const releasePlatforms = ['웹', 'iOS', '안드로이드'];
+
+  const handlePlatformToggle = (platform: string) => {
+    setSelectedPlatforms((current) =>
+      current.includes(platform)
+        ? current.filter((item) => item !== platform)
+        : [...current, platform],
+    );
+  };
+
   return (
-    <section className="space-y-6 md:space-y-8 bg-white p-10 max-w-3xl w-full rounded-3xl flex flex-col shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]">
+    <section className="mx-auto space-y-6 md:space-y-8 bg-white p-10 max-w-3xl w-full rounded-3xl flex flex-col shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]">
       <form className="flex flex-col gap-8">
         <BaseField
           errorText="프로젝트 이름을 입력 해주세요"
@@ -66,7 +77,30 @@ export default function Page() {
           <BaseTextarea placeholder="프로젝트를 설명해주세요" />
         </BaseField>
         <BaseField errorText="" hintText="" label="출시 플랫폼">
-          <BaseTag>웹</BaseTag>
+          <div className="flex flex-wrap gap-2">
+            {releasePlatforms.map((platform) => {
+              const selected = selectedPlatforms.includes(platform);
+
+              return (
+                <BaseTag
+                  key={platform}
+                  selected={selected}
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={selected}
+                  onClick={() => handlePlatformToggle(platform)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      handlePlatformToggle(platform);
+                    }
+                  }}
+                >
+                  {platform}
+                </BaseTag>
+              );
+            })}
+          </div>
         </BaseField>
         <BaseField errorText="" hintText="" label="프로젝트 커버 이미지">
           <CoverImageUploader />
