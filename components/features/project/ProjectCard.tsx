@@ -88,7 +88,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
 
             <div className="flex flex-col items-end gap-1">
               <div className="flex items-center gap-1 text-[10px] font-bold text-white/90">
-                <Image alt="members" className="h-3 w-3" src={UsersIcon} />
+                <UsersIcon className="h-3 w-3" aria-hidden />
                 {project.currentMembers}/{project.maxMembers}명
               </div>
               <div className="h-1.5 w-20 overflow-hidden rounded-full bg-white/20">
