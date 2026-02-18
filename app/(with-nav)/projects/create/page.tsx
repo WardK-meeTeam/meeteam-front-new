@@ -2,6 +2,7 @@
 
 import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
+import BaseButton from '@/components/shared/BaseButton';
 import GithubLoginIcon from '@/assets/GithubLogin.svg';
 import CategoryBox from '@/components/features/project/create/CategoryBox';
 import BaseTextarea from '@/components/shared/BaseTextarea';
@@ -100,6 +101,17 @@ export default function Page() {
     setOpenRecruitDropdown((prev) =>
       prev && prev.index === index && prev.key === key ? null : { index, key },
     );
+  };
+
+  const handleCancel = () => {
+    setProjectCategoryId('');
+    setSelectedPlatforms(['웹']);
+    setMyInterest({ major: '', minor: '' });
+    setMyOpenDropdown(null);
+    setRecruitInterests([{ major: '', minor: '', count: 1 }]);
+    setOpenRecruitDropdown(null);
+    setRecruitDeadline('');
+    setIsRecruitUntilComplete(false);
   };
 
   return (
@@ -231,7 +243,9 @@ export default function Page() {
                   <BaseDropdown
                     value={interest.major}
                     placeholder="직군 선택"
-                    open={openRecruitDropdown?.index === index && openRecruitDropdown.key === 'major'}
+                    open={
+                      openRecruitDropdown?.index === index && openRecruitDropdown.key === 'major'
+                    }
                     items={majors}
                     onToggle={() => toggleRecruitDropdown(index, 'major')}
                     onSelect={(selectedMajor) => {
@@ -246,7 +260,9 @@ export default function Page() {
                   <BaseDropdown
                     value={interest.minor}
                     placeholder="상세 분야 선택"
-                    open={openRecruitDropdown?.index === index && openRecruitDropdown.key === 'minor'}
+                    open={
+                      openRecruitDropdown?.index === index && openRecruitDropdown.key === 'minor'
+                    }
                     items={getMinors(interest.major)}
                     onToggle={() => interest.major && toggleRecruitDropdown(index, 'minor')}
                     onSelect={(selectedMinor) => {
@@ -308,6 +324,26 @@ export default function Page() {
           }}
           minDate="2026-01-01"
         />
+
+        <div className="flex items-start gap-4 pt-8">
+          <div className="w-1/3">
+            <BaseButton size="XL" variant="gray" full onClick={handleCancel}>
+              취소
+            </BaseButton>
+          </div>
+
+          <div className="flex-1">
+            <BaseButton
+              size="XL"
+              variant="primary"
+              full
+              type="submit"
+              className="shadow-xl shadow-brand-400/40"
+            >
+              프로젝트 등록하기
+            </BaseButton>
+          </div>
+        </div>
       </form>
     </section>
   );
