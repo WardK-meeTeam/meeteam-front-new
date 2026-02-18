@@ -35,9 +35,15 @@ export default function RecruitDeadlineField({
             onChange={(event) => onUntilCompleteChange(event.target.checked)}
             className="peer sr-only"
           />
-          <span className="flex size-4 items-center justify-center rounded-sm border border-slate-300 bg-white p-px transition peer-checked:border-brand-500 peer-checked:bg-brand-500 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400/30">
+          <span
+            className={`flex size-4 items-center justify-center rounded-sm border p-px transition peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400/30 ${
+              untilComplete ? 'border-brand-500 bg-brand-500' : 'border-border-gray bg-white'
+            }`}
+          >
             <Check
-              className="size-3.5 text-white opacity-0 transition-opacity peer-checked:opacity-100"
+              className={`size-3.5 text-white transition-opacity ${
+                untilComplete ? 'opacity-100' : 'opacity-0'
+              }`}
               strokeWidth={3}
               aria-hidden="true"
             />
