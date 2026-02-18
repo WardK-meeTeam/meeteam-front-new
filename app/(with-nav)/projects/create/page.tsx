@@ -2,8 +2,7 @@
 
 import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
-import GithubIcon from '@/assets/Github.svg';
-import Image from 'next/image';
+import GithubLoginIcon from '@/assets/GithubLogin.svg';
 import CategoryBox from '@/components/features/project/create/CategoryBox';
 import BaseTextarea from '@/components/shared/BaseTextarea';
 import BaseTag from '@/components/shared/BaseTag';
@@ -14,7 +13,7 @@ import { MessageCircle } from 'lucide-react';
 
 export default function Page() {
   const messageIcon = <MessageCircle className="w-5 h-5 text-zinc-400" />;
-  const githubIcon = <Image src={GithubIcon} alt="GitHub" className="w-5 h-5" />;
+  const githubIcon = <GithubLoginIcon className="h-5 w-5 text-muted-gray" aria-hidden />;
   const [recruitDeadline, setRecruitDeadline] = useState('');
   const [isRecruitUntilComplete, setIsRecruitUntilComplete] = useState(false);
   const [projectCategoryId, setProjectCategoryId] = useState('');
