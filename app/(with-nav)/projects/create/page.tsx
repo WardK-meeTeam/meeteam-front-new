@@ -41,7 +41,14 @@ export default function Page() {
   };
 
   return (
-    <section className="mx-auto space-y-6 md:space-y-8 bg-white p-10 max-w-3xl w-full rounded-3xl flex flex-col shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]">
+    <section className="mx-auto flex w-full max-w-3xl flex-col space-y-6 rounded-3xl border border-border-gray bg-white p-10 shadow-xl md:space-y-8">
+      <header className="flex flex-col gap-0.5">
+        <h1 className="text-2xl font-extrabold leading-8 text-text-black">프로젝트 등록</h1>
+        <p className="text-sm font-normal leading-5 text-text-gray">
+          멋진 아이디어를 함께 실현할 팀원들을 모아보세요.
+        </p>
+      </header>
+
       <form className="flex flex-col gap-8">
         <BaseField
           errorText="프로젝트 이름을 입력 해주세요"
