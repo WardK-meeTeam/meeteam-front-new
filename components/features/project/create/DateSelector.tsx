@@ -18,7 +18,7 @@ export default function DateSelector({
   id,
   value,
   onChange,
-  placeholder = 'mm/dd/yyyy',
+  placeholder = 'YYYY년 MM월 DD일',
   minDate,
   maxDate,
   disabled = false,
@@ -42,7 +42,7 @@ export default function DateSelector({
         if (!year || !month || !day) {
           return placeholder;
         }
-        return `${month}/${day}/${year}`;
+        return `${year}년 ${month.padStart(2, '0')}월 ${day.padStart(2, '0')}일`;
       })()
     : placeholder;
 
