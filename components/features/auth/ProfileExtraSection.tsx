@@ -1,10 +1,11 @@
 import { Link, Camera } from 'lucide-react';
-import Github from '@/assets/Github.svg';
+import Github from '@/assets/GithubLogin.svg';
 import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
-import Image from 'next/image';
 
 export default function ProfileExtraSection() {
+  const githubIcon = <Github className="w-5 h-5 text-muted-gray" />;
+
   return (
     <>
       <BaseField label="프로젝트 경험 횟수" htmlFor="project">
@@ -13,12 +14,7 @@ export default function ProfileExtraSection() {
 
       <div className="flex gap-4">
         <BaseField label="GitHub" htmlFor="github" required={false}>
-          <BaseInput
-            id="github"
-            type="text"
-            placeholder="github.com/..."
-            leftIcon={<Image src={Github} width={20} height={20} alt="깃허브" />}
-          />
+          <BaseInput id="github" type="text" placeholder="github.com/..." leftIcon={githubIcon} />
         </BaseField>
         <BaseField label="블로그" htmlFor="blog" required={false}>
           <BaseInput
