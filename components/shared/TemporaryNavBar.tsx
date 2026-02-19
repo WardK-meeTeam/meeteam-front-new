@@ -7,6 +7,7 @@ const navItems = [
   { href: "/projects/1/apply", label: "프로젝트 1 지원" },
   { href: "/projects/1/apply/1", label: "지원서 1 상세" },
   { href: "/projects/1/manage", label: "프로젝트 관리 홈" },
+  { href: "/projects/create", label: "프로젝트 생성" },
   { href: "/projects/1/manage/members", label: "팀원 관리" },
   { href: "/projects/1/manage/applicants", label: "지원자 관리" },
   { href: "/projects/1/manage/edit", label: "프로젝트 수정" },
