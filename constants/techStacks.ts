@@ -30,8 +30,6 @@ export const TECHS_BY_MAJOR: Record<TechMajor, Tech[]> = {
     { kor: '스위프트', eng: 'Swift' },
     { kor: 'HTML/CSS', eng: 'HTML/CSS' },
     { kor: 'Tailwind CSS', eng: 'Tailwind CSS' },
-    { kor: 'GraphQL', eng: 'GraphQL' },
-    { kor: 'WebSocket', eng: 'WebSocket' },
   ],
   백엔드: [
     { kor: '노드', eng: 'Node.js' },
@@ -92,6 +90,8 @@ export const TECHS_BY_MAJOR: Record<TechMajor, Tech[]> = {
     { kor: 'Grafana', eng: 'Grafana' },
     { kor: 'Logstash', eng: 'Logstash' },
     { kor: 'Kibana', eng: 'Kibana' },
+    { kor: 'GraphQL', eng: 'GraphQL' },
+    { kor: 'WebSocket', eng: 'WebSocket' },
     { kor: 'C언어', eng: 'C' },
     { kor: 'C++', eng: 'C++' },
   ],
