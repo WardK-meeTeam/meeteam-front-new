@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import UsersIcon from '@/assets/Users.svg';
+import { Lock, Users } from 'lucide-react';
 
 interface ProjectCardProps {
   project: {
@@ -88,7 +88,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
 
             <div className="flex flex-col items-end gap-1">
               <div className="flex items-center gap-1 text-[10px] font-bold text-white/90">
-                <UsersIcon className="h-3 w-3" aria-hidden />
+                <Users className="h-3 w-3" aria-hidden strokeWidth={2} />
                 {project.currentMembers}/{project.maxMembers}명
               </div>
               <div className="h-1.5 w-20 overflow-hidden rounded-full bg-white/20">
@@ -141,7 +141,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                           </div>
                         ) : (
                           <div className="flex items-center gap-1 text-danger-500/90">
-                            <span aria-hidden>🔒</span>
+                            <Lock className="h-3 w-3" aria-hidden strokeWidth={2} />
                           </div>
                         )}
                       </div>
