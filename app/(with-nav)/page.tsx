@@ -82,14 +82,14 @@ const teammateCards = Array.from({ length: 5 }).map((_, index) => ({
 export default function Page() {
   return (
     <div className="space-y-12 pb-8 md:space-y-16">
-      <section className="rounded-3xl border border-border-gray bg-brand-50 px-6 py-8 md:px-10 md:py-12">
+      <section className="overflow-hidden rounded-3xl border border-border-gray bg-brand-50 px-6 py-8 md:px-10 md:py-12">
         <div className="grid items-center gap-8 lg:grid-cols-2">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border-gray bg-white px-4 py-2 text-xs font-bold text-text-gray">
+          <div className="space-y-6 hero-fade-up">
+            <div className="inline-flex items-center gap-2 rounded-full border border-border-gray bg-white px-4 py-2 text-xs font-bold text-text-gray hero-fade-up hero-delay-1">
               <span className="h-2 w-2 rounded-full bg-brand-400" />
               사이드 프로젝트 팀빌딩 플랫폼
             </div>
-            <div className="space-y-3">
+            <div className="space-y-3 hero-fade-up hero-delay-2">
               <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-text-black md:text-5xl">
                 아이디어가 현실이 되는 곳,
                 <br />
@@ -101,7 +101,7 @@ export default function Page() {
                 당신의 열정과 함께할 최고의 동료를 지금 바로 만나보세요.
               </p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 hero-fade-up hero-delay-3">
               <StartJourneyModalTrigger />
               <Link
                 href="/teammates"
@@ -112,15 +112,15 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="relative">
-            <div className="overflow-hidden rounded-3xl border border-border-gray bg-white p-2 shadow-2xl">
+          <div className="relative hero-fade-up hero-delay-2">
+            <div className="overflow-hidden rounded-3xl border border-border-gray bg-white p-2 shadow-2xl hero-image-settle">
               <img
                 src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80"
                 alt="팀 협업 이미지"
                 className="h-72 w-full rounded-2xl object-cover md:h-80"
               />
             </div>
-            <div className="absolute -bottom-4 -left-4 flex items-center gap-3 rounded-2xl border border-border-gray bg-white px-4 py-3 shadow-xl">
+            <div className="absolute -bottom-4 -left-4 flex items-center gap-3 rounded-2xl border border-border-gray bg-white px-4 py-3 shadow-xl hero-badge-animate">
               <div className="flex -space-x-3">
                 <img
                   src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=120&q=80"

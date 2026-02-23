@@ -54,3 +54,80 @@ select {
 button {
   cursor: pointer;
 }
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-image-settle {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.hero-fade-up {
+  animation: hero-fade-up 560ms ease-out both;
+  will-change: opacity, transform;
+}
+
+.hero-image-settle {
+  animation: hero-image-settle 720ms ease-out 120ms both;
+  will-change: opacity, transform;
+}
+
+.hero-delay-1 {
+  animation-delay: 120ms;
+}
+
+.hero-delay-2 {
+  animation-delay: 220ms;
+}
+
+.hero-delay-3 {
+  animation-delay: 320ms;
+}
+
+.hero-badge-animate {
+  animation:
+    hero-fade-up 560ms ease-out 360ms both,
+    hero-float 3200ms ease-in-out 1200ms infinite;
+  will-change: opacity, transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-fade-up,
+  .hero-image-settle,
+  .hero-badge-animate,
+  .hero-delay-1,
+  .hero-delay-2,
+  .hero-delay-3 {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
