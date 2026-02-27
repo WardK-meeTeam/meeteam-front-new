@@ -3,18 +3,42 @@ import Github from '@/assets/GithubLogin.svg';
 import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
 
-export default function ProfileExtraSection() {
+type ProfileExtraSectionProps = {
+  onChangeProject: React.ChangeEventHandler<HTMLInputElement>;
+  onChangeGithubLink: React.ChangeEventHandler<HTMLInputElement>;
+  onChangeBlogLink: React.ChangeEventHandler<HTMLInputElement>;
+  onChangeProfileImage: React.ChangeEventHandler<HTMLInputElement>;
+};
+
+export default function ProfileExtraSection({
+  onChangeProject,
+  onChangeGithubLink,
+  onChangeBlogLink,
+  onChangeProfileImage,
+}: ProfileExtraSectionProps) {
   const githubIcon = <Github className="w-5 h-5 text-muted-gray" />;
 
   return (
     <>
       <BaseField label="프로젝트 경험 횟수" htmlFor="project">
-        <BaseInput id="project" type="number" placeholder="0" rightIcon={'회'} />
+        <BaseInput
+          id="project"
+          type="number"
+          placeholder="0"
+          rightIcon={'회'}
+          onChange={onChangeProject}
+        />
       </BaseField>
 
       <div className="flex gap-4">
         <BaseField label="GitHub" htmlFor="github" required={false}>
-          <BaseInput id="github" type="text" placeholder="github.com/..." leftIcon={githubIcon} />
+          <BaseInput
+            id="github"
+            type="text"
+            placeholder="github.com/..."
+            leftIcon={githubIcon}
+            onChange={onChangeGithubLink}
+          />
         </BaseField>
         <BaseField label="블로그" htmlFor="blog" required={false}>
           <BaseInput
@@ -22,6 +46,7 @@ export default function ProfileExtraSection() {
             type="text"
             placeholder="URL 입력"
             leftIcon={<Link width={20} height={20} color="#94a3b8" />}
+            onChange={onChangeBlogLink}
           />
         </BaseField>
       </div>
@@ -41,9 +66,14 @@ export default function ProfileExtraSection() {
               </span>
             </div>
           </div>
-          {/* right button */}
           <div className="shrink-0">
-            <input id="profile" type="file" accept="image/png, image/jpeg" className="hidden" />
+            <input
+              id="profile"
+              type="file"
+              accept="image/png, image/jpeg"
+              className="hidden"
+              onChange={onChangeProfileImage}
+            />
             <label
               htmlFor="profile"
               className="cursor-pointer select-none rounded-lg px-4 py-2 border border-border-gray bg-white text-[12px] font-bold text-[#334155] hover:bg-slate-50 active:scale-[0.99]"

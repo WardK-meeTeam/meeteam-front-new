@@ -1,15 +1,25 @@
 import BaseInput from '@/components/shared/BaseInput';
 import BaseField from '@/components/shared/BaseField';
 
-export default function ProfileSection() {
+type ProfileSectionProps = {
+  onChangeName: React.ChangeEventHandler<HTMLInputElement>;
+  onChangeBirth: React.ChangeEventHandler<HTMLInputElement>;
+  onChangeGender: React.ChangeEventHandler<HTMLInputElement>;
+};
+
+export default function ProfileSection({
+  onChangeName,
+  onChangeBirth,
+  onChangeGender,
+}: ProfileSectionProps) {
   return (
     <>
       <div className="flex gap-4">
         <BaseField label="이름" htmlFor="name">
-          <BaseInput id="name" type="text" placeholder="실명 입력" />
+          <BaseInput id="name" type="text" placeholder="실명 입력" onChange={onChangeName} />
         </BaseField>
         <BaseField label="생년월일" htmlFor="birth">
-          <BaseInput id="birth" type="text" placeholder="연도 - 월 - 일" />
+          <BaseInput id="birth" type="text" placeholder="연도 - 월 - 일" onChange={onChangeBirth} />
         </BaseField>
       </div>
       <div>
@@ -23,6 +33,7 @@ export default function ProfileSection() {
                 name="gender"
                 className="peer hidden"
                 defaultChecked
+                onChange={onChangeGender}
               />
               <label
                 htmlFor="male"
@@ -40,6 +51,7 @@ export default function ProfileSection() {
                 value="female"
                 name="gender"
                 className="peer hidden"
+                onChange={onChangeGender}
               />
               <label
                 htmlFor="female"
