@@ -1,4 +1,4 @@
-import { useState, useMemo, use } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import BaseButton from '@/components/shared/BaseButton';
 import AuthSection from '@/components/features/auth/AuthSection';
 import ProfileSection from '@/components/features/auth/ProfileSection';
@@ -20,6 +20,19 @@ export default function SignupForm() {
   const [githubLink, setGithubLink] = useState<string>('');
   const [blogLink, setBlogLink] = useState<string>('');
   const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [profileImagePreviewUrl, setProfileImagePreviewUrl] = useState<string>('');
+
+  useEffect(() => {
+    if (!profileImage) {
+      setProfileImagePreviewUrl('');
+      return;
+    }
+
+    const url = URL.createObjectURL(profileImage);
+    setProfileImagePreviewUrl(url);
+
+    return () => URL.revokeObjectURL(url);
+  }, [profileImage]);
 
   const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -79,6 +92,10 @@ export default function SignupForm() {
     setProfileImage(file);
   };
 
+  const onRemoveProfileImage = () => {
+    setProfileImage(null);
+  };
+
   return (
     <form className="flex flex-col gap-5 w-full">
       <AuthSection
@@ -112,6 +129,9 @@ export default function SignupForm() {
         onChangeGithubLink={onChangeGithubLInk}
         onChangeBlogLink={onChangeBlogLink}
         onChangeProfileImage={onChangeProfileImage}
+        onRemoveProfileImage={onRemoveProfileImage}
+        profileImageName={profileImage?.name ?? ''}
+        profileImagePreviewUrl={profileImagePreviewUrl}
       />
 
       <BaseButton size="L" full={true} type="submit">
