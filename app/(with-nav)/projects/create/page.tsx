@@ -31,6 +31,7 @@ export default function Page() {
   const [recruitInterests, setRecruitInterests] = useState<RecruitInterest[]>([
     { major: '', minor: '', count: 1 },
   ]);
+  const [recruitTechStacks, setRecruitTechStacks] = useState<Record<string, string[]>>({});
   const [openRecruitDropdown, setOpenRecruitDropdown] = useState<{
     index: number;
     key: Exclude<OpenDropdownKey, null>;
@@ -109,6 +110,7 @@ export default function Page() {
     setMyInterest({ major: '', minor: '' });
     setMyOpenDropdown(null);
     setRecruitInterests([{ major: '', minor: '', count: 1 }]);
+    setRecruitTechStacks({});
     setOpenRecruitDropdown(null);
     setRecruitDeadline('');
     setIsRecruitUntilComplete(false);
@@ -311,7 +313,11 @@ export default function Page() {
           </div>
         </div>
 
-        <TechStackSection interests={recruitInterests} />
+        <TechStackSection
+          interests={recruitInterests}
+          value={recruitTechStacks}
+          onChange={setRecruitTechStacks}
+        />
         <RecruitDeadlineField
           deadline={recruitDeadline}
           onDeadlineChange={setRecruitDeadline}

@@ -15,3 +15,9 @@
 - Avoid hard-coded size values such as `px`, `rem`, `em` in arbitrary classes (for example: `h-[60px]`, `px-[21px]`, `text-[14px]`, `rounded-[4px]`).
 - Use arbitrary size values only when no equivalent Tailwind scale value exists and the exception is explicitly required by design.
 - When a similar predefined class exists, always choose the predefined class.
+
+## Icon Rules
+
+- Use `lucide-react` for all icons by default.
+- Do not add or use custom SVG icon files or inline `<svg>` icons unless explicitly requested.
+- Keep icon stroke and size consistent with adjacent UI elements (for example: `h-4 w-4`, `strokeWidth={1.8}` or `2`).
