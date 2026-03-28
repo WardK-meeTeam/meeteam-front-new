@@ -35,12 +35,12 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
   const tags = project.tags ?? [];
   const recruitInfo = project.recruitInfo ?? [];
 
-  const heightClass = compact ? 'h-[280px]' : 'h-[380px]';
-  const titleClass = compact ? 'text-xl mb-2' : 'text-2xl mb-3';
+  const heightClass = compact ? 'h-50' : 'h-[380px]';
+  const titleClass = compact ? 'mb-3 text-2xl' : 'mb-3 text-2xl';
 
   return (
     <Link
-      className={`group relative block max-w-71.5 ${heightClass} w-full overflow-hidden rounded-3xl bg-text-black shadow-2xl transition-all duration-300 hover:ring-1 hover:ring-brand-400/50`}
+      className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-text-black shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] transition-all duration-300 hover:ring-1 hover:ring-brand-400/50`}
       href={`/projects/${project.id}`}
     >
       <div className="absolute inset-0 h-full w-full">
@@ -55,18 +55,18 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
         <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </div>
 
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between p-6">
+      <div className={`absolute left-0 right-0 top-0 z-10 flex justify-between ${compact ? 'p-4' : 'p-6'}`}>
         <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/20 px-3 py-1 text-xs font-bold text-white shadow-sm backdrop-blur-md">
           {project.category}
         </span>
-        {!compact && project.deadline ? (
-          <div className="inline-flex items-center rounded-md bg-brand-500/90 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm backdrop-blur-sm">
+        {project.deadline ? (
+          <div className="inline-flex items-center rounded-md bg-brand-500/90 px-2 py-0.5 text-[10px] leading-4 font-bold text-white shadow-sm backdrop-blur-sm">
             {project.deadline} 마감
           </div>
         ) : null}
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end p-6">
+      <div className={`absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end ${compact ? 'p-4' : 'p-6'}`}>
         <div className="transform transition-transform duration-500 ease-out group-hover:-translate-y-2">
           <h3
             className={`${titleClass} line-clamp-2 leading-tight font-bold text-white drop-shadow-md`}
@@ -101,7 +101,13 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
           </div>
         </div>
 
-        <div className="grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-out group-hover:mt-4 group-hover:grid-rows-[1fr] group-hover:opacity-100">
+        <div
+          className={
+            compact
+              ? 'hidden'
+              : 'grid grid-rows-[0fr] opacity-0 transition-all duration-500 ease-out group-hover:mt-4 group-hover:grid-rows-[1fr] group-hover:opacity-100'
+          }
+        >
           <div className="overflow-hidden">
             <div className="border-t border-white/20 pt-4">
               <div className="mb-3 flex items-center justify-between">
@@ -118,39 +124,37 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                 </div>
               </div>
 
-              {!compact ? (
-                <div className="max-h-35 space-y-2 overflow-y-auto pr-1">
-                  {recruitInfo.length > 0 ? (
-                    recruitInfo.map((info) => (
-                      <div
-                        className="flex items-center justify-between rounded-lg border border-white/10 bg-white/10 p-2.5 transition-colors hover:bg-white/20"
-                        key={info.id}
-                      >
-                        <div className="flex flex-col">
-                          <span className="text-xs font-bold text-white">{info.role}</span>
-                          <span className="text-[10px] text-white/70">
-                            {info.subRoles?.join(', ') || '전체'}
+              <div className="max-h-35 space-y-2 overflow-y-auto pr-1">
+                {recruitInfo.length > 0 ? (
+                  recruitInfo.map((info) => (
+                    <div
+                      className="flex items-center justify-between rounded-lg border border-white/10 bg-white/10 p-2.5 transition-colors hover:bg-white/20"
+                      key={info.id}
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-white">{info.role}</span>
+                        <span className="text-[10px] text-white/70">
+                          {info.subRoles?.join(', ') || '전체'}
+                        </span>
+                      </div>
+
+                      {info.status === 'open' ? (
+                        <div className="flex items-center gap-2">
+                          <span className="rounded bg-brand-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
+                            {info.current}/{info.max}
                           </span>
                         </div>
-
-                        {info.status === 'open' ? (
-                          <div className="flex items-center gap-2">
-                            <span className="rounded bg-brand-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
-                              {info.current}/{info.max}
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-1 text-danger-500/90">
-                            <Lock className="h-3 w-3" aria-hidden strokeWidth={2} />
-                          </div>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="py-2 text-center text-xs text-text-gray">모집 포지션 없음</div>
-                  )}
-                </div>
-              ) : null}
+                      ) : (
+                        <div className="flex items-center gap-1 text-danger-500/90">
+                          <Lock className="h-3 w-3" aria-hidden strokeWidth={2} />
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-2 text-center text-xs text-text-gray">모집 포지션 없음</div>
+                )}
+              </div>
 
               <div className="mt-4 flex items-center justify-end">
                 <span className="cursor-pointer text-xs font-bold text-brand-400 transition-colors hover:text-brand-500">

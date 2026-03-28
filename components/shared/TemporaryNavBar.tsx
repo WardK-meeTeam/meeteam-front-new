@@ -1,40 +1,62 @@
-import Link from "next/link";
+import Link from 'next/link';
+import { Bell, ChevronDown } from 'lucide-react';
 
 const navItems = [
-  { href: "/", label: "메인" },
-  { href: "/projects", label: "프로젝트 찾기" },
-  { href: "/projects/1", label: "프로젝트 1 상세" },
-  { href: "/projects/1/apply", label: "프로젝트 1 지원" },
-  { href: "/projects/1/apply/1", label: "지원서 1 상세" },
-  { href: "/projects/1/manage", label: "프로젝트 관리 홈" },
-  { href: "/projects/create", label: "프로젝트 생성" },
-  { href: "/projects/1/manage/members", label: "팀원 관리" },
-  { href: "/projects/1/manage/applicants", label: "지원자 관리" },
-  { href: "/projects/1/manage/edit", label: "프로젝트 수정" },
-  { href: "/profile", label: "마이페이지" },
-  { href: "/profile/1", label: "사용자 1 프로필" },
-  { href: "/teammates", label: "팀원 찾기" },
-  { href: "/notifications", label: "알림" },
-  { href: "/auth/login", label: "로그인" },
-  { href: "/auth/sign-up", label: "회원가입" },
+  { href: '/teammates', label: '팀원 찾기', active: false },
+  { href: '/projects', label: '프로젝트 찾기', active: false },
+  { href: '/projects/create', label: '프로젝트 등록하기', active: true },
 ];
 
 export function TemporaryNavBar() {
   return (
-    <nav className="border-b border-zinc-200">
-      <div className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-        <ul className="m-0 flex list-none flex-wrap gap-x-3 gap-y-2 p-0 text-sm">
-          {navItems.map((item) => (
-            <li key={item.href}>
-              <Link
-                className="rounded-md px-2 py-1 text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900"
-                href={item.href}
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+    <nav className="sticky top-0 z-20 border-b border-border-gray bg-white/80 backdrop-blur-sm">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-8">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="text-xl leading-7 font-bold tracking-tight text-text-black">
+            meeTeam
+          </Link>
+
+          <ul className="flex list-none items-center gap-6 p-0">
+            {navItems.map((item) => (
+              <li key={item.href}>
+                <Link
+                  className={
+                    item.active
+                      ? 'text-sm leading-5 font-semibold text-brand-500'
+                      : 'text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black'
+                  }
+                  href={item.href}
+                >
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-project-status-closed transition-colors hover:bg-surface-soft hover:text-text-black"
+            aria-label="알림"
+          >
+            <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
+            <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-danger-500 shadow-[0_0_0_2px_white]" />
+          </button>
+
+          <span className="h-6 w-px bg-border-gray" aria-hidden />
+
+          <Link href="/profile/1" className="flex items-center gap-2">
+            <span className="h-9 w-9 overflow-hidden rounded-full bg-brand-50">
+              <img
+                alt="프로필"
+                className="h-full w-full object-cover"
+                src="http://localhost:3845/assets/f1172eb8cefcbe26d0f11c0aadeea5d533cb00a6.png"
+              />
+            </span>
+            <ChevronDown className="h-4 w-4 text-text-gray" aria-hidden strokeWidth={1.8} />
+          </Link>
+        </div>
       </div>
     </nav>
   );

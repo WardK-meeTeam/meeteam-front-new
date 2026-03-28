@@ -5,6 +5,7 @@
   --color-brand-400: #6366f1;
   --color-brand-500: #4f46e5;
   --color-danger-500: #e12e2e;
+  --color-danger-soft: #f0cece;
   --color-error-red: #e12e2e;
   --color-project-recruiting-bg: #d4fde7;
   --color-role-leader-bg: #fef9c3;
@@ -15,6 +16,14 @@
   --color-border-gray: #e2e8f0;
   --color-text-black: #0f172a;
   --color-text-gray: #64748b;
+  --color-surface-soft: #f8fafc;
+  --color-divider-soft: #cbd5e1;
+  --color-label-dark: #1e293b;
+  --color-text-body: #334155;
+  --color-brand-100: #e0e7ff;
+  --color-brand-700: #4338ca;
+  --color-chip-bg: #eef2ff;
+  --color-chip-text: #4338ca;
 }
 
 *,
