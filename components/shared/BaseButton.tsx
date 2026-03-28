@@ -31,9 +31,7 @@ export default function BaseButton({
   full = false,
   className = '',
   type = 'button',
-  onClick = () => {
-    console.warn('아직 onClick을 추가하지 않았네요');
-  },
+  onClick,
   disabled,
   children,
 }: BaseButtonProps) {
