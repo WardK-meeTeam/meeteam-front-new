@@ -9,6 +9,7 @@ import { TECHS_BY_MAJOR } from '@/constants/techStacks';
 import TechStackList from '@/components/features/auth/TechStackList';
 
 type TechStackSectionProps = {
+  label?: string;
   interests: Interest[];
   value: Record<string, string[]>;
   onChange: (next: Record<string, string[]>) => void;
@@ -18,7 +19,12 @@ type TechMajor = keyof typeof TECHS_BY_MAJOR;
 
 const isTechMajor = (value: string): value is TechMajor => value in TECHS_BY_MAJOR;
 
-export default function TechStackSection({ interests, value, onChange }: TechStackSectionProps) {
+export default function TechStackSection({
+  label = '기술 스택',
+  interests,
+  value,
+  onChange,
+}: TechStackSectionProps) {
   const [open, setOpen] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('');
   const [techKeyword, setTechKeyword] = useState('');
@@ -81,7 +87,7 @@ export default function TechStackSection({ interests, value, onChange }: TechSta
   );
 
   return (
-    <BaseField label="기술 스택" htmlFor="tech" required={false}>
+    <BaseField label={label} htmlFor="tech" required={false}>
       <div className="flex gap-2">
         <BaseDropdown
           value={currentLabel}
@@ -107,7 +113,7 @@ export default function TechStackSection({ interests, value, onChange }: TechSta
               setTechKeyword(e.target.value);
               if (selectedMajor) setOpenTechMenu(true);
             }}
-            rightIcon={<Search width={20} height={20} color="#94a3b8" />}
+            rightIcon={<Search className="h-5 w-5 text-muted-gray" />}
           />
           {openTechMenu && techItems.length > 0 && (
             <SelectMenu items={techItems} onSelect={handleSelectTech} />
