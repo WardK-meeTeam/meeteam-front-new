@@ -27,6 +27,9 @@
   --color-chip-text: #4338ca;
   --color-border-soft: #f1f5f9;
   --color-text-soft: #6b7280;
+  --color-accent-violet-500: #a855f7;
+  --color-overlay-dark: rgb(0 0 0 / 40%);
+  --color-overlay-white: rgb(255 255 255 / 50%);
 }
 
 *,

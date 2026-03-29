@@ -33,6 +33,7 @@ export default function BaseTextarea({
         focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-400/20
         disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-gray
         ${sizeClass}
+        ${className}
         ${widthClass}
         resize-y
         ${className}`}

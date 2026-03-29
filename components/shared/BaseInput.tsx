@@ -22,6 +22,7 @@ export default function BaseInput({
   disabled,
   leftIcon,
   rightIcon,
+  className = '',
   ...props
 }: BaseInputProps) {
   const sizeClass = SIZE_MAP[inputSize];
@@ -46,6 +47,7 @@ export default function BaseInput({
           ${sizeClass}
           ${leftPaddingClass}
           ${rightPaddingClass}
+          ${className}
           ${widthClass}`}
         {...props}
       />
