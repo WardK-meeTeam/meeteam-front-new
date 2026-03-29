@@ -1,6 +1,5 @@
 import Github from '@/assets/GithubLogin.svg';
 import Google from '@/assets/Google.svg';
-import Image from 'next/image';
 
 export default function SocialLogin() {
   return (
@@ -16,14 +15,14 @@ export default function SocialLogin() {
           type="button"
           className="flex flex-1 gap-2 py-3 items-center justify-center rounded-xl border border-slate-200 cursor-pointer"
         >
-          <Image src={Google} alt="google" width={20} height={20} />
-          <span className="text-[#334155] font-bold text-3.5">Google</span>
+          <Google aria-hidden className="h-5 w-5" />
+          <span className="text-text-body font-bold text-3.5">Google</span>
         </button>
         <button
           type="button"
           className="flex flex-1 gap-2 py-3 items-center justify-center bg-[#24292f] rounded-xl cursor-pointer"
         >
-          <Image src={Github} alt="github" width={20} height={20} />
+          <Github aria-hidden className="h-5 w-5 text-white" />
           <span className="text-white font-bold text-3.5">GitHub</span>
         </button>
       </div>
