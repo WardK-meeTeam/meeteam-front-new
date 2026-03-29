@@ -9,9 +9,9 @@ import {
   Link2,
   Settings,
 } from 'lucide-react';
+import ProjectActionButtons from '@/components/features/project/detail/ProjectActionButtons';
+import ProjectDetailContent from '@/components/features/project/detail/ProjectDetailContent';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
-import ProjectDetailContent from './_components/ProjectDetailContent';
-import ProjectActionButtons from './_components/ProjectActionButtons';
 
 const HERO_IMAGE_URLS = {
   first: 'http://localhost:3845/assets/96b5d67a8d8fcae1aba609faa758ade8f623622b.png',
