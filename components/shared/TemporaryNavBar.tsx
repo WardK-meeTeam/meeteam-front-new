@@ -1,13 +1,24 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Bell, ChevronDown } from 'lucide-react';
 
 const navItems = [
-  { href: '/teammates', label: '팀원 찾기', active: false },
-  { href: '/projects', label: '프로젝트 찾기', active: false },
-  { href: '/projects/create', label: '프로젝트 등록하기', active: true },
+  { href: '/teammates', label: '팀원 찾기' },
+  { href: '/projects', label: '프로젝트 찾기' },
+  { href: '/projects/create', label: '프로젝트 등록하기' },
 ];
 
 export function TemporaryNavBar() {
+  const pathname = usePathname();
+  const isActiveLink = (href: string) =>
+    pathname === href ||
+    (href !== '/projects' && pathname.startsWith(`${href}/`)) ||
+    (href === '/projects' &&
+      pathname.startsWith('/projects') &&
+      !pathname.startsWith('/projects/create'));
+
   return (
     <nav className="sticky top-0 z-20 border-b border-border-gray bg-white/80 backdrop-blur-sm">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-8">
@@ -21,7 +32,7 @@ export function TemporaryNavBar() {
               <li key={item.href}>
                 <Link
                   className={
-                    item.active
+                    isActiveLink(item.href)
                       ? 'text-sm leading-5 font-semibold text-brand-500'
                       : 'text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black'
                   }

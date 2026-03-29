@@ -1,5 +1,5 @@
-import ProjectForm from '@/components/features/project/create/ProjectForm';
+import CreateProjectPage from '@/components/features/project/create/CreateProjectPage';
 
 export default function Page() {
-  return <ProjectForm variant="create" />;
+  return <CreateProjectPage />;
 }
