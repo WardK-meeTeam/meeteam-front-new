@@ -67,7 +67,7 @@ export default function ProfileExtraSection({
           onChange={onChangeProfileImage}
         />
         {!hasProfileImage ? (
-          <div className="flex p-5 items-center border border-border-gray justify-between rounded-2xl bg-[#f8fafc]">
+          <div className="flex p-5 items-center border border-border-gray justify-between rounded-2xl bg-surface-soft">
             <div className="flex items-center gap-4">
               <div className="bg-white border border-border-gray rounded-full w-12 h-12 flex items-center justify-center">
                 <Camera width={20} height={20} color="#94a3b8" />
@@ -83,7 +83,7 @@ export default function ProfileExtraSection({
             </div>
             <label
               htmlFor="profile-upload"
-              className="cursor-pointer select-none rounded-lg px-4 py-2 border border-border-gray bg-white text-[12px] font-bold text-[#334155] hover:bg-slate-50 active:scale-[0.99]"
+              className="cursor-pointer select-none rounded-lg px-4 py-2 border border-border-gray bg-white text-[12px] font-bold text-text-body hover:bg-slate-50 active:scale-[0.99]"
             >
               업로드
             </label>
@@ -108,7 +108,7 @@ export default function ProfileExtraSection({
             <div className="flex items-center gap-3 shrink-0">
               <label
                 htmlFor="profile-upload"
-                className="cursor-pointer select-none rounded-xl px-5 py-2.5 border border-border-gray bg-[#f8fafc] text-sm font-bold text-project-status-closed"
+                className="cursor-pointer select-none rounded-xl px-5 py-2.5 border border-border-gray bg-surface-soft text-sm font-bold text-project-status-closed"
               >
                 사진 변경
               </label>
