@@ -18,6 +18,7 @@ export default function BaseTextarea({
   full = true,
   disabled,
   rows = 4,
+  className = '',
   ...props
 }: BaseTextareaProps) {
   const sizeClass = SIZE_MAP[textareaSize];
@@ -33,7 +34,8 @@ export default function BaseTextarea({
         disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-gray
         ${sizeClass}
         ${widthClass}
-        resize-y`}
+        resize-y
+        ${className}`}
       {...props}
     />
   );

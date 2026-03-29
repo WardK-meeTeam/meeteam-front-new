@@ -14,8 +14,8 @@ const TABS: Array<{ key: ProjectDetailTab; label: string }> = [
 
 export default function ProjectDetailTabs({ activeTab, onTabChange }: ProjectDetailTabsProps) {
   return (
-    <div className="sticky top-16 z-10 w-full border-b border-border-gray bg-white pt-2 pb-px">
-      <nav className="flex w-full items-start gap-6">
+    <div className="sticky top-16 z-10 w-full overflow-x-auto border-b border-border-gray bg-white pt-2 pb-px">
+      <nav className="flex min-w-max items-start gap-6">
         {TABS.map((tab) => {
           const isActive = tab.key === activeTab;
 
