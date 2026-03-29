@@ -6,11 +6,13 @@ import type {
   ProjectApplicant,
   ProjectFormValues,
   ProjectMember,
+  ProjectStatus,
 } from '@/types/project';
 
 type ProjectManageState = {
   projectsById: Record<string, ManagedProject>;
   getProject: (projectId: string) => ManagedProject | null;
+  updateProjectStatus: (projectId: string, status: ProjectStatus) => void;
   updateProject: (projectId: string, values: ProjectFormValues) => void;
   removeMember: (projectId: string, memberId: number) => void;
   approveApplicant: (projectId: string, applicantId: number) => void;
@@ -159,6 +161,21 @@ const toMember = (applicant: ProjectApplicant): ProjectMember => ({
 export const useProjectManageStore = create<ProjectManageState>((set, get) => ({
   projectsById: INITIAL_PROJECTS,
   getProject: (projectId) => get().projectsById[projectId] ?? null,
+  updateProjectStatus: (projectId, status) =>
+    set((state) => {
+      const project = state.projectsById[projectId];
+      if (!project) return state;
+
+      return {
+        projectsById: {
+          ...state.projectsById,
+          [projectId]: {
+            ...project,
+            status,
+          },
+        },
+      };
+    }),
   updateProject: (projectId, values) =>
     set((state) => {
       const project = state.projectsById[projectId];
