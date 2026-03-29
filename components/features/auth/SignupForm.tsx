@@ -8,6 +8,7 @@ import TechStackSection from './TechStackSection';
 import ProfileExtraSection from './ProfileExtraSection';
 
 export default function SignupForm() {
+  // todo: zod + react-hook-form 사용하여 검증
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [passwordConfirm, setPasswordConfirm] = useState<string>('');
