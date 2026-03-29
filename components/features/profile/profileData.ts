@@ -14,7 +14,18 @@ export const profileData = {
   profileImage: 'https://www.figma.com/api/mcp/asset/fb8f287d-9a11-49ab-a87f-83ff2ebe3644',
 };
 
-export const joinedProject = {
+export interface JoinedProject {
+  id: number;
+  title: string;
+  category: string;
+  leader: string;
+  currentMembers: number;
+  maxMembers: number;
+  imageUrl: string;
+  leaderImageUrl: string;
+}
+
+export const joinedProject: JoinedProject | null = {
   id: 1,
   title: 'AI 기반 뉴스 요약 서비스 개발',
   category: 'AI/테크',
