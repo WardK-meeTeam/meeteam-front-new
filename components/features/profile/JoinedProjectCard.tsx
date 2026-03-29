@@ -2,8 +2,12 @@ import Link from 'next/link';
 import { BriefcaseBusiness, Users } from 'lucide-react';
 import { joinedProject } from '@/components/features/profile/profileData';
 
-export default function JoinedProjectCard() {
-  if (!joinedProject) {
+interface JoinedProjectCardProps {
+  empty?: boolean;
+}
+
+export default function JoinedProjectCard({ empty = false }: JoinedProjectCardProps) {
+  if (empty || !joinedProject) {
     return (
       <section className="space-y-4">
         <div className="flex items-baseline gap-2">
@@ -11,28 +15,14 @@ export default function JoinedProjectCard() {
           <span className="text-lg leading-7 font-medium text-muted-gray">0</span>
         </div>
 
-        <div className="flex min-h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-divider-soft bg-surface-soft/50 px-6 py-16 text-center">
-          <span className="flex h-16 w-16 items-center justify-center rounded-full border border-icon-gray bg-white text-divider-soft shadow-sm">
+        <div className="flex min-h-76 flex-col items-center justify-center rounded-2xl border border-dashed border-divider-soft bg-surface-soft/50 px-6 py-16 text-center">
+          <span className="flex h-16 w-16 items-center justify-center rounded-full border border-border-soft bg-white text-divider-soft shadow-sm">
             <BriefcaseBusiness className="h-8 w-8" aria-hidden strokeWidth={1.8} />
           </span>
 
-          <div className="mt-5 space-y-1">
-            <h3 className="text-lg leading-7 font-bold text-text-body">
-              진행한 프로젝트가 없나요?
-            </h3>
-            <p className="text-sm leading-5 font-normal text-muted-gray">
-              첫 번째 프로젝트를 시작하거나, 생성해보세요!
-            </p>
-          </div>
-
-          <div className="mt-6">
-            <Link
-              href="/projects"
-              className="inline-flex rounded-full bg-white px-6 py-2 text-sm leading-5 font-bold text-brand-500 shadow-sm ring-1 ring-inset ring-border-gray transition-colors hover:text-brand-700"
-            >
-              프로젝트 찾아보기
-            </Link>
-          </div>
+          <p className="mt-4 text-sm leading-5 font-normal text-muted-gray">
+            참여중인 프로젝트가 존재하지 않습니다.
+          </p>
         </div>
       </section>
     );

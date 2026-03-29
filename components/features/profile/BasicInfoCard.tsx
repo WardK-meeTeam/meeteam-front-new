@@ -22,9 +22,9 @@ export default function BasicInfoCard() {
       <div className="mt-4 space-y-4">
         <a
           href={emailContact.href}
-          className="flex items-center gap-3 border-y border-border-soft py-4 text-sm leading-5 font-medium text-text-body transition-colors hover:text-text-black"
+          className="flex items-center gap-3 border-y border-border-soft py-4 text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black"
         >
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-softborder-border-soft text-text-gray">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-soft text-text-gray">
             <EmailIcon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
           </span>
           <span>{emailContact.value}</span>
@@ -38,9 +38,9 @@ export default function BasicInfoCard() {
               <a
                 key={item.value}
                 href={item.href}
-                className="flex items-center gap-3 text-sm leading-5 font-medium text-text-body transition-colors hover:text-text-black"
+                className="flex items-center gap-3 text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black"
               >
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-softborder-border-soft text-text-gray">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-soft text-text-gray">
                   <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                 </span>
                 <span>{item.value}</span>

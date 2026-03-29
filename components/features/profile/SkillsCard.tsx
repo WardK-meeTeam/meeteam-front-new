@@ -4,7 +4,9 @@ import { skillGroups } from '@/components/features/profile/profileData';
 
 export default function SkillsCard() {
   return (
-    <ProfileCard title="보유 기술" className="min-h-56">
+    <ProfileCard className="min-h-56">
+      <h2 className="text-lg leading-7 font-bold text-text-black">보유 기술</h2>
+
       <div className="mt-4 space-y-5">
         {skillGroups.map((group) => (
           <div key={`${group.category}-${group.role}`} className="space-y-3">
