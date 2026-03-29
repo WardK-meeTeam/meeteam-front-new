@@ -85,7 +85,7 @@ export default function BasicInfoCard({
   }
 
   return (
-    <ProfileCard className="min-h-[488px]">
+    <ProfileCard className="min-h-122">
       <h2 className="text-lg leading-7 font-bold text-text-black">기본 정보 수정</h2>
 
       <div className="mt-4 space-y-4">
