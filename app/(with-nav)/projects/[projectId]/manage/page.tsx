@@ -1,13 +1,7 @@
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ projectId: string }>;
-}) {
+import ProjectManageOverview from '@/components/features/project/manage/ProjectManageOverview';
+
+export default async function Page({ params }: { params: Promise<{ projectId: string }> }) {
   const { projectId } = await params;
 
-  return (
-    <section className="space-y-6 md:space-y-8">
-      <h1>프로젝트 {projectId}번 관리 홈 페이지</h1>
-    </section>
-  );
+  return <ProjectManageOverview projectId={projectId} />;
 }

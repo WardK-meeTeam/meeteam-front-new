@@ -22,8 +22,11 @@
   --color-text-body: #334155;
   --color-brand-100: #e0e7ff;
   --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
   --color-chip-bg: #eef2ff;
   --color-chip-text: #4338ca;
+  --color-border-soft: #f1f5f9;
+  --color-text-soft: #6b7280;
 }
 
 *,
