@@ -42,9 +42,9 @@ export default function AuthSection({
             onChange={onChangePassword}
           />
         </BaseField>
-        <BaseField label="비밀번호 확인" htmlFor="password">
+        <BaseField label="비밀번호 확인" htmlFor="passwordConfirm">
           <BaseInput
-            id="password"
+            id="passwordConfirm"
             type="password"
             placeholder="비밀번호 재입력"
             onChange={onChangePasswordConfirm}

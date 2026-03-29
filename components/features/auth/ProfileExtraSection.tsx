@@ -94,7 +94,7 @@ export default function ProfileExtraSection({
               <img
                 src={profileImagePreviewUrl}
                 alt="프로필 미리보기"
-                className="w-13 h-full rounded-full bg-white flex-[1_0_0]"
+                className="h-13 w-13 shrink-0 rounded-full bg-white object-cover"
               />
               <div className="flex flex-col min-w-0">
                 <span className="text-text-black text-[15px] font-bold">프로필 사진 등록 완료</span>

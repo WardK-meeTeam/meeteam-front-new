@@ -91,6 +91,7 @@ export default function SignupForm() {
   const onChangeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     setProfileImage(file);
+    e.target.value = '';
   };
 
   const onRemoveProfileImage = () => {
