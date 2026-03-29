@@ -7,5 +7,5 @@ export default async function Page({
 }) {
   await params;
 
-  return <ProfileOverview actionLabel="제안 보내기" emptyProject />;
+  return <ProfileOverview editable={false} actionLabel="제안 보내기" emptyProject />;
 }

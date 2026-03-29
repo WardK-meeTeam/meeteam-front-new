@@ -6,11 +6,14 @@ export const profileData = {
   role: 'Product Designer',
   age: '22세',
   gender: '여성',
+  fieldCategory: '디자인',
+  fieldRole: 'UI/UX디자인',
   field: '디자인, 그래픽디자인',
   projectCount: '2회',
   email: 'gimmilyang542@gmail.com',
   github: 'github.com/hongjiyeon',
   blog: 'velog.io/@hongji',
+  introduction: '',
   profileImage: 'https://www.figma.com/api/mcp/asset/fb8f287d-9a11-49ab-a87f-83ff2ebe3644',
 };
 

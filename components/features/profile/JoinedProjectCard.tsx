@@ -4,9 +4,13 @@ import { joinedProject } from '@/components/features/profile/profileData';
 
 interface JoinedProjectCardProps {
   empty?: boolean;
+  disabled?: boolean;
 }
 
-export default function JoinedProjectCard({ empty = false }: JoinedProjectCardProps) {
+export default function JoinedProjectCard({
+  empty = false,
+  disabled = false,
+}: JoinedProjectCardProps) {
   if (empty || !joinedProject) {
     return (
       <section className="space-y-4">
@@ -15,7 +19,11 @@ export default function JoinedProjectCard({ empty = false }: JoinedProjectCardPr
           <span className="text-lg leading-7 font-medium text-muted-gray">0</span>
         </div>
 
-        <div className="flex min-h-76 flex-col items-center justify-center rounded-2xl border border-dashed border-divider-soft bg-surface-soft/50 px-6 py-16 text-center">
+        <div
+          className={`flex min-h-76 flex-col items-center justify-center rounded-2xl border border-dashed border-divider-soft bg-surface-soft/50 px-6 py-16 text-center ${
+            disabled ? 'pointer-events-none opacity-70 blur-[1px]' : ''
+          }`}
+        >
           <span className="flex h-16 w-16 items-center justify-center rounded-full border border-border-soft bg-white text-divider-soft shadow-sm">
             <BriefcaseBusiness className="h-8 w-8" aria-hidden strokeWidth={1.8} />
           </span>
@@ -41,8 +49,17 @@ export default function JoinedProjectCard({ empty = false }: JoinedProjectCardPr
 
       <Link
         href={`/projects/${project.id}`}
-        className="group relative block w-full max-w-78.25 overflow-hidden rounded-3xl bg-text-black shadow-2xl"
+        className={`group relative block w-full max-w-78.25 overflow-hidden rounded-3xl bg-text-black shadow-2xl ${
+          disabled ? 'pointer-events-none opacity-70 blur-[1px]' : ''
+        }`}
       >
+        {disabled ? (
+          <div
+            aria-hidden
+            className="absolute inset-0 z-10 rounded-3xl bg-overlay-white backdrop-blur-sm"
+          />
+        ) : null}
+
         <div className="absolute inset-0">
           <img
             alt={project.title}
