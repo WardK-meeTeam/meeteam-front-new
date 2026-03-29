@@ -46,18 +46,19 @@ export function TemporaryNavBar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button
-            type="button"
-            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-project-status-closed transition-colors hover:bg-surface-soft hover:text-text-black"
-            aria-label="알림"
-          >
-            <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-            <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-danger-500 shadow-[0_0_0_2px_white]" />
-          </button>
-
+          <Link href="/notifications">
+            <button
+              type="button"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-project-status-closed transition-colors hover:bg-surface-soft hover:text-text-black"
+              aria-label="알림"
+            >
+              <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
+              <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-danger-500 shadow-[0_0_0_2px_white]" />
+            </button>
+          </Link>
           <span className="h-6 w-px bg-border-gray" aria-hidden />
 
-          <Link href="/profile/1" className="flex items-center gap-2">
+          <Link href="/profile" className="flex items-center gap-2">
             <span className="h-9 w-9 overflow-hidden rounded-full bg-brand-50">
               <img
                 alt="프로필"
