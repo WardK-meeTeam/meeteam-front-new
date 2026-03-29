@@ -1,7 +1,5 @@
+import TeammatesPage from '@/components/features/team/TeammatesPage';
+
 export default function Page() {
-  return (
-    <section className="space-y-6 md:space-y-8">
-      <h1>팀원 찾기 페이지</h1>
-    </section>
-  );
+  return <TeammatesPage />;
 }
