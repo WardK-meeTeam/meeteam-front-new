@@ -1,3 +1,5 @@
+import ProjectApplyPage from '@/components/features/project/apply/ProjectApplyPage';
+
 export default async function Page({
   params,
 }: {
@@ -5,9 +7,5 @@ export default async function Page({
 }) {
   const { projectId } = await params;
 
-  return (
-    <section className="space-y-6 md:space-y-8">
-      <h1>프로젝트 {projectId}번 지원 페이지</h1>
-    </section>
-  );
+  return <ProjectApplyPage projectId={projectId} />;
 }

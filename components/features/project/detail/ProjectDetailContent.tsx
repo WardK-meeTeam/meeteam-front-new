@@ -8,15 +8,15 @@ import ProjectRecruitSection from './ProjectRecruitSection';
 
 export type ProjectDetailTab = 'intro' | 'recruit' | 'qna';
 
-export default function ProjectDetailContent() {
+export default function ProjectDetailContent({ projectId }: { projectId: string }) {
   const [activeTab, setActiveTab] = useState<ProjectDetailTab>('intro');
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <ProjectDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       {activeTab === 'intro' && <ProjectIntroSection />}
-      {activeTab === 'recruit' && <ProjectRecruitSection />}
+      {activeTab === 'recruit' && <ProjectRecruitSection projectId={projectId} />}
       {activeTab === 'qna' && <ProjectQnaSection />}
     </div>
   );

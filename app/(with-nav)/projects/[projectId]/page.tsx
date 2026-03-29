@@ -142,7 +142,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
       </div>
 
       <div className="grid grid-cols-1 gap-8 pb-14 xl:grid-cols-[minmax(0,1fr)_24rem]">
-        <ProjectDetailContent />
+        <ProjectDetailContent projectId={projectId} />
 
         <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
           <article className="rounded-3xl border border-border-gray bg-white p-6 shadow-sm">
