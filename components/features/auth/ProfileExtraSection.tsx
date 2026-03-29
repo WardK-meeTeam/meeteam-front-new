@@ -99,7 +99,7 @@ export default function ProfileExtraSection({
               <div className="flex flex-col min-w-0">
                 <span className="text-text-black text-[15px] font-bold">프로필 사진 등록 완료</span>
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <CircleCheck width={16} height={16} color="#4f46e5" />
+                  <CircleCheck width={12} height={12} color="#4f46e5" />
                   <span className="text-brand-500 text-[12px] font-bold">{profileImageName}</span>
                 </div>
               </div>
