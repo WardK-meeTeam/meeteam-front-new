@@ -32,7 +32,11 @@ export default function ProjectQnaSection() {
             data-node-id="97:1466"
           >
             <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-100 pt-0.5">
-              <Send className="h-4 w-4 rotate-[-45deg] text-brand-500" aria-hidden strokeWidth={2} />
+              <Send
+                className="h-4 w-4 rotate-[-45deg] text-brand-500"
+                aria-hidden
+                strokeWidth={2}
+              />
             </div>
 
             <div className="flex min-w-0 flex-1 flex-col gap-0.5 self-stretch">
@@ -44,9 +48,12 @@ export default function ProjectQnaSection() {
                   방금 전
                 </p>
               </div>
-              <p className="text-sm leading-5 font-normal text-project-status-closed" data-node-id="97:1479">
-                매주 토요일 오후 2시 강남역 부근에서 진행합니다! 월 1회 정도는 온라인으로
-                대체 가능합니다.
+              <p
+                className="text-sm leading-5 font-normal text-project-status-closed"
+                data-node-id="97:1479"
+              >
+                매주 토요일 오후 2시 강남역 부근에서 진행합니다! 월 1회 정도는 온라인으로 대체
+                가능합니다.
               </p>
             </div>
           </div>

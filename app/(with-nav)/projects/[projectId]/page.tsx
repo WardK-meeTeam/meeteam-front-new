@@ -9,9 +9,9 @@ import {
   Link2,
   Settings,
 } from 'lucide-react';
+import ProjectActionButtons from '@/components/features/project/detail/ProjectActionButtons';
+import ProjectDetailContent from '@/components/features/project/detail/ProjectDetailContent';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
-import ProjectDetailContent from './_components/ProjectDetailContent';
-import ProjectActionButtons from './_components/ProjectActionButtons';
 
 const HERO_IMAGE_URLS = {
   first: 'http://localhost:3845/assets/96b5d67a8d8fcae1aba609faa758ade8f623622b.png',
@@ -105,7 +105,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
       </Link>
 
       <div className="relative h-96 overflow-hidden rounded-4xl bg-text-black px-12 py-8 text-white">
-        <div className="absolute inset-0 bg-linear-to-r from-text-black via-label-dark to-label-dark" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-text-black via-label-dark to-label-dark" />
         <div className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-brand-400/20 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-brand-500/20 blur-3xl" />
 
@@ -134,7 +134,7 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
 
         <Link
           href={`/projects/${projectId}/manage`}
-          className="absolute right-10 top-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-2.5 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+          className="absolute right-10 top-8 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-2.5 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
         >
           <Settings className="h-4 w-4" aria-hidden strokeWidth={1.8} />
           프로젝트 관리
@@ -259,11 +259,13 @@ export default async function Page({ params }: { params: Promise<{ projectId: st
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           {RECOMMENDED_PROJECTS.map((project) => (
-            <ProjectCard key={project.id} project={project} compact />
+            <li key={project.id}>
+              <ProjectCard project={project} />
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );

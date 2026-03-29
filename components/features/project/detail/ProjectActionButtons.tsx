@@ -7,9 +7,7 @@ interface ProjectActionButtonsProps {
   initialLikeCount: number;
 }
 
-export default function ProjectActionButtons({
-  initialLikeCount,
-}: ProjectActionButtonsProps) {
+export default function ProjectActionButtons({ initialLikeCount }: ProjectActionButtonsProps) {
   const [liked, setLiked] = useState(false);
 
   const likeCount = liked ? initialLikeCount + 1 : initialLikeCount;
@@ -27,11 +25,7 @@ export default function ProjectActionButtons({
               : 'bg-white text-project-status-closed hover:bg-danger-soft'
           }`}
       >
-        <Heart
-          className={`h-5 w-5 ${liked ? 'fill-current' : ''}`}
-          aria-hidden
-          strokeWidth={1.8}
-        />
+        <Heart className={`h-5 w-5 ${liked ? 'fill-current' : ''}`} aria-hidden strokeWidth={1.8} />
         {likeCount}
       </button>
 

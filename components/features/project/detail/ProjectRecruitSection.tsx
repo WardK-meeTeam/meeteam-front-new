@@ -104,7 +104,9 @@ export default function ProjectRecruitSection() {
             <div className="my-6 h-px w-full bg-surface-soft" />
 
             <div className="flex flex-wrap items-center gap-6">
-              <span className="text-sm leading-5 font-medium text-project-status-closed">기술스택</span>
+              <span className="text-sm leading-5 font-medium text-project-status-closed">
+                기술스택
+              </span>
               <div className="flex flex-wrap items-center gap-2">
                 {position.techStack.map((tech) => (
                   <RecruitTechChip key={tech} label={tech} />
