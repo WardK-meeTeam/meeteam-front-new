@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { ProjectRecord } from '@/types/project';
 import BaseButton from '@/components/shared/BaseButton';
 
 type RecruitPositionStatus = 'open' | 'closed';
@@ -12,36 +13,6 @@ type RecruitPosition = {
   status: RecruitPositionStatus;
   techStack: string[];
 };
-
-const RECRUIT_POSITIONS: RecruitPosition[] = [
-  {
-    id: 1,
-    role: '프론트엔드',
-    specialty: '웹프론트엔드',
-    joined: 0,
-    total: 1,
-    status: 'open',
-    techStack: ['React.js'],
-  },
-  {
-    id: 2,
-    role: '프론트엔드',
-    specialty: 'iOS',
-    joined: 0,
-    total: 1,
-    status: 'open',
-    techStack: ['Swift'],
-  },
-  {
-    id: 3,
-    role: '백엔드',
-    specialty: 'Java/Spring',
-    joined: 1,
-    total: 1,
-    status: 'closed',
-    techStack: ['Spring Boot'],
-  },
-];
 
 function RecruitStatusBadge({ status }: { status: RecruitPositionStatus }) {
   if (status === 'open') {
@@ -67,10 +38,26 @@ function RecruitTechChip({ label }: { label: string }) {
   );
 }
 
-export default function ProjectRecruitSection({ projectId }: { projectId: string }) {
+export default function ProjectRecruitSection({ project }: { project: ProjectRecord }) {
+  const recruitPositions: RecruitPosition[] = project.recruitInterests.map((interest, index) => {
+    const joined = project.members.filter(
+      (member) => !member.isLeader && member.role.includes(interest.major),
+    ).length;
+
+    return {
+      id: index + 1,
+      role: interest.major,
+      specialty: interest.minor,
+      joined,
+      total: interest.count,
+      status: joined >= interest.count || project.status === 'closed' ? 'closed' : 'open',
+      techStack: project.recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [],
+    };
+  });
+
   return (
     <section className="flex w-full flex-col gap-8" data-node-id="97:800">
-      {RECRUIT_POSITIONS.map((position) => {
+      {recruitPositions.map((position) => {
         const isOpen = position.status === 'open';
 
         return (
@@ -93,7 +80,7 @@ export default function ProjectRecruitSection({ projectId }: { projectId: string
               </div>
 
               {isOpen ? (
-                <Link href={`/projects/${projectId}/apply`}>
+                <Link href={`/projects/${project.id}/apply`}>
                   <BaseButton
                     size="S"
                     className="h-10 min-w-24 rounded-xl bg-text-black px-5 text-xs leading-4 font-bold text-white shadow-none hover:bg-label-dark"

@@ -2,20 +2,11 @@ import { Code2 } from 'lucide-react';
 import IntroSectionHeading from './IntroSectionHeading';
 import IntroTechStackCard from './IntroTechStackCard';
 
-const TECH_STACK_GROUPS = [
-  {
-    title: '프론트엔드',
-    subtitle: '웹프론트엔드',
-    skills: ['React', 'TypeScript'],
-  },
-  {
-    title: '백엔드',
-    subtitle: 'AI',
-    skills: ['Python', 'FastAPI'],
-  },
-];
-
-export default function ProjectTechStackSection() {
+export default function ProjectTechStackSection({
+  groups,
+}: {
+  groups: Array<{ title: string; subtitle: string; skills: string[] }>;
+}) {
   return (
     <section className="flex w-full flex-col gap-4">
       <IntroSectionHeading
@@ -23,9 +14,9 @@ export default function ProjectTechStackSection() {
         icon={<Code2 className="h-5 w-5" aria-hidden strokeWidth={1.8} />}
       />
       <div className="grid gap-4 md:grid-cols-2">
-        {TECH_STACK_GROUPS.map((group) => (
+        {groups.map((group) => (
           <IntroTechStackCard
-            key={group.title}
+            key={`${group.title}-${group.subtitle}`}
             title={group.title}
             subtitle={group.subtitle}
             skills={group.skills}

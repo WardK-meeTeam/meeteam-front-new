@@ -13,9 +13,10 @@ import BaseTag from '@/components/shared/BaseTag';
 import BaseTextarea from '@/components/shared/BaseTextarea';
 import CategoryBox from '@/components/features/project/create/CategoryBox';
 import CoverImageUploader from '@/components/features/project/create/CoverImageUploader';
+import { PROJECT_CATEGORIES, RELEASE_PLATFORMS } from '@/components/features/project/constants';
 import RecruitDeadlineField from '@/components/features/project/create/RecruitDeadlineField';
 import TechStackSection from '@/components/features/auth/TechStackSection';
-import type { ProjectFormValues, RecruitInterest } from '@/types/project';
+import type { ProjectFormValues, RecruitInterest, ReleasePlatform } from '@/types/project';
 type OpenDropdownKey = 'major' | 'minor' | null;
 
 type ProjectFormVariant = 'create' | 'edit';
@@ -25,19 +26,6 @@ interface ProjectFormProps {
   initialValues?: ProjectFormValues;
   onSubmit?: (values: ProjectFormValues) => void;
 }
-
-const PROJECT_CATEGORIES = [
-  { id: 'ai-tech', label: 'AI/테크', icon: '🤖' },
-  { id: 'eco', label: '친환경', icon: '🍀' },
-  { id: 'healthcare', label: '헬스케어', icon: '💪' },
-  { id: 'pets', label: '반려동물', icon: '🐱' },
-  { id: 'education', label: '교육/학습', icon: '📚' },
-  { id: 'fashion', label: '패션/뷰티', icon: '💄' },
-  { id: 'fintech', label: '금융/핀테크', icon: '💸' },
-  { id: 'etc', label: '기타', icon: '⚙️' },
-] as const;
-
-const RELEASE_PLATFORMS = ['웹', 'iOS', '안드로이드'] as const;
 
 const DEFAULT_FORM_VALUES: ProjectFormValues = {
   projectName: '',
@@ -73,7 +61,7 @@ export default function ProjectForm({
     hydratedInitialValues.isRecruitUntilComplete,
   );
   const [projectCategoryId, setProjectCategoryId] = useState(hydratedInitialValues.categoryId);
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(
+  const [selectedPlatforms, setSelectedPlatforms] = useState<ReleasePlatform[]>(
     hydratedInitialValues.releasePlatforms,
   );
   const [myInterest, setMyInterest] = useState<Interest>(hydratedInitialValues.myInterest);
@@ -94,7 +82,7 @@ export default function ProjectForm({
     return selected?.minor ?? [];
   };
 
-  const handlePlatformToggle = (platform: string) => {
+  const handlePlatformToggle = (platform: ReleasePlatform) => {
     setSelectedPlatforms((current) =>
       current.includes(platform)
         ? current.filter((item) => item !== platform)

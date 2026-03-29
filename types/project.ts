@@ -4,6 +4,18 @@ export type RecruitInterest = Interest & { count: number };
 
 export type ProjectStatus = 'recruiting' | 'closed';
 
+export type ProjectCategoryId =
+  | 'ai-tech'
+  | 'eco'
+  | 'healthcare'
+  | 'pets'
+  | 'education'
+  | 'fashion'
+  | 'fintech'
+  | 'etc';
+
+export type ReleasePlatform = '웹' | 'iOS' | '안드로이드';
+
 export type ProjectMember = {
   id: number;
   name: string;
@@ -30,9 +42,9 @@ export type ProjectFormValues = {
   projectName: string;
   githubUrl: string;
   communicationUrl: string;
-  categoryId: string;
+  categoryId: ProjectCategoryId | '';
   description: string;
-  releasePlatforms: string[];
+  releasePlatforms: ReleasePlatform[];
   myInterest: Interest;
   recruitInterests: RecruitInterest[];
   recruitTechStacks: Record<string, string[]>;
@@ -48,4 +60,11 @@ export type ManagedProject = ProjectFormValues & {
   targetMemberCount: number;
   members: ProjectMember[];
   applicants: ProjectApplicant[];
+};
+
+export type ProjectRecord = ManagedProject & {
+  summary: string;
+  coverImageUrl: string;
+  createdAt: string;
+  leaderRole: string;
 };
