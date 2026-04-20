@@ -29,6 +29,7 @@ export default function InterestSection({
           type="button"
           onClick={onAdd}
           disabled={disabled}
+          data-cy="signup-interest-add"
           className="cursor-pointer text-brand-500 text-xs font-bold leading-4 disabled:cursor-not-allowed disabled:text-muted-gray"
         >
           + 분야 추가
@@ -39,6 +40,7 @@ export default function InterestSection({
         {interests.map((it, i) => (
           <InterestRow
             key={`${i}-${it.major}-${it.minor}`}
+            index={i}
             jobFields={jobFields}
             value={it}
             onChange={(next) => onChange(i, next)}

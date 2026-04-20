@@ -1,24 +1,27 @@
 import { Search } from 'lucide-react';
-import { TEAMMATE_ROLE_OPTIONS } from '@/mocks/team/teammates';
+import TechStackPicker from '@/components/shared/TechStackPicker';
 import { TEAMMATE_PAGE_COPY } from './constants';
+import { TEAMMATE_ROLE_OPTIONS } from './constants';
 import { TeammateFilterChip } from './TeammateFilterChip';
 
 type TeammateFinderPanelProps = {
   searchValue: string;
   selectedRole: (typeof TEAMMATE_ROLE_OPTIONS)[number];
-  skillKeyword: string;
+  selectedSkills: string[];
+  availableSkills: string[];
   onSearchChange: (value: string) => void;
   onRoleChange: (value: (typeof TEAMMATE_ROLE_OPTIONS)[number]) => void;
-  onSkillKeywordChange: (value: string) => void;
+  onSelectedSkillsChange: (value: string[]) => void;
 };
 
 export function TeammateFinderPanel({
   searchValue,
   selectedRole,
-  skillKeyword,
+  selectedSkills,
+  availableSkills,
   onSearchChange,
   onRoleChange,
-  onSkillKeywordChange,
+  onSelectedSkillsChange,
 }: TeammateFinderPanelProps) {
   return (
     <div className="space-y-6 pt-4">
@@ -63,13 +66,13 @@ export function TeammateFinderPanel({
               기술 스택
             </span>
             <div className="w-full max-w-md">
-              <input
-                type="text"
-                value={skillKeyword}
-                onChange={(event) => onSkillKeywordChange(event.target.value)}
+              <TechStackPicker
+                inputId="teammate-skill-input"
+                inputDataCy="teammate-skill-input"
+                options={availableSkills}
+                value={selectedSkills}
+                onChange={onSelectedSkillsChange}
                 placeholder={TEAMMATE_PAGE_COPY.skillPlaceholder}
-                data-cy="teammate-skill-input"
-                className="h-10 w-full rounded-lg border border-border-gray bg-surface-soft px-4 text-sm leading-5 text-text-black outline-none placeholder:text-muted-gray focus:border-brand-400 focus:bg-white"
               />
             </div>
           </div>

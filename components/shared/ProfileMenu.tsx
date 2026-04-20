@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ChevronDown, LogOut, Settings, UserRound } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { logoutMember } from '@/components/features/auth/loginApi';
+import { fetchMyProfile } from '@/components/features/profile/profileApi';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import { useAuthStore } from '@/stores/useAuthStore';
-
-const PROFILE_IMAGE_URL =
-  'http://localhost:3845/assets/f1172eb8cefcbe26d0f11c0aadeea5d533cb00a6.png';
 
 const MENU_ITEMS = [
   {
@@ -26,10 +26,13 @@ export default function ProfileMenu() {
   const pathname = usePathname();
   const router = useRouter();
   const clearSession = useAuthStore((state) => state.clearSession);
+  const setProfileIdentity = useAuthStore((state) => state.setProfileIdentity);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const name = useAuthStore((state) => state.name);
   const email = useAuthStore((state) => state.email);
 
   const [open, setOpen] = useState(false);
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const userName = name?.trim() || 'meeTeam 사용자';
@@ -38,6 +41,47 @@ export default function ProfileMenu() {
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const shouldSyncIdentity = !name?.trim() || name === email || name.includes('@');
+    const shouldSyncProfileImage = profileImageUrl === null;
+
+    if (!isAuthenticated || (!shouldSyncIdentity && !shouldSyncProfileImage)) {
+      return;
+    }
+
+    let cancelled = false;
+
+    const syncIdentity = async () => {
+      try {
+        const profile = await fetchMyProfile();
+
+        if (cancelled) {
+          return;
+        }
+
+        setProfileIdentity({
+          name: profile.name,
+          email: profile.email,
+        });
+        setProfileImageUrl(profile.profileImageUrl);
+      } catch {
+        // Keep the persisted login identity if profile fetch fails.
+      }
+    };
+
+    void syncIdentity();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [email, isAuthenticated, name, profileImageUrl, setProfileIdentity]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setProfileImageUrl(null);
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!open) {
@@ -65,11 +109,18 @@ export default function ProfileMenu() {
     };
   }, [open]);
 
-  const handleLogout = () => {
-    clearSession();
-    setOpen(false);
-    router.push('/auth/login');
-    router.refresh();
+  const handleLogout = async () => {
+    try {
+      await logoutMember();
+    } catch {
+      // Clear local session even if backend logout fails.
+    } finally {
+      clearSession();
+      setProfileImageUrl(null);
+      setOpen(false);
+      router.push('/auth/login');
+      router.refresh();
+    }
   };
 
   return (
@@ -82,9 +133,7 @@ export default function ProfileMenu() {
         aria-label="프로필 메뉴"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <span className="h-9 w-9 overflow-hidden rounded-full bg-brand-50">
-          <img alt="프로필" className="h-full w-full object-cover" src={PROFILE_IMAGE_URL} />
-        </span>
+        <ProfileAvatar name={userName} imageUrl={profileImageUrl} sizeClassName="h-9 w-9" />
         <ChevronDown
           className={`h-4 w-4 text-text-gray transition-transform ${open ? 'rotate-180' : ''}`}
           aria-hidden

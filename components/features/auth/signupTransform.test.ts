@@ -14,8 +14,8 @@ const JOB_FIELDS: JobFieldOption[] = [
     code: 'BACKEND',
     name: '백엔드',
     positions: [
-      { code: 'JAVA_SPRING', name: 'Java/Spring' },
-      { code: 'NODE_NESTJS', name: 'Node.js/NestJS' },
+      { id: 11, code: 'JAVA_SPRING', name: 'Java/Spring' },
+      { id: 13, code: 'NODE_NESTJS', name: 'Node.js/NestJS' },
     ],
     techStacks: [
       { id: 1, name: 'Java' },
@@ -26,7 +26,7 @@ const JOB_FIELDS: JobFieldOption[] = [
   {
     code: 'FRONTEND',
     name: '프론트엔드',
-    positions: [{ code: 'WEB_FRONTEND', name: '웹 프론트엔드' }],
+    positions: [{ id: 7, code: 'WEB_FRONTEND', name: '웹 프론트엔드' }],
     techStacks: [
       { id: 10, name: 'React' },
       { id: 11, name: 'TypeScript' },

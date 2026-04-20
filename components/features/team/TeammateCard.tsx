@@ -15,13 +15,19 @@ export function TeammateCard({ teammate }: { teammate: Teammate }) {
     >
       <div className="flex items-start justify-between gap-4">
         <div className="relative h-16 w-16 overflow-hidden rounded-2xl shadow-sm">
-          <Image
-            alt={teammate.name}
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            fill
-            sizes="64px"
-            src={teammate.imageUrl}
-          />
+          {teammate.imageUrl ? (
+            <Image
+              alt={teammate.name}
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
+              fill
+              sizes="64px"
+              src={teammate.imageUrl}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-brand-50 text-xl leading-none font-bold text-brand-500">
+              {teammate.name.slice(0, 1)}
+            </div>
+          )}
         </div>
 
         <span className="rounded-lg bg-surface-soft px-2 py-1 text-xs leading-4 font-medium text-text-gray">

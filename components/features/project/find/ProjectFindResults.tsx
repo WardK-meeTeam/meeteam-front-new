@@ -1,10 +1,9 @@
 'use client';
 
 import type { RefObject } from 'react';
-import type { ProjectRecord } from '@/types/project';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
 import { ProjectCardSkeleton } from '@/components/features/project/ProjectCardSkeleton';
-import { toProjectCardData } from './projectFinder';
+import type { ProjectSearchCard } from './projectFindApi';
 import type { SortFilter } from './types';
 
 function SortSelect({
@@ -35,12 +34,14 @@ function SortSelect({
 }
 
 type ProjectFindResultsProps = {
-  projects: ProjectRecord[];
-  totalCount: number;
+  projects: ProjectSearchCard[];
+  countLabel: string;
   sort: SortFilter;
+  isInitialLoading: boolean;
   isLoadingMore: boolean;
   hasMore: boolean;
   hasActiveFilters: boolean;
+  errorMessage: string | null;
   loadMoreRef: RefObject<HTMLDivElement | null>;
   onSortChange: (value: SortFilter) => void;
   onResetFilters: () => void;
@@ -48,15 +49,19 @@ type ProjectFindResultsProps = {
 
 export function ProjectFindResults({
   projects,
-  totalCount,
+  countLabel,
   sort,
+  isInitialLoading,
   isLoadingMore,
   hasMore,
   hasActiveFilters,
+  errorMessage,
   loadMoreRef,
   onSortChange,
   onResetFilters,
 }: ProjectFindResultsProps) {
+  const shouldShowErrorOnly = !isInitialLoading && Boolean(errorMessage) && projects.length === 0;
+
   return (
     <>
       <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -64,17 +69,31 @@ export function ProjectFindResults({
           data-cy="project-total-count"
           className="text-base leading-6 font-semibold text-text-body"
         >
-          총 <span className="text-brand-500">{totalCount}</span>개의 프로젝트
+          총 <span className="text-brand-500">{countLabel}</span>개의 프로젝트
         </p>
 
         <SortSelect sort={sort} onSortChange={onSortChange} />
       </div>
 
-      {projects.length > 0 ? (
+      {errorMessage ? (
+        <div className="rounded-2xl border border-border-gray bg-danger-soft px-6 py-16 text-center text-sm leading-6 text-danger-500 shadow-sm">
+          {errorMessage}
+        </div>
+      ) : null}
+
+      {isInitialLoading ? (
+        <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <li key={`project-initial-skeleton-${index}`}>
+              <ProjectCardSkeleton />
+            </li>
+          ))}
+        </ul>
+      ) : shouldShowErrorOnly ? null : projects.length > 0 ? (
         <ul data-cy="project-list" className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {projects.map((project) => (
             <li key={project.id}>
-              <ProjectCard project={toProjectCardData(project)} />
+              <ProjectCard project={project} />
             </li>
           ))}
         </ul>

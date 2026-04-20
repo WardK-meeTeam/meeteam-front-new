@@ -26,6 +26,7 @@ export type LoginFormValues = {
 };
 
 export type JobPositionOption = {
+  id: number;
   code: string;
   name: string;
 };
@@ -83,7 +84,6 @@ export type LoginSuccessResponse = {
 };
 
 export type AuthSession = LoginSuccessResponse & {
-  accessToken: string;
   email: string;
 };
 

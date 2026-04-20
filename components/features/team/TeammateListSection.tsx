@@ -2,8 +2,7 @@ import type { RefObject } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { TeammateSort } from '@/types/team';
 import type { Teammate } from '@/types/team';
-import { TEAMMATE_SORT_OPTIONS } from '@/mocks/team/teammates';
-import { TEAMMATE_LIST_CONFIG, TEAMMATE_PAGE_COPY } from './constants';
+import { TEAMMATE_LIST_CONFIG, TEAMMATE_PAGE_COPY, TEAMMATE_SORT_OPTIONS } from './constants';
 import { TeammateCard } from './TeammateCard';
 import { TeammateCardSkeleton } from './TeammateCardSkeleton';
 
@@ -11,8 +10,10 @@ type TeammateListSectionProps = {
   teammates: Teammate[];
   totalCount: number;
   sort: TeammateSort;
+  isInitialLoading: boolean;
   isLoadingMore: boolean;
   hasMore: boolean;
+  errorMessage: string | null;
   loadMoreRef: RefObject<HTMLDivElement | null>;
   onSortChange: (value: TeammateSort) => void;
 };
@@ -21,11 +22,15 @@ export function TeammateListSection({
   teammates,
   totalCount,
   sort,
+  isInitialLoading,
   isLoadingMore,
   hasMore,
+  errorMessage,
   loadMoreRef,
   onSortChange,
 }: TeammateListSectionProps) {
+  const shouldShowErrorOnly = !isInitialLoading && Boolean(errorMessage) && teammates.length === 0;
+
   return (
     <>
       <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -57,18 +62,34 @@ export function TeammateListSection({
         </div>
       </div>
 
-      <ul
-        data-cy="teammate-list"
-        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-      >
-        {teammates.map((teammate) => (
-          <li key={teammate.id}>
-            <TeammateCard teammate={teammate} />
-          </li>
-        ))}
-      </ul>
+      {errorMessage ? (
+        <div className="rounded-2xl border border-border-gray bg-danger-soft px-6 py-12 text-center text-sm leading-6 text-danger-500 shadow-sm">
+          {errorMessage}
+        </div>
+      ) : null}
 
-      {teammates.length === 0 ? (
+      {isInitialLoading ? (
+        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {Array.from({ length: TEAMMATE_LIST_CONFIG.initialVisibleCount }).map((_, index) => (
+            <li key={`teammate-initial-skeleton-${index}`}>
+              <TeammateCardSkeleton />
+            </li>
+          ))}
+        </ul>
+      ) : !shouldShowErrorOnly ? (
+        <ul
+          data-cy="teammate-list"
+          className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+        >
+          {teammates.map((teammate) => (
+            <li key={teammate.id}>
+              <TeammateCard teammate={teammate} />
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {!isInitialLoading && !errorMessage && teammates.length === 0 ? (
         <div
           data-cy="teammate-empty-state"
           className="rounded-2xl border border-border-gray bg-white px-6 py-12 text-center text-sm leading-6 text-text-gray shadow-sm"

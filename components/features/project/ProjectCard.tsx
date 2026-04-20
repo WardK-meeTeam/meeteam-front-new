@@ -46,13 +46,17 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
       href={`/projects/${project.id}`}
     >
       <div className="absolute inset-0 h-full w-full">
-        <Image
-          alt={project.title}
-          className="object-cover opacity-70 transition-transform duration-700 group-hover:scale-110"
-          fill
-          sizes={compact ? '100vw' : '(max-width: 768px) 100vw, 50vw'}
-          src={project.imageUrl}
-        />
+        {project.imageUrl ? (
+          <Image
+            alt={project.title}
+            className="object-cover opacity-70 transition-transform duration-700 group-hover:scale-110"
+            fill
+            sizes={compact ? '100vw' : '(max-width: 768px) 100vw, 50vw'}
+            src={project.imageUrl}
+          />
+        ) : (
+          <div className="h-full w-full bg-text-black/80" />
+        )}
         <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/50 to-transparent transition-opacity duration-500" />
         <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </div>
@@ -82,14 +86,20 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
           </h3>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Image
-                alt="Leader"
-                className="h-8 w-8 rounded-full border border-white/30 object-cover"
-                height={32}
-                src={project.leader.avatar}
-                width={32}
-              />
+          <div className="flex items-center gap-2">
+              {project.leader.avatar ? (
+                <Image
+                  alt="Leader"
+                  className="h-8 w-8 rounded-full border border-white/30 object-cover"
+                  height={32}
+                  src={project.leader.avatar}
+                  width={32}
+                />
+              ) : (
+                <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-white/20 text-xs font-bold text-white">
+                  {project.leader.name.slice(0, 1)}
+                </span>
+              )}
               <span data-cy="project-card-leader" className="text-xs font-medium text-muted-gray">
                 {project.leader.name}
               </span>

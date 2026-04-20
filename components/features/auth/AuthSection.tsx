@@ -41,12 +41,7 @@ export default function AuthSection({
 
   return (
     <>
-      <BaseField
-        label="이메일"
-        htmlFor="email"
-        errorText={emailError}
-        hintText={emailHintText}
-      >
+      <BaseField label="이메일" htmlFor="email" errorText={emailError} hintText={emailHintText}>
         <div className="flex gap-2">
           <BaseInput
             id="email"
@@ -54,6 +49,7 @@ export default function AuthSection({
             value={email}
             placeholder="example@email.com"
             onChange={onChangeEmail}
+            data-cy="signup-email"
           />
           <BaseButton
             type="button"
@@ -62,6 +58,7 @@ export default function AuthSection({
             onClick={onCheckEmail}
             disabled={!email.trim() || isCheckingEmail}
             className="shrink-0 border-none bg-chip-bg text-brand-500"
+            data-cy="signup-email-check"
           >
             <span className="font-bold">{isCheckingEmail ? '확인 중...' : '중복 확인'}</span>
           </BaseButton>
@@ -80,19 +77,17 @@ export default function AuthSection({
             value={password}
             placeholder="8자 이상 입력"
             onChange={onChangePassword}
+            data-cy="signup-password"
           />
         </BaseField>
-        <BaseField
-          label="비밀번호 확인"
-          htmlFor="passwordConfirm"
-          errorText={passwordError}
-        >
+        <BaseField label="비밀번호 확인" htmlFor="passwordConfirm" errorText={passwordError}>
           <BaseInput
             id="passwordConfirm"
             type="password"
             value={passwordConfirm}
             placeholder="비밀번호 재입력"
             onChange={onChangePasswordConfirm}
+            data-cy="signup-password-confirm"
           />
         </BaseField>
       </div>

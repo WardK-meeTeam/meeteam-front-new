@@ -44,6 +44,7 @@ export default function ProfileExtraSection({
           placeholder="0"
           rightIcon={'회'}
           onChange={onChangeProject}
+          data-cy="signup-project-count"
         />
       </BaseField>
 
@@ -56,6 +57,7 @@ export default function ProfileExtraSection({
             placeholder="github.com/..."
             leftIcon={githubIcon}
             onChange={onChangeGithubLink}
+            data-cy="signup-github-url"
           />
         </BaseField>
         <BaseField label="블로그" htmlFor="blog" required={false}>
@@ -66,6 +68,7 @@ export default function ProfileExtraSection({
             placeholder="URL 입력"
             leftIcon={<Link className="h-5 w-5 text-muted-gray" />}
             onChange={onChangeBlogLink}
+            data-cy="signup-blog-url"
           />
         </BaseField>
       </div>
@@ -77,6 +80,7 @@ export default function ProfileExtraSection({
           accept="image/png, image/jpeg"
           className="hidden"
           onChange={onChangeProfileImage}
+          data-cy="signup-profile-upload"
         />
         {!hasProfileImage ? (
           <div className="flex p-5 items-center border border-border-gray justify-between rounded-2xl bg-surface-soft">

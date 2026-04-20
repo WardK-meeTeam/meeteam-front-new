@@ -32,6 +32,7 @@ export default function ProfileSection({
             value={name}
             placeholder="실명 입력"
             onChange={onChangeName}
+            data-cy="signup-name"
           />
         </BaseField>
         <BaseField label="생년월일" htmlFor="birth" errorText={birthError}>
@@ -41,6 +42,7 @@ export default function ProfileSection({
             value={birth}
             placeholder="1998-03-15"
             onChange={onChangeBirth}
+            data-cy="signup-birth"
           />
         </BaseField>
       </div>
@@ -56,6 +58,7 @@ export default function ProfileSection({
                 className="peer hidden"
                 checked={gender === 'male'}
                 onChange={onChangeGender}
+                data-cy="signup-gender-male"
               />
               <label
                 htmlFor="male"
@@ -75,6 +78,7 @@ export default function ProfileSection({
                 className="peer hidden"
                 checked={gender === 'female'}
                 onChange={onChangeGender}
+                data-cy="signup-gender-female"
               />
               <label
                 htmlFor="female"

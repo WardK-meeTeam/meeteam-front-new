@@ -1,17 +1,27 @@
 import Link from 'next/link';
 import { BriefcaseBusiness, Users } from 'lucide-react';
-import { joinedProject } from '@/components/features/profile/profileData';
+
+interface JoinedProjectData {
+  id: number;
+  title: string;
+  category: string;
+  leader: string;
+  currentMembers: number;
+  maxMembers: number;
+  imageUrl: string | null;
+  leaderImageUrl: string | null;
+}
 
 interface JoinedProjectCardProps {
-  empty?: boolean;
+  projects?: JoinedProjectData[];
   disabled?: boolean;
 }
 
 export default function JoinedProjectCard({
-  empty = false,
+  projects = [],
   disabled = false,
 }: JoinedProjectCardProps) {
-  if (empty || !joinedProject) {
+  if (projects.length === 0) {
     return (
       <section className="space-y-4">
         <div className="flex items-baseline gap-2">
@@ -36,15 +46,16 @@ export default function JoinedProjectCard({
     );
   }
 
-  const project = joinedProject;
+  const project = projects[0];
   const memberRatio = `${project.currentMembers}/${project.maxMembers}명`;
-  const progressWidth = `${(project.currentMembers / project.maxMembers) * 100}%`;
+  const progressWidth =
+    project.maxMembers > 0 ? `${(project.currentMembers / project.maxMembers) * 100}%` : '0%';
 
   return (
     <section className="space-y-4">
       <div className="flex items-baseline gap-2">
         <h2 className="text-xl leading-7 font-bold text-text-black">참여 프로젝트</h2>
-        <span className="text-lg leading-7 font-medium text-muted-gray">1</span>
+        <span className="text-lg leading-7 font-medium text-muted-gray">{projects.length}</span>
       </div>
 
       <Link
@@ -61,11 +72,15 @@ export default function JoinedProjectCard({
         ) : null}
 
         <div className="absolute inset-0">
-          <img
-            alt={project.title}
-            className="h-full w-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-105"
-            src={project.imageUrl}
-          />
+          {project.imageUrl ? (
+            <img
+              alt={project.title}
+              className="h-full w-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-105"
+              src={project.imageUrl}
+            />
+          ) : (
+            <div className="h-full w-full bg-text-black opacity-70" />
+          )}
           <div className="absolute inset-0 bg-linear-to-t from-text-black via-text-black/50 to-transparent" />
         </div>
 
@@ -82,11 +97,17 @@ export default function JoinedProjectCard({
             <div className="flex items-end justify-between gap-4">
               <div className="flex items-center gap-2">
                 <span className="h-8 w-8 overflow-hidden rounded-full border border-white/30">
-                  <img
-                    alt={project.leader}
-                    className="h-full w-full object-cover"
-                    src={project.leaderImageUrl}
-                  />
+                  {project.leaderImageUrl ? (
+                    <img
+                      alt={project.leader}
+                      className="h-full w-full object-cover"
+                      src={project.leaderImageUrl}
+                    />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center bg-white/20 text-xs font-bold text-white">
+                      {project.leader.slice(0, 1)}
+                    </span>
+                  )}
                 </span>
                 <span className="text-xs leading-4 font-medium text-white/90">{project.leader}</span>
               </div>

@@ -13,6 +13,7 @@ type BaseDropdownProps = {
   buttonClassName?: string;
   textClassName?: string;
   selectMenuClassName?: string;
+  dataCy?: string;
 };
 
 export default function BaseDropdown({
@@ -27,6 +28,7 @@ export default function BaseDropdown({
   buttonClassName = '',
   textClassName = '',
   selectMenuClassName = '',
+  dataCy,
 }: BaseDropdownProps) {
   const label = value || placeholder;
 
@@ -36,6 +38,7 @@ export default function BaseDropdown({
         type="button"
         onClick={onToggle}
         disabled={disabled}
+        data-cy={dataCy}
         className={`flex w-full rounded-xl border border-border-gray text-[#334155]
           disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-gray ${buttonClassName}`}
       >

@@ -5,7 +5,7 @@ export default async function Page({
 }: {
   params: Promise<{ userId: string }>;
 }) {
-  await params;
+  const { userId } = await params;
 
-  return <ProfileOverview editable={false} actionLabel="제안 보내기" emptyProject />;
+  return <ProfileOverview memberId={Number(userId)} editable={false} actionLabel="제안 보내기" />;
 }

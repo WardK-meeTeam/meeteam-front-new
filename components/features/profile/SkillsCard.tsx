@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { CodeXml, Plus } from 'lucide-react';
+import { CodeXml, X } from 'lucide-react';
 import ProfileCard from '@/components/features/profile/ProfileCard';
-import { skillGroups as defaultSkillGroups } from '@/components/features/profile/profileData';
+import TechStackPicker from '@/components/shared/TechStackPicker';
 
 interface SkillGroupData {
   category: string;
@@ -13,32 +12,17 @@ interface SkillGroupData {
 
 interface SkillsCardProps {
   editable?: boolean;
-  skillGroups?: SkillGroupData[];
-  onSkillAdd?: (groupIndex: number, skill: string) => void;
+  skillGroups: SkillGroupData[];
+  availableSkills?: string[];
+  onSkillsChange?: (groupIndex: number, skills: string[]) => void;
 }
 
 export default function SkillsCard({
   editable = false,
-  skillGroups = defaultSkillGroups,
-  onSkillAdd,
+  skillGroups,
+  availableSkills = [],
+  onSkillsChange,
 }: SkillsCardProps) {
-  const [drafts, setDrafts] = useState(() => skillGroups.map(() => ''));
-
-  const updateDraft = (groupIndex: number, value: string) => {
-    setDrafts((current) => current.map((draft, index) => (index === groupIndex ? value : draft)));
-  };
-
-  const addSkill = (groupIndex: number) => {
-    const nextSkill = drafts[groupIndex]?.trim();
-
-    if (!nextSkill) {
-      return;
-    }
-
-    onSkillAdd?.(groupIndex, nextSkill);
-    updateDraft(groupIndex, '');
-  };
-
   return (
     <ProfileCard className={editable ? 'min-h-[297px]' : 'min-h-56'}>
       <h2 className="text-lg leading-7 font-bold text-text-black">보유 기술</h2>
@@ -57,37 +41,37 @@ export default function SkillsCard({
               {group.skills.map((skill) => (
                 <span
                   key={`${group.category}-${skill}`}
-                  className="rounded-lg bg-surface-soft px-3 py-1.5 text-sm leading-5 font-medium text-label-dark"
+                  className="inline-flex items-center gap-1 rounded-lg bg-surface-soft px-3 py-1.5 text-sm leading-5 font-medium text-label-dark"
                 >
                   {skill}
+                  {editable ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onSkillsChange?.(
+                          groupIndex,
+                          group.skills.filter((currentSkill) => currentSkill !== skill),
+                        )
+                      }
+                      className="text-muted-gray transition-colors hover:text-danger-400"
+                      aria-label={`${skill} 삭제`}
+                    >
+                      <X className="h-3.5 w-3.5" aria-hidden strokeWidth={2} />
+                    </button>
+                  ) : null}
                 </span>
               ))}
             </div>
 
             {editable ? (
-              <div className="flex items-center gap-2 rounded-lg border border-divider-soft bg-white px-3 py-2.5">
-                <input
-                  value={drafts[groupIndex] ?? ''}
-                  onChange={(event) => updateDraft(groupIndex, event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                      addSkill(groupIndex);
-                    }
-                  }}
-                  placeholder="기술 추가"
-                  className="w-full border-0 bg-transparent p-0 text-sm leading-5 text-text-body outline-none placeholder:text-muted-gray"
-                />
-
-                <button
-                  type="button"
-                  onClick={() => addSkill(groupIndex)}
-                  className="text-muted-gray transition-colors hover:text-brand-500"
-                  aria-label={`${group.role} 기술 추가`}
-                >
-                  <Plus className="h-4 w-4" aria-hidden strokeWidth={2} />
-                </button>
-              </div>
+              <TechStackPicker
+                inputId={`profile-skills-${groupIndex}`}
+                options={availableSkills}
+                value={group.skills}
+                onChange={(nextSkills) => onSkillsChange?.(groupIndex, nextSkills)}
+                placeholder="기술 스택 검색"
+                showSelectedChips={false}
+              />
             ) : null}
           </div>
         ))}

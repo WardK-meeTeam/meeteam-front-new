@@ -1,37 +1,56 @@
 'use client';
 
+import type { LucideIcon } from 'lucide-react';
+
 import { useState } from 'react';
 import BaseDropdown from '@/components/shared/BaseDropdown';
 import BaseInput from '@/components/shared/BaseInput';
 import ProfileCard from '@/components/features/profile/ProfileCard';
-import { contactItems, profileInfoItems } from '@/components/features/profile/profileData';
 
 interface EditableProfileFields {
+  name: string;
   age: string;
   gender: string;
   fieldCategory: string;
   fieldRole: string;
   projectCount: string;
+  email: string;
   github: string;
   blog: string;
 }
 
+interface ProfileInfoItem {
+  label: string;
+  value: string;
+}
+
+interface ProfileContactItem {
+  icon: LucideIcon;
+  value: string;
+  href: string;
+}
+
 interface BasicInfoCardProps {
   editable?: boolean;
+  infoItems: ProfileInfoItem[];
+  emailContact: ProfileContactItem;
+  socialContacts: ProfileContactItem[];
+  categoryOptions?: string[];
+  roleOptions?: string[];
   formData?: EditableProfileFields;
   onFieldChange?: (field: keyof EditableProfileFields, value: string) => void;
 }
 
-const FIELD_CATEGORY_OPTIONS = ['디자인', '개발', '기획'];
-const FIELD_ROLE_OPTIONS = ['UI/UX디자인', '그래픽디자인', '웹프론트엔드'];
-
 export default function BasicInfoCard({
   editable = false,
+  infoItems,
+  emailContact,
+  socialContacts,
+  categoryOptions = [],
+  roleOptions = [],
   formData,
   onFieldChange,
 }: BasicInfoCardProps) {
-  const emailContact = contactItems[0];
-  const socialContacts = contactItems.slice(1);
   const EmailIcon = emailContact.icon;
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isRoleOpen, setIsRoleOpen] = useState(false);
@@ -40,7 +59,7 @@ export default function BasicInfoCard({
     return (
       <ProfileCard title="기본 정보">
         <dl className="mt-4 space-y-4">
-          {profileInfoItems.map((item) => (
+          {infoItems.map((item) => (
             <div key={item.label} className="flex items-start justify-between gap-4">
               <dt className="text-sm leading-5 font-normal text-text-gray">{item.label}</dt>
               <dd className="text-right text-sm leading-5 font-medium text-text-black">
@@ -67,7 +86,7 @@ export default function BasicInfoCard({
 
               return (
                 <a
-                  key={item.value}
+                  key={`${item.href}-${item.value}`}
                   href={item.href}
                   className="flex items-center gap-3 text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black"
                 >
@@ -91,6 +110,13 @@ export default function BasicInfoCard({
       <div className="mt-4 space-y-4">
         <dl className="space-y-4">
           <div className="flex items-start justify-between gap-4">
+            <dt className="text-sm leading-5 font-normal text-text-gray">이름</dt>
+            <dd className="text-right text-sm leading-5 font-medium text-text-black">
+              {formData.name}
+            </dd>
+          </div>
+
+          <div className="flex items-start justify-between gap-4">
             <dt className="text-sm leading-5 font-normal text-text-gray">나이</dt>
             <dd className="text-right text-sm leading-5 font-medium text-text-black">
               {formData.age}
@@ -111,7 +137,7 @@ export default function BasicInfoCard({
                 value={formData.fieldCategory}
                 placeholder="직군 대분류"
                 open={isCategoryOpen}
-                items={FIELD_CATEGORY_OPTIONS}
+                items={categoryOptions}
                 onToggle={() => setIsCategoryOpen((current) => !current)}
                 onSelect={(value) => {
                   onFieldChange('fieldCategory', value);
@@ -126,7 +152,7 @@ export default function BasicInfoCard({
                 value={formData.fieldRole}
                 placeholder="직군 세부 분야"
                 open={isRoleOpen}
-                items={FIELD_ROLE_OPTIONS}
+                items={roleOptions}
                 onToggle={() => setIsRoleOpen((current) => !current)}
                 onSelect={(value) => {
                   onFieldChange('fieldRole', value);
@@ -152,7 +178,7 @@ export default function BasicInfoCard({
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-soft text-text-gray">
               <EmailIcon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
             </span>
-            <span>{emailContact.value}</span>
+            <span>{formData.email}</span>
           </div>
 
           {socialContacts.map((item, index) => {
@@ -160,7 +186,7 @@ export default function BasicInfoCard({
             const field = index === 0 ? 'github' : 'blog';
 
             return (
-              <div key={item.value} className="flex items-center gap-3">
+              <div key={`${field}-${item.href}-${item.value}`} className="flex items-center gap-3">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-soft text-text-gray">
                   <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                 </span>

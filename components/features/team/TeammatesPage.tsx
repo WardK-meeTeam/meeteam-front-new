@@ -11,16 +11,19 @@ export default function TeammatesPage() {
   const {
     searchValue,
     selectedRole,
-    skillKeyword,
+    selectedSkills,
+    availableSkills,
     sort,
     visibleTeammates,
     filteredTeammatesCount,
+    isInitialLoading,
     isLoadingMore,
+    errorMessage,
     hasMore,
     loadMoreRef,
     setSearchValue,
     setSelectedRole,
-    setSkillKeyword,
+    setSelectedSkills,
     setSort,
   } = useTeammateFinder();
 
@@ -44,18 +47,21 @@ export default function TeammatesPage() {
       <TeammateFinderPanel
         searchValue={searchValue}
         selectedRole={selectedRole}
-        skillKeyword={skillKeyword}
+        selectedSkills={selectedSkills}
+        availableSkills={availableSkills}
         onSearchChange={setSearchValue}
         onRoleChange={setSelectedRole}
-        onSkillKeywordChange={setSkillKeyword}
+        onSelectedSkillsChange={setSelectedSkills}
       />
 
       <TeammateListSection
         teammates={visibleTeammates}
         totalCount={filteredTeammatesCount}
         sort={sort}
+        isInitialLoading={isInitialLoading}
         isLoadingMore={isLoadingMore}
         hasMore={hasMore}
+        errorMessage={errorMessage}
         loadMoreRef={loadMoreRef}
         onSortChange={setSort}
       />

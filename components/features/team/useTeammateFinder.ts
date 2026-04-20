@@ -1,45 +1,114 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { TEAMMATES, TEAMMATE_ROLE_OPTIONS } from '@/mocks/team/teammates';
 import { useInfiniteScroll } from '@/components/shared/useInfiniteScroll';
+import { fetchJobOptions } from '@/components/features/auth/signupApi';
+import { collectTechStackNames } from '@/components/features/auth/jobOptionUtils';
 import type { TeammateRole, TeammateSort } from '@/types/team';
-import { TEAMMATE_LIST_CONFIG } from './constants';
+import type { Teammate } from '@/types/team';
+import { fetchAllTeammates } from './teamApi';
+import { TEAMMATE_LIST_CONFIG, TEAMMATE_ROLE_OPTIONS } from './constants';
 
 export function useTeammateFinder() {
+  const [teammates, setTeammates] = useState<Teammate[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [selectedRole, setSelectedRole] =
     useState<(typeof TEAMMATE_ROLE_OPTIONS)[number]>('전체');
-  const [skillKeyword, setSkillKeyword] = useState('');
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [availableSkills, setAvailableSkills] = useState<string[]>([]);
   const [sort, setSort] = useState<TeammateSort>('experience-desc');
   const [visibleCount, setVisibleCount] = useState<number>(
     TEAMMATE_LIST_CONFIG.initialVisibleCount,
   );
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const loadMoreTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadTeammates = async () => {
+      try {
+        setIsInitialLoading(true);
+        setErrorMessage(null);
+
+        const nextTeammates = await fetchAllTeammates();
+
+        if (!active) {
+          return;
+        }
+
+        setTeammates(nextTeammates);
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+
+        setErrorMessage(error instanceof Error ? error.message : '팀원 목록을 불러오지 못했습니다.');
+      } finally {
+        if (active) {
+          setIsInitialLoading(false);
+        }
+      }
+    };
+
+    void loadTeammates();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadSkillOptions = async () => {
+      try {
+        const nextJobFields = await fetchJobOptions();
+
+        if (!active) {
+          return;
+        }
+
+        setAvailableSkills(collectTechStackNames(nextJobFields));
+      } catch {
+        if (active) {
+          setAvailableSkills([]);
+        }
+      }
+    };
+
+    void loadSkillOptions();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const filteredTeammates = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
-    const normalizedSkillKeyword = skillKeyword.trim().toLowerCase();
 
-    return TEAMMATES.filter((teammate) => {
-      const matchesName =
-        normalizedSearch.length === 0 || teammate.name.toLowerCase().includes(normalizedSearch);
-      const matchesRole =
-        selectedRole === '전체' || teammate.role === (selectedRole as TeammateRole);
-      const matchesSkill =
-        normalizedSkillKeyword.length === 0 ||
-        teammate.skills.some((skill) => skill.toLowerCase().includes(normalizedSkillKeyword));
+    return teammates
+      .filter((teammate) => {
+        const matchesName =
+          normalizedSearch.length === 0 || teammate.name.toLowerCase().includes(normalizedSearch);
+        const matchesRole =
+          selectedRole === '전체' || teammate.role === (selectedRole as TeammateRole);
+        const matchesSkill =
+          selectedSkills.length === 0 ||
+          selectedSkills.every((skill) => teammate.skills.includes(skill));
 
-      return matchesName && matchesRole && matchesSkill;
-    }).sort((left, right) => {
-      if (sort === 'name-asc') {
-        return left.name.localeCompare(right.name, 'ko');
-      }
+        return matchesName && matchesRole && matchesSkill;
+      })
+      .sort((left, right) => {
+        if (sort === 'name-asc') {
+          return left.name.localeCompare(right.name, 'ko');
+        }
 
-      return right.experienceCount - left.experienceCount;
-    });
-  }, [searchValue, selectedRole, skillKeyword, sort]);
+        return right.experienceCount - left.experienceCount;
+      });
+  }, [searchValue, selectedRole, selectedSkills, sort, teammates]);
 
   const visibleTeammates = filteredTeammates.slice(0, visibleCount);
   const hasMore = visibleTeammates.length < filteredTeammates.length;
@@ -52,7 +121,7 @@ export function useTeammateFinder() {
       window.clearTimeout(loadMoreTimeoutRef.current);
       loadMoreTimeoutRef.current = null;
     }
-  }, [searchValue, selectedRole, skillKeyword, sort]);
+  }, [searchValue, selectedRole, selectedSkills, sort]);
 
   useEffect(
     () => () => {
@@ -85,16 +154,19 @@ export function useTeammateFinder() {
   return {
     searchValue,
     selectedRole,
-    skillKeyword,
+    selectedSkills,
+    availableSkills,
     sort,
     visibleTeammates,
     filteredTeammatesCount: filteredTeammates.length,
+    isInitialLoading,
     isLoadingMore,
+    errorMessage,
     hasMore,
     loadMoreRef,
     setSearchValue,
     setSelectedRole,
-    setSkillKeyword,
+    setSelectedSkills,
     setSort,
   };
 }

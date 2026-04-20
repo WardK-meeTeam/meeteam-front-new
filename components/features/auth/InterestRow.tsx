@@ -6,6 +6,7 @@ import BaseDropdown from '@/components/shared/BaseDropdown';
 type OpenDropdown = 'major' | 'minor' | null;
 
 type InterestRowProps = {
+  index: number;
   jobFields: JobFieldOption[];
   value: Interest;
   onChange: (next: Interest) => void;
@@ -15,6 +16,7 @@ type InterestRowProps = {
 };
 
 export default function InterestRow({
+  index,
   jobFields,
   value,
   onChange,
@@ -28,7 +30,10 @@ export default function InterestRow({
     () => new Map(jobFields.map((item) => [item.code, item.name])),
     [jobFields],
   );
-  const fieldByName = useMemo(() => new Map(jobFields.map((item) => [item.name, item])), [jobFields]);
+  const fieldByName = useMemo(
+    () => new Map(jobFields.map((item) => [item.name, item])),
+    [jobFields],
+  );
   const majors = jobFields.map((item) => item.name);
   const minors = useMemo(() => {
     const selected = jobFields.find((item) => item.code === value.major);
@@ -73,13 +78,15 @@ export default function InterestRow({
         containerClassName="max-w-30 flex-1"
         buttonClassName="flex-1 justify-evenly pt-3.5 pb-3.5"
         textClassName="font-medium text-sm whitespace-nowrap"
+        dataCy={`signup-interest-major-${index}`}
       />
 
       <BaseDropdown
-        value={jobFields
-          .find((item) => item.code === value.major)
-          ?.positions.find((position) => position.code === value.minor)
-          ?.name}
+        value={
+          jobFields
+            .find((item) => item.code === value.major)
+            ?.positions.find((position) => position.code === value.minor)?.name
+        }
         placeholder="상세 분야"
         open={openDropdown === 'minor'}
         items={minors}
@@ -89,12 +96,14 @@ export default function InterestRow({
         containerClassName="max-w-78 flex-1"
         buttonClassName="justify-between pt-3.5 pb-3.5 pl-4 pr-4"
         textClassName="font-normal text-sm"
+        dataCy={`signup-interest-minor-${index}`}
       />
 
       {length > 1 && value.major && value.minor && (
         <button
           type="button"
           onClick={onRemove}
+          data-cy={`signup-interest-remove-${index}`}
           className="ml-1 flex items-center"
           aria-label="관심 분야 삭제"
         >

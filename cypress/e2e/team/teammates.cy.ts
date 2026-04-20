@@ -1,11 +1,243 @@
 const TEAMMATES_PATH = '/teammates';
 
-const getTeammateCards = () => cy.get('[data-cy="teammate-card"]');
-const getTeammateNames = () => cy.get('[data-cy="teammate-card-name"]');
+const ALL_TEAMMATES = [
+  {
+    memberId: 1,
+    name: '김도윤',
+    jobFieldName: '백엔드',
+    jobPositionNameEn: 'Java/Spring',
+    projectCount: 11,
+    mainSkills: ['Spring Boot', 'MySQL'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 14,
+    name: '권나은',
+    jobFieldName: '프론트',
+    jobPositionNameEn: 'Web Frontend',
+    projectCount: 8,
+    mainSkills: ['React Query', 'Next.js'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 2,
+    name: '강예나',
+    jobFieldName: '디자인',
+    jobPositionNameEn: 'UI/UX',
+    projectCount: 7,
+    mainSkills: ['Figma', 'Illustrator'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 3,
+    name: '나지민',
+    jobFieldName: '프론트',
+    jobPositionNameEn: 'Web Frontend',
+    projectCount: 6,
+    mainSkills: ['React', 'TypeScript'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 4,
+    name: '다은별',
+    jobFieldName: '기획',
+    jobPositionNameEn: 'PM',
+    projectCount: 6,
+    mainSkills: ['Notion', 'Jira'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 5,
+    name: '라현우',
+    jobFieldName: '백엔드',
+    jobPositionNameEn: 'Node/NestJS',
+    projectCount: 5,
+    mainSkills: ['NestJS', 'PostgreSQL'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 6,
+    name: '마서준',
+    jobFieldName: '디자인',
+    jobPositionNameEn: 'BX',
+    projectCount: 5,
+    mainSkills: ['Branding', 'Photoshop'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 7,
+    name: '박소율',
+    jobFieldName: '프론트',
+    jobPositionNameEn: 'iOS',
+    projectCount: 5,
+    mainSkills: ['SwiftUI', 'UIKit'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 8,
+    name: '배지훈',
+    jobFieldName: '백엔드',
+    jobPositionNameEn: 'Python',
+    projectCount: 4,
+    mainSkills: ['FastAPI', 'Redis'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 9,
+    name: '서하린',
+    jobFieldName: '기획',
+    jobPositionNameEn: 'PO',
+    projectCount: 4,
+    mainSkills: ['Analytics', 'Figma'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 10,
+    name: '송이준',
+    jobFieldName: '프론트',
+    jobPositionNameEn: 'Android',
+    projectCount: 4,
+    mainSkills: ['Kotlin', 'Compose'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 11,
+    name: '신채은',
+    jobFieldName: '디자인',
+    jobPositionNameEn: 'Motion',
+    projectCount: 3,
+    mainSkills: ['After Effects', 'Figma'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 12,
+    name: '안도현',
+    jobFieldName: '백엔드',
+    jobPositionNameEn: 'Java/Spring',
+    projectCount: 3,
+    mainSkills: ['Java', 'Kafka'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 13,
+    name: '오민재',
+    jobFieldName: '프론트',
+    jobPositionNameEn: 'Web Frontend',
+    projectCount: 3,
+    mainSkills: ['Vue', 'Pinia'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 15,
+    name: '유서진',
+    jobFieldName: '기획',
+    jobPositionNameEn: 'PM',
+    projectCount: 3,
+    mainSkills: ['MVP', 'Wireframe'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 16,
+    name: '윤채원',
+    jobFieldName: '백엔드',
+    jobPositionNameEn: 'Node/NestJS',
+    projectCount: 2,
+    mainSkills: ['Node.js', 'MongoDB'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 17,
+    name: '이가은',
+    jobFieldName: '프론트',
+    jobPositionNameEn: 'Web Frontend',
+    projectCount: 2,
+    mainSkills: ['React', 'Cypress'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 18,
+    name: '이우진',
+    jobFieldName: '기획',
+    jobPositionNameEn: 'PO',
+    projectCount: 2,
+    mainSkills: ['Communication', 'Docs'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 19,
+    name: '장하준',
+    jobFieldName: '디자인',
+    jobPositionNameEn: 'UI/UX',
+    projectCount: 2,
+    mainSkills: ['Figma', 'ProtoPie'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 20,
+    name: '정연준',
+    jobFieldName: '백엔드',
+    jobPositionNameEn: 'Java/Spring',
+    projectCount: 2,
+    mainSkills: ['Spring', 'Docker'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 21,
+    name: '조민서',
+    jobFieldName: '프론트',
+    jobPositionNameEn: 'Web Frontend',
+    projectCount: 1,
+    mainSkills: ['React', 'Tailwind'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 22,
+    name: '최현아',
+    jobFieldName: '디자인',
+    jobPositionNameEn: 'BX',
+    projectCount: 1,
+    mainSkills: ['Illustrator', 'Branding'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 23,
+    name: '하윤서',
+    jobFieldName: '기획',
+    jobPositionNameEn: 'PM',
+    projectCount: 1,
+    mainSkills: ['Research', 'Presentation'],
+    profileImageUrl: null,
+  },
+  {
+    memberId: 24,
+    name: '황지후',
+    jobFieldName: '백엔드',
+    jobPositionNameEn: 'Python',
+    projectCount: 1,
+    mainSkills: ['Python', 'Airflow'],
+    profileImageUrl: null,
+  },
+];
+
+function getTeammateCards() {
+  return cy.get('[data-cy="teammate-card"]');
+}
+
+function getTeammateNames() {
+  return cy.get('[data-cy="teammate-card-name"]');
+}
 
 describe('팀원 찾기 흐름', () => {
   beforeEach(() => {
+    cy.intercept('GET', '**/api/members/all', {
+      statusCode: 200,
+      body: {
+        result: ALL_TEAMMATES,
+      },
+    }).as('allTeammatesRequest');
+
     cy.visit(TEAMMATES_PATH);
+    cy.wait('@allTeammatesRequest');
   });
 
   it('기본 진입 시 프로젝트 경험 많은 순으로 팀원 목록을 보여준다', () => {
@@ -56,5 +288,50 @@ describe('팀원 찾기 흐름', () => {
     cy.get('[data-cy="teammate-empty-state"]')
       .should('be.visible')
       .and('contain', '조건에 맞는 팀원이 아직 없어요.');
+  });
+});
+
+describe('팀원 찾기 예외 흐름', () => {
+  it('초기 팀원 조회가 실패하면 에러 상태를 보여준다', () => {
+    cy.intercept('GET', '**/api/members/all', {
+      statusCode: 500,
+      body: {
+        message: '팀원 목록을 불러오지 못했습니다.',
+      },
+    }).as('failedTeammatesRequest');
+
+    cy.visit(TEAMMATES_PATH);
+    cy.wait('@failedTeammatesRequest');
+
+    cy.contains('팀원 목록을 불러오지 못했습니다.').should('be.visible');
+    cy.get('[data-cy="teammate-list"]').should('not.exist');
+    cy.get('[data-cy="teammate-empty-state"]').should('not.exist');
+  });
+
+  it('백엔드 에러 메시지가 없어도 기본 에러 문구를 보여준다', () => {
+    cy.intercept('GET', '**/api/members/all', {
+      statusCode: 500,
+      body: {},
+    }).as('fallbackFailedTeammatesRequest');
+
+    cy.visit(TEAMMATES_PATH);
+    cy.wait('@fallbackFailedTeammatesRequest');
+
+    cy.contains('팀원 목록을 불러오지 못했습니다.').should('be.visible');
+    cy.get('[data-cy="teammate-list"]').should('not.exist');
+  });
+
+  it('초기 팀원 응답 형식이 올바르지 않으면 파싱 에러를 보여준다', () => {
+    cy.intercept('GET', '**/api/members/all', {
+      statusCode: 200,
+      body: {},
+    }).as('invalidTeammatesResponseRequest');
+
+    cy.visit(TEAMMATES_PATH);
+    cy.wait('@invalidTeammatesResponseRequest');
+
+    cy.contains('응답 형식을 해석할 수 없습니다.').should('be.visible');
+    cy.get('[data-cy="teammate-list"]').should('not.exist');
+    cy.get('[data-cy="teammate-empty-state"]').should('not.exist');
   });
 });

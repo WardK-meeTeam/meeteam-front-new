@@ -1,10 +1,10 @@
 'use client';
 
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { MessageCircle, Plus } from 'lucide-react';
 import GithubLoginIcon from '@/assets/GithubLogin.svg';
 import { OPTIONS } from '@/constants/interest';
-import type { Interest } from '@/types/auth';
+import type { Interest, JobFieldOption } from '@/types/auth';
 import BaseButton from '@/components/shared/BaseButton';
 import BaseDropdown from '@/components/shared/BaseDropdown';
 import BaseField from '@/components/shared/BaseField';
@@ -16,6 +16,7 @@ import CoverImageUploader from '@/components/features/project/create/CoverImageU
 import { PROJECT_CATEGORIES, RELEASE_PLATFORMS } from '@/components/features/project/constants';
 import RecruitDeadlineField from '@/components/features/project/create/RecruitDeadlineField';
 import TechStackSection from '@/components/features/auth/TechStackSection';
+import { fetchJobOptions } from '@/components/features/auth/signupApi';
 import type { ProjectFormValues, RecruitInterest, ReleasePlatform } from '@/types/project';
 type OpenDropdownKey = 'major' | 'minor' | null;
 
@@ -76,6 +77,44 @@ export default function ProjectForm({
     index: number;
     key: Exclude<OpenDropdownKey, null>;
   } | null>(null);
+  const [jobFields, setJobFields] = useState<JobFieldOption[]>([]);
+  const [isLoadingJobOptions, setIsLoadingJobOptions] = useState(true);
+  const [jobOptionsError, setJobOptionsError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+
+    const loadJobOptions = async () => {
+      try {
+        const nextJobFields = await fetchJobOptions();
+
+        if (!active) {
+          return;
+        }
+
+        setJobFields(nextJobFields);
+        setJobOptionsError('');
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+
+        setJobOptionsError(
+          error instanceof Error ? error.message : '기술 스택 옵션을 불러오지 못했습니다.',
+        );
+      } finally {
+        if (active) {
+          setIsLoadingJobOptions(false);
+        }
+      }
+    };
+
+    void loadJobOptions();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const getMinors = (major: string) => {
     const selected = OPTIONS.find((item) => item.major === major);
@@ -403,9 +442,12 @@ export default function ProjectForm({
 
         <TechStackSection
           label={isEdit ? '필요 기술 스택' : '기술 스택'}
+          jobFields={jobFields}
           interests={recruitInterests}
           value={recruitTechStacks}
           onChange={setRecruitTechStacks}
+          errorText={jobOptionsError}
+          disabled={isLoadingJobOptions}
         />
 
         <RecruitDeadlineField

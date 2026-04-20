@@ -9,10 +9,12 @@ import { useProjectFinder } from './useProjectFinder';
 export default function ProjectFindPage() {
   const {
     filters,
-    filteredProjects,
-    visibleProjects,
+    projects,
+    countLabel,
     hasMore,
+    isInitialLoading,
     isLoadingMore,
+    errorMessage,
     hasActiveFilters,
     loadMoreRef,
     setSearchValue,
@@ -57,12 +59,14 @@ export default function ProjectFindPage() {
       />
 
       <ProjectFindResults
-        projects={visibleProjects}
-        totalCount={filteredProjects.length}
+        projects={projects}
+        countLabel={countLabel}
         sort={filters.sort}
+        isInitialLoading={isInitialLoading}
         isLoadingMore={isLoadingMore}
         hasMore={hasMore}
         hasActiveFilters={hasActiveFilters}
+        errorMessage={errorMessage}
         loadMoreRef={loadMoreRef}
         onSortChange={setSort}
         onResetFilters={resetFilters}
