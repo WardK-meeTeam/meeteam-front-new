@@ -1,0 +1,44 @@
+import { z } from 'zod';
+
+export const signupEmailSchema = z.string().email('올바른 이메일 형식을 입력해 주세요.');
+
+export const signupFormSchema = z
+  .object({
+    email: signupEmailSchema,
+    password: z.string().min(8, '비밀번호는 8자 이상이어야 합니다.'),
+    passwordConfirm: z.string().min(1, '비밀번호 확인을 입력해 주세요.'),
+    name: z.string().trim().min(1, '이름을 입력해 주세요.'),
+    birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '생년월일은 YYYY-MM-DD 형식으로 입력해 주세요.'),
+    gender: z.enum(['male', 'female']),
+    projectExperienceCount: z
+      .string()
+      .regex(/^\d+$/, '프로젝트 경험 횟수는 0 이상의 숫자로 입력해 주세요.'),
+    githubUrl: z.string(),
+    blogUrl: z.string(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.password !== value.passwordConfirm) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['passwordConfirm'],
+        message: '비밀번호가 일치하지 않습니다.',
+      });
+    }
+  });
+
+export type SignupFieldErrors = Partial<
+  Record<
+    | 'email'
+    | 'password'
+    | 'passwordConfirm'
+    | 'name'
+    | 'birth'
+    | 'projectExperienceCount'
+    | 'githubUrl'
+    | 'blogUrl'
+    | 'interests'
+    | 'emailCheck'
+    | 'form',
+    string
+  >
+>;

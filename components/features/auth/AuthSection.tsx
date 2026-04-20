@@ -1,57 +1,99 @@
 import BaseInput from '@/components/shared/BaseInput';
 import BaseField from '@/components/shared/BaseField';
+import BaseButton from '@/components/shared/BaseButton';
 
 type AuthSectionProps = {
+  email: string;
+  password: string;
+  passwordConfirm: string;
   onChangeEmail: React.ChangeEventHandler<HTMLInputElement>;
   onChangePassword: React.ChangeEventHandler<HTMLInputElement>;
   onChangePasswordConfirm: React.ChangeEventHandler<HTMLInputElement>;
-  isPasswordMatched: boolean;
+  onCheckEmail: () => void;
+  emailFeedback?: string;
+  emailFeedbackTone?: 'default' | 'success' | 'error';
+  emailError?: string;
+  passwordError?: string;
+  isCheckingEmail: boolean;
 };
 
 export default function AuthSection({
+  email,
+  password,
+  passwordConfirm,
   onChangeEmail,
   onChangePassword,
   onChangePasswordConfirm,
-  isPasswordMatched,
+  onCheckEmail,
+  emailFeedback,
+  emailFeedbackTone = 'default',
+  emailError,
+  passwordError,
+  isCheckingEmail,
 }: AuthSectionProps) {
+  const emailHintText = !emailError && emailFeedbackTone === 'default' ? emailFeedback : undefined;
+  const emailMessageClassName =
+    emailFeedbackTone === 'success'
+      ? 'text-brand-500'
+      : emailFeedbackTone === 'error'
+        ? 'text-error-red'
+        : 'text-text-gray';
+
   return (
     <>
-      <BaseField label="이메일" htmlFor="email">
+      <BaseField
+        label="이메일"
+        htmlFor="email"
+        errorText={emailError}
+        hintText={emailHintText}
+      >
         <div className="flex gap-2">
           <BaseInput
             id="email"
             type="email"
+            value={email}
             placeholder="example@email.com"
             onChange={onChangeEmail}
           />
-          <button
+          <BaseButton
             type="button"
-            className="flex items-center justify-center rounded-xl cursor-pointer text-brand-500 text-sm pl-4 pr-4 bg-[#eef2ff] leading-5 whitespace-nowrap"
+            variant="gray"
+            size="M"
+            onClick={onCheckEmail}
+            disabled={!email.trim() || isCheckingEmail}
+            className="shrink-0 border-none bg-chip-bg text-brand-500"
           >
-            <span className="font-bold">중복 확인</span>
-          </button>
+            <span className="font-bold">{isCheckingEmail ? '확인 중...' : '중복 확인'}</span>
+          </BaseButton>
         </div>
       </BaseField>
+
+      {!emailError && emailFeedback && emailFeedbackTone !== 'default' ? (
+        <p className={`text-sm ${emailMessageClassName}`}>{emailFeedback}</p>
+      ) : null}
 
       <div className="flex gap-4">
         <BaseField label="비밀번호" htmlFor="password">
           <BaseInput
             id="password"
             type="password"
+            value={password}
             placeholder="8자 이상 입력"
             onChange={onChangePassword}
           />
         </BaseField>
-        <BaseField label="비밀번호 확인" htmlFor="passwordConfirm">
+        <BaseField
+          label="비밀번호 확인"
+          htmlFor="passwordConfirm"
+          errorText={passwordError}
+        >
           <BaseInput
             id="passwordConfirm"
             type="password"
+            value={passwordConfirm}
             placeholder="비밀번호 재입력"
             onChange={onChangePasswordConfirm}
           />
-          {!isPasswordMatched && (
-            <p className="text-red-500 text-xs">비밀번호가 일치하지 않습니다.</p>
-          )}
         </BaseField>
       </div>
     </>
