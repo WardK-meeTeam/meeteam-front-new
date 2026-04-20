@@ -13,15 +13,20 @@ function FilterChip({
   label,
   active,
   onClick,
+  dataCy,
 }: {
   label: string;
   active: boolean;
   onClick: () => void;
+  dataCy: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      data-cy={dataCy}
+      data-value={label}
+      aria-pressed={active}
       className={`rounded-full px-3.5 py-1.5 text-sm leading-5 transition-all ${
         active
           ? 'bg-text-black font-medium text-white shadow-sm'
@@ -38,17 +43,20 @@ function SelectField({
   onChange,
   options,
   className = '',
+  dataCy,
 }: {
   value: string;
   onChange: (value: string) => void;
   options: readonly string[];
   className?: string;
+  dataCy: string;
 }) {
   return (
     <div className={`relative ${className}`}>
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
+        data-cy={dataCy}
         className="h-12 w-full appearance-none rounded-xl border border-border-gray bg-white py-3 pl-4 pr-10 text-sm leading-5 font-medium text-text-body shadow-sm outline-none transition-colors focus:border-brand-400"
       >
         {options.map((option) => (
@@ -105,6 +113,7 @@ export function ProjectFindFilters({
             value={searchValue}
             onChange={(event) => onSearchValueChange(event.target.value)}
             placeholder="프로젝트 이름 또는 리더 이름으로 검색하세요."
+            data-cy="project-search-input"
             className="h-14 w-full rounded-xl border border-border-gray bg-white py-4 pl-12 pr-5 text-base text-text-black shadow-sm outline-none placeholder:text-muted-gray focus:border-brand-400"
           />
         </label>
@@ -115,6 +124,7 @@ export function ProjectFindFilters({
             onChange={(value) => onCategoryChange(value as CategoryFilter)}
             options={FINDER_CATEGORY_OPTIONS}
             className="sm:min-w-36"
+            dataCy="project-category-select"
           />
           <SelectField
             value={recruitOnly === 'recruiting' ? '모집 중만 보기' : '전체 상태'}
@@ -123,6 +133,7 @@ export function ProjectFindFilters({
             }
             options={RECRUIT_STATUS_OPTIONS}
             className="sm:min-w-36"
+            dataCy="project-recruit-select"
           />
         </div>
       </div>
@@ -140,6 +151,7 @@ export function ProjectFindFilters({
                   label={option}
                   active={platform === option}
                   onClick={() => onPlatformChange(option)}
+                  dataCy="project-platform-filter"
                 />
               ))}
             </div>
@@ -158,6 +170,7 @@ export function ProjectFindFilters({
                   label={option}
                   active={field === option}
                   onClick={() => onFieldChange(option)}
+                  dataCy="project-field-filter"
                 />
               ))}
             </div>

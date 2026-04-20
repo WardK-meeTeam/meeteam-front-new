@@ -21,6 +21,7 @@ function SortSelect({
         onChange={(event) =>
           onSortChange(event.target.value === 'deadline' ? 'deadline' : 'latest')
         }
+        data-cy="project-sort-select"
         className="h-12 w-full appearance-none rounded-xl border border-border-gray bg-white py-3 pl-4 pr-10 text-sm leading-5 font-medium text-text-body shadow-sm outline-none transition-colors focus:border-brand-400"
       >
         <option value="latest">최신순</option>
@@ -59,7 +60,10 @@ export function ProjectFindResults({
   return (
     <>
       <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-base leading-6 font-semibold text-text-body">
+        <p
+          data-cy="project-total-count"
+          className="text-base leading-6 font-semibold text-text-body"
+        >
           총 <span className="text-brand-500">{totalCount}</span>개의 프로젝트
         </p>
 
@@ -67,7 +71,7 @@ export function ProjectFindResults({
       </div>
 
       {projects.length > 0 ? (
-        <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <ul data-cy="project-list" className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {projects.map((project) => (
             <li key={project.id}>
               <ProjectCard project={toProjectCardData(project)} />
@@ -75,7 +79,10 @@ export function ProjectFindResults({
           ))}
         </ul>
       ) : (
-        <div className="rounded-2xl border border-border-gray bg-white px-6 py-16 text-center shadow-sm">
+        <div
+          data-cy="project-empty-state"
+          className="rounded-2xl border border-border-gray bg-white px-6 py-16 text-center shadow-sm"
+        >
           <p className="text-lg font-bold text-text-black">조건에 맞는 프로젝트가 아직 없어요.</p>
           <p className="mt-2 text-sm leading-5 text-text-gray">
             검색어 또는 필터를 조금 넓혀서 다시 찾아보세요.
@@ -84,6 +91,7 @@ export function ProjectFindResults({
             <button
               type="button"
               onClick={onResetFilters}
+              data-cy="project-reset-filters"
               className="mt-6 inline-flex h-11 items-center justify-center rounded-xl border border-border-gray px-5 text-sm font-semibold text-text-black transition-colors hover:bg-surface-soft"
             >
               필터 초기화
@@ -102,7 +110,14 @@ export function ProjectFindResults({
         </ul>
       ) : null}
 
-      {hasMore ? <div ref={loadMoreRef} className="h-6 w-full" aria-hidden /> : null}
+      {hasMore ? (
+        <div
+          ref={loadMoreRef}
+          data-cy="project-load-more-trigger"
+          className="h-6 w-full"
+          aria-hidden
+        />
+      ) : null}
     </>
   );
 }

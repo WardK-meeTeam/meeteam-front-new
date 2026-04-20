@@ -9,6 +9,8 @@ export function TeammateCard({ teammate }: { teammate: Teammate }) {
   return (
     <Link
       href={`/profile/${teammate.id}`}
+      data-cy="teammate-card"
+      data-teammate-id={teammate.id}
       className="group flex h-full min-h-72 flex-col rounded-2xl border border-border-soft bg-white px-6 pt-6 pb-14 shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-4">
@@ -28,14 +30,12 @@ export function TeammateCard({ teammate }: { teammate: Teammate }) {
       </div>
 
       <div className="mt-4 space-y-1">
-        <h2 className="text-base leading-6 font-bold text-text-black">{teammate.name}</h2>
+        <h2 data-cy="teammate-card-name" className="text-base leading-6 font-bold text-text-black">
+          {teammate.name}
+        </h2>
         <div className="flex items-center gap-1.5 text-xs leading-4 text-text-gray">
-          <BriefcaseBusiness
-            aria-hidden
-            className="h-3.5 w-3.5 text-text-gray"
-            strokeWidth={1.8}
-          />
-          <span>프로젝트 {teammate.experienceCount}회 경험</span>
+          <BriefcaseBusiness aria-hidden className="h-3.5 w-3.5 text-text-gray" strokeWidth={1.8} />
+          <span data-cy="teammate-card-experience">프로젝트 {teammate.experienceCount}회 경험</span>
         </div>
       </div>
 

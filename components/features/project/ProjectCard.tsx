@@ -40,6 +40,8 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
 
   return (
     <Link
+      data-cy="project-card"
+      data-project-id={project.id}
       className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-text-black shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] transition-all duration-300 hover:ring-1 hover:ring-brand-400/50`}
       href={`/projects/${project.id}`}
     >
@@ -55,7 +57,9 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
         <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </div>
 
-      <div className={`absolute left-0 right-0 top-0 z-10 flex justify-between ${compact ? 'p-4' : 'p-6'}`}>
+      <div
+        className={`absolute left-0 right-0 top-0 z-10 flex justify-between ${compact ? 'p-4' : 'p-6'}`}
+      >
         <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/20 px-3 py-1 text-xs font-bold text-white shadow-sm backdrop-blur-md">
           {project.category}
         </span>
@@ -66,9 +70,12 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
         ) : null}
       </div>
 
-      <div className={`absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end ${compact ? 'p-4' : 'p-6'}`}>
+      <div
+        className={`absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end ${compact ? 'p-4' : 'p-6'}`}
+      >
         <div className="transform transition-transform duration-500 ease-out group-hover:-translate-y-2">
           <h3
+            data-cy="project-card-title"
             className={`${titleClass} line-clamp-2 leading-tight font-bold text-white drop-shadow-md`}
           >
             {project.title}
@@ -83,7 +90,9 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                 src={project.leader.avatar}
                 width={32}
               />
-              <span className="text-xs font-medium text-muted-gray">{project.leader.name}</span>
+              <span data-cy="project-card-leader" className="text-xs font-medium text-muted-gray">
+                {project.leader.name}
+              </span>
             </div>
 
             <div className="flex flex-col items-end gap-1">

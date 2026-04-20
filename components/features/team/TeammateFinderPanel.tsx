@@ -33,6 +33,7 @@ export function TeammateFinderPanel({
           value={searchValue}
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder={TEAMMATE_PAGE_COPY.searchPlaceholder}
+          data-cy="teammate-search-input"
           className="h-14 w-full rounded-xl border border-border-gray bg-white py-4 pl-12 pr-5 text-base leading-6 text-text-black shadow-sm outline-none placeholder:text-muted-gray focus:border-brand-400 focus:ring-2 focus:ring-brand-400/15"
         />
       </label>
@@ -67,6 +68,7 @@ export function TeammateFinderPanel({
                 value={skillKeyword}
                 onChange={(event) => onSkillKeywordChange(event.target.value)}
                 placeholder={TEAMMATE_PAGE_COPY.skillPlaceholder}
+                data-cy="teammate-skill-input"
                 className="h-10 w-full rounded-lg border border-border-gray bg-surface-soft px-4 text-sm leading-5 text-text-black outline-none placeholder:text-muted-gray focus:border-brand-400 focus:bg-white"
               />
             </div>
