@@ -11,6 +11,7 @@ type AuthState = {
   accessToken: string | null;
   memberId: number | null;
   name: string | null;
+  email: string | null;
   isAuthenticated: boolean;
   setSession: (session: AuthSession) => void;
   clearSession: () => void;
@@ -20,6 +21,7 @@ const INITIAL_STATE = {
   accessToken: null,
   memberId: null,
   name: null,
+  email: null,
   isAuthenticated: false,
 };
 
@@ -32,6 +34,7 @@ export const useAuthStore = create<AuthState>()(
           accessToken: session.accessToken,
           memberId: session.memberId,
           name: session.name,
+          email: session.email,
           isAuthenticated: true,
         }),
       clearSession: () => set(INITIAL_STATE),
@@ -43,6 +46,7 @@ export const useAuthStore = create<AuthState>()(
         accessToken: state.accessToken,
         memberId: state.memberId,
         name: state.name,
+        email: state.email,
         isAuthenticated: state.isAuthenticated,
       }),
     },

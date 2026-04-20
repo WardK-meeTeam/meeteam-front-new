@@ -51,5 +51,6 @@ export async function loginMember(payload: LoginRequestPayload): Promise<AuthSes
   return {
     ...extractApiData(data),
     accessToken,
+    email: payload.email.trim(),
   };
 }

@@ -84,6 +84,7 @@ export type LoginSuccessResponse = {
 
 export type AuthSession = LoginSuccessResponse & {
   accessToken: string;
+  email: string;
 };
 
 export type ApiEnvelope<T> = {

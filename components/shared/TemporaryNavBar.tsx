@@ -2,7 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, ChevronDown } from 'lucide-react';
+import { Bell } from 'lucide-react';
+import ProfileMenu from '@/components/shared/ProfileMenu';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 const navItems = [
   { href: '/teammates', label: '팀원 찾기' },
@@ -12,6 +14,7 @@ const navItems = [
 
 export function TemporaryNavBar() {
   const pathname = usePathname();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isActiveLink = (href: string) =>
     pathname === href ||
     (href !== '/projects' && pathname.startsWith(`${href}/`)) ||
@@ -45,30 +48,29 @@ export function TemporaryNavBar() {
           </ul>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Link href="/notifications">
-            <button
-              type="button"
-              className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-project-status-closed transition-colors hover:bg-surface-soft hover:text-text-black"
-              aria-label="알림"
-            >
-              <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-              <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-danger-500 shadow-[0_0_0_2px_white]" />
-            </button>
+        {isAuthenticated ? (
+          <div className="flex items-center gap-4">
+            <Link href="/notifications">
+              <button
+                type="button"
+                className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-project-status-closed transition-colors hover:bg-surface-soft hover:text-text-black"
+                aria-label="알림"
+              >
+                <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
+                <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-danger-500 shadow-[0_0_0_2px_white]" />
+              </button>
+            </Link>
+            <span className="h-6 w-px bg-border-gray" aria-hidden />
+            <ProfileMenu />
+          </div>
+        ) : (
+          <Link
+            href="/auth/login"
+            className="text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black"
+          >
+            로그인
           </Link>
-          <span className="h-6 w-px bg-border-gray" aria-hidden />
-
-          <Link href="/profile" className="flex items-center gap-2">
-            <span className="h-9 w-9 overflow-hidden rounded-full bg-brand-50">
-              <img
-                alt="프로필"
-                className="h-full w-full object-cover"
-                src="http://localhost:3845/assets/f1172eb8cefcbe26d0f11c0aadeea5d533cb00a6.png"
-              />
-            </span>
-            <ChevronDown className="h-4 w-4 text-text-gray" aria-hidden strokeWidth={1.8} />
-          </Link>
-        </div>
+        )}
       </div>
     </nav>
   );

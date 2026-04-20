@@ -35,6 +35,7 @@ describe('loginMember', () => {
       name: '홍길동',
       memberId: 42,
       accessToken: 'test-access-token',
+      email: 'hello@example.com',
     });
 
     expect(global.fetch).toHaveBeenCalledWith(
