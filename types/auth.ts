@@ -20,6 +20,11 @@ export type SignupFormValues = {
   profileImage: File | null;
 };
 
+export type LoginFormValues = {
+  email: string;
+  password: string;
+};
+
 export type JobPositionOption = {
   code: string;
   name: string;
@@ -70,9 +75,22 @@ export type SignupSuccessResponse = {
   username: string;
 };
 
-export type SignupApiEnvelope<T> = {
+export type LoginRequestPayload = LoginFormValues;
+
+export type LoginSuccessResponse = {
+  name: string;
+  memberId: number;
+};
+
+export type AuthSession = LoginSuccessResponse & {
+  accessToken: string;
+};
+
+export type ApiEnvelope<T> = {
   data?: T;
   result?: T;
   message?: string;
   code?: string;
 };
+
+export type SignupApiEnvelope<T> = ApiEnvelope<T>;

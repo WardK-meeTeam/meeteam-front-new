@@ -1,13 +1,13 @@
 import type {
+  ApiEnvelope,
   Interest,
   JobFieldOption,
   RegisterJobPositionPayload,
   RegisterRequestPayload,
-  SignupApiEnvelope,
   SignupFormValues,
 } from '@/types/auth';
 
-export function extractApiData<T>(payload: SignupApiEnvelope<T>): T {
+export function extractApiData<T>(payload: ApiEnvelope<T>): T {
   if (payload.data !== undefined) {
     return payload.data;
   }

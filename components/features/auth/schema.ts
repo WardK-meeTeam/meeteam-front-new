@@ -1,6 +1,16 @@
 import { z } from 'zod';
 
 export const signupEmailSchema = z.string().email('올바른 이메일 형식을 입력해 주세요.');
+export const loginEmailSchema = z
+  .string()
+  .trim()
+  .min(1, '이메일을 입력해 주세요.')
+  .email('올바른 이메일 형식을 입력해 주세요.');
+
+export const loginFormSchema = z.object({
+  email: loginEmailSchema,
+  password: z.string().min(1, '비밀번호를 입력해 주세요.'),
+});
 
 export const signupFormSchema = z
   .object({
@@ -42,3 +52,5 @@ export type SignupFieldErrors = Partial<
     string
   >
 >;
+
+export type LoginFieldErrors = Partial<Record<'email' | 'password' | 'form', string>>;
