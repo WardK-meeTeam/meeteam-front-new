@@ -50,6 +50,18 @@ export type ProjectFormValues = {
   recruitTechStacks: Record<string, string[]>;
   recruitDeadline: string;
   isRecruitUntilComplete: boolean;
+  coverImage?: File | null;
+};
+
+export type ProjectRecruitmentDetail = {
+  id: string;
+  jobFieldCode: string;
+  jobFieldName: string;
+  jobPositionName: string;
+  recruitmentCount: number;
+  currentCount: number;
+  isClosed: boolean;
+  techStacks: string[];
 };
 
 export type ManagedProject = ProjectFormValues & {
@@ -67,4 +79,8 @@ export type ProjectRecord = ManagedProject & {
   coverImageUrl: string;
   createdAt: string;
   leaderRole: string;
+  leaderProfileId?: number;
+  leaderTechStacks?: string[];
+  likeCount?: number;
+  recruitmentDetails?: ProjectRecruitmentDetail[];
 };

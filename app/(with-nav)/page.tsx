@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import AuthLink from '@/components/features/auth/AuthLink';
 import StartJourneyModalTrigger from '@/components/features/home/StartJourneyModalTrigger';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
 import BaseTag from '@/components/shared/BaseTag';
@@ -163,9 +164,9 @@ export default function Page() {
       <section className="space-y-6">
         <div className="flex items-end justify-between">
           <h2 className="text-2xl font-bold text-text-black">프로젝트</h2>
-          <Link href="/projects" className="text-sm font-semibold text-brand-500">
+          <AuthLink href="/projects" className="text-sm font-semibold text-brand-500">
             전체보기 &gt;
-          </Link>
+          </AuthLink>
         </div>
         <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           {projectCards.map((project) => (
@@ -211,12 +212,12 @@ export default function Page() {
               망설이지 마세요. 1분이면 프로젝트를 등록하고 멋진 동료들을 모집할 수 있습니다.
             </p>
           </div>
-          <Link
+          <AuthLink
             href="/projects/create"
             className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-bold text-text-black shadow-xl"
           >
             무료로 프로젝트 등록하기
-          </Link>
+          </AuthLink>
         </div>
       </section>
     </div>

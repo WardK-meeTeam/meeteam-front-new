@@ -6,32 +6,40 @@ import { type ChangeEvent, type MouseEvent, useEffect, useRef, useState } from '
 interface CoverImageUploaderProps {
   id?: string;
   accept?: string;
+  value?: File | null;
+  initialPreviewUrl?: string | null;
+  onChange?: (file: File | null) => void;
 }
 
 export default function CoverImageUploader({
   id = 'project-cover-image',
   accept = 'image/png,image/jpeg',
+  value = null,
+  initialPreviewUrl = null,
+  onChange,
 }: CoverImageUploaderProps) {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (!value) {
+      setPreviewUrl(initialPreviewUrl);
+      return;
+    }
+
+    const nextUrl = URL.createObjectURL(value);
+    setPreviewUrl(nextUrl);
+
     return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
+      URL.revokeObjectURL(nextUrl);
     };
-  }, [previewUrl]);
+  }, [initialPreviewUrl, value]);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const nextUrl = URL.createObjectURL(file);
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setPreviewUrl(nextUrl);
+    onChange?.(file);
   };
 
   const handleOpenFileDialog = (event: MouseEvent<HTMLButtonElement>) => {
@@ -44,10 +52,7 @@ export default function CoverImageUploader({
     event.preventDefault();
     event.stopPropagation();
 
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setPreviewUrl(null);
+    onChange?.(null);
     if (inputRef.current) {
       inputRef.current.value = '';
     }

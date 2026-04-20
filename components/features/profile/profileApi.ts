@@ -1,5 +1,6 @@
 import type { ApiEnvelope, JobFieldOption } from '@/types/auth';
 
+import { createApiError } from '@/components/features/auth/authError';
 import { extractApiData, normalizeUrl } from '@/components/features/auth/signupTransform';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
@@ -61,11 +62,7 @@ async function readEnvelope<T>(response: Response) {
   const payload = (await response.json().catch(() => null)) as ApiEnvelope<T> | null;
 
   if (!response.ok) {
-    const errorMessage =
-      typeof payload?.message === 'string'
-        ? payload.message
-        : '프로필 정보를 처리하는 중 오류가 발생했습니다.';
-    throw new Error(errorMessage);
+    throw createApiError(response, payload, '프로필 정보를 처리하는 중 오류가 발생했습니다.');
   }
 
   if (!payload) {

@@ -1,6 +1,7 @@
 import type { ApiEnvelope } from '@/types/auth';
 import type { Teammate } from '@/types/team';
 
+import { createApiError } from '@/components/features/auth/authError';
 import { extractApiData } from '@/components/features/auth/signupTransform';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
@@ -24,7 +25,7 @@ export async function fetchAllTeammates() {
   const payload = (await response.json().catch(() => null)) as ApiEnvelope<MemberCardResponse[]> | null;
 
   if (!response.ok) {
-    throw new Error(payload?.message ?? '팀원 목록을 불러오지 못했습니다.');
+    throw createApiError(response, payload, '팀원 목록을 불러오지 못했습니다.');
   }
 
   if (!payload) {

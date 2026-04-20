@@ -3,6 +3,7 @@
 import { Github, Link2, Mail } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
+import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
 import BasicInfoCard from '@/components/features/profile/BasicInfoCard';
 import IntroductionCard from '@/components/features/profile/IntroductionCard';
@@ -48,10 +49,12 @@ export default function ProfileOverview({
   editable = true,
   actionLabel = '제안 보내기',
 }: ProfileOverviewProps) {
+  const handleAuthRequired = useAuthRequiredModal();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isAuthBlocked, setIsAuthBlocked] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [profile, setProfile] = useState<MemberProfileResponse | null>(null);
   const [jobFields, setJobFields] = useState<JobFieldOption[]>([]);
@@ -82,6 +85,7 @@ export default function ProfileOverview({
     const loadProfile = async () => {
       try {
         setIsLoading(true);
+        setIsAuthBlocked(false);
         setErrorMessage(null);
 
         if (memberId) {
@@ -114,6 +118,12 @@ export default function ProfileOverview({
           return;
         }
 
+        if (handleAuthRequired(error, { redirectPath: memberId ? `/profile/${memberId}` : '/profile' })) {
+          setIsAuthBlocked(true);
+          setErrorMessage(null);
+          return;
+        }
+
         setErrorMessage(error instanceof Error ? error.message : '프로필을 불러오지 못했습니다.');
       } finally {
         if (active) {
@@ -127,7 +137,7 @@ export default function ProfileOverview({
     return () => {
       active = false;
     };
-  }, [isAuthenticated, memberId]);
+  }, [handleAuthRequired, isAuthenticated, memberId]);
 
   const currentActionLabel = canEdit ? (isEditing ? '저장하기' : '프로필 수정') : actionLabel;
   const categoryOptions = useMemo(() => jobFields.map((field) => field.name), [jobFields]);
@@ -294,6 +304,11 @@ export default function ProfileOverview({
       applyProfile(nextProfile, nextJobFields);
       setIsEditing(false);
     } catch (error) {
+      if (handleAuthRequired(error, { redirectPath: '/profile' })) {
+        setErrorMessage(null);
+        return;
+      }
+
       setErrorMessage(error instanceof Error ? error.message : '프로필 저장에 실패했습니다.');
     } finally {
       setIsSaving(false);
@@ -349,6 +364,10 @@ export default function ProfileOverview({
     profile?.representativePosition ??
     profileForm?.fieldRole ??
     '';
+
+  if (isAuthBlocked) {
+    return null;
+  }
 
   if (isLoading) {
     return (

@@ -2,18 +2,22 @@
 
 import { useRouter } from 'next/navigation';
 import ProjectForm from '@/components/features/project/create/ProjectForm';
-import { useProjectStore } from '@/components/features/project/store';
+import {
+  buildProjectCreatePayload,
+  createProject,
+} from '@/components/features/project/projectApi';
 
 export default function CreateProjectPage() {
   const router = useRouter();
-  const createProject = useProjectStore((state) => state.createProject);
 
   return (
     <ProjectForm
       variant="create"
-      onSubmit={(values) => {
-        const projectId = createProject(values);
-        router.push(`/projects/${projectId}`);
+      onSubmit={async (values, { jobFields }) => {
+        const payload = buildProjectCreatePayload(values, jobFields);
+        const response = await createProject(payload, values.coverImage);
+
+        router.push(`/projects/${response.id}`);
       }}
     />
   );

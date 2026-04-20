@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -12,37 +12,95 @@ import {
   Link2,
   Settings,
 } from 'lucide-react';
+import AuthLink from '@/components/features/auth/AuthLink';
 import { getProjectCategoryLabel } from '@/components/features/project/constants';
 import ProjectActionButtons from '@/components/features/project/detail/ProjectActionButtons';
 import ProjectDetailContent from '@/components/features/project/detail/ProjectDetailContent';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
+import { fetchProjectDetail } from '@/components/features/project/projectApi';
 import { useProjectStore } from '@/components/features/project/store';
+import type { ProjectRecord } from '@/types/project';
 
 export default function ProjectDetailPage({ projectId }: { projectId: string }) {
   const projectsById = useProjectStore((state) => state.projectsById);
-  const project = projectsById[projectId] ?? null;
+  const localProject = projectsById[projectId] ?? null;
+  const [project, setProject] = useState<ProjectRecord | null>(localProject);
+  const [isLoading, setIsLoading] = useState(!localProject);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadProject = async () => {
+      try {
+        if (!localProject) {
+          setIsLoading(true);
+        }
+
+        const nextProject = await fetchProjectDetail(projectId);
+
+        if (!active) {
+          return;
+        }
+
+        setProject(nextProject);
+        setErrorMessage(null);
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+
+        setProject(localProject);
+
+        if (!localProject) {
+          setErrorMessage(
+            error instanceof Error ? error.message : '프로젝트를 불러오지 못했습니다.',
+          );
+        }
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadProject();
+
+    return () => {
+      active = false;
+    };
+  }, [localProject, projectId]);
+
+  if (isLoading && !project) {
+    return (
+      <section className="mx-auto flex w-full max-w-7xl flex-col items-center gap-4 py-24 text-center">
+        <h1 className="text-3xl font-bold text-text-black">프로젝트를 불러오는 중입니다.</h1>
+        <p className="text-base leading-6 text-text-gray">잠시만 기다려 주세요.</p>
+      </section>
+    );
+  }
 
   if (!project) {
     return (
       <section className="mx-auto flex w-full max-w-7xl flex-col items-center gap-4 py-24 text-center">
         <h1 className="text-3xl font-bold text-text-black">프로젝트를 찾을 수 없어요.</h1>
         <p className="text-base leading-6 text-text-gray">
-          목록으로 돌아가서 다른 프로젝트를 확인해보세요.
+          {errorMessage ?? '목록으로 돌아가서 다른 프로젝트를 확인해보세요.'}
         </p>
-        <Link
+        <AuthLink
           href="/projects"
           className="inline-flex items-center gap-2 rounded-full border border-border-gray bg-white px-5 py-3 text-sm font-bold text-text-gray transition-colors hover:text-text-black"
         >
           <ChevronLeft className="h-4 w-4" aria-hidden strokeWidth={1.8} />
           프로젝트 목록으로
-        </Link>
+        </AuthLink>
       </section>
     );
   }
 
   const leader = project.members.find((member) => member.isLeader) ?? project.members[0];
   const leaderSkillKey = `${project.myInterest.major} - ${project.myInterest.minor}`;
-  const leaderSkills = project.recruitTechStacks[leaderSkillKey] ?? [];
+  const leaderSkills = project.leaderTechStacks ?? project.recruitTechStacks[leaderSkillKey] ?? [];
   const recommendedProjects = useMemo(
     () =>
       Object.values(projectsById)
@@ -69,7 +127,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-8 pb-20">
-      <Link
+      <AuthLink
         href="/projects"
         className="inline-flex items-center gap-2 text-sm font-bold text-text-gray transition-colors hover:text-text-black"
       >
@@ -77,14 +135,16 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
           <ChevronLeft className="h-5 w-5" aria-hidden strokeWidth={1.8} />
         </span>
         목록으로 돌아가기
-      </Link>
+      </AuthLink>
 
       <div className="relative h-96 overflow-hidden rounded-4xl bg-text-black px-12 py-8 text-white">
-        <img
-          alt={project.title}
-          className="absolute inset-0 h-full w-full object-cover opacity-60"
-          src={project.coverImageUrl}
-        />
+        {project.coverImageUrl ? (
+          <img
+            alt={project.title}
+            className="absolute inset-0 h-full w-full object-cover opacity-60"
+            src={project.coverImageUrl}
+          />
+        ) : null}
         <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-text-black via-label-dark to-label-dark" />
         <div className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-brand-400/20 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-brand-500/20 blur-3xl" />
@@ -113,13 +173,13 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
           </div>
         </div>
 
-        <Link
+        <AuthLink
           href={`/projects/${project.id}/manage`}
           className="absolute right-10 top-8 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-2.5 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
         >
           <Settings className="h-4 w-4" aria-hidden strokeWidth={1.8} />
           프로젝트 관리
-        </Link>
+        </AuthLink>
       </div>
 
       <div className="grid grid-cols-1 gap-8 pb-14 xl:grid-cols-[minmax(0,1fr)_24rem]">
@@ -129,13 +189,19 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
           <article className="rounded-3xl border border-border-gray bg-white p-6 shadow-sm">
             <h2 className="text-sm font-bold text-text-black">프로젝트 리더</h2>
 
-            <Link href="/profile/1" className="mt-4 flex items-center gap-4">
+            <Link href={`/profile/${project.leaderProfileId ?? 1}`} className="mt-4 flex items-center gap-4">
               <div className="relative h-16 w-16 overflow-hidden rounded-2xl bg-brand-50">
-                <img
-                  alt={leader?.name ?? '프로젝트 리더'}
-                  className="h-full w-full object-cover"
-                  src={leader?.avatarUrl ?? ''}
-                />
+                {leader?.avatarUrl ? (
+                  <img
+                    alt={leader?.name ?? '프로젝트 리더'}
+                    className="h-full w-full object-cover"
+                    src={leader.avatarUrl}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-lg font-bold text-brand-500">
+                    {leader?.name?.slice(0, 1) ?? 'L'}
+                  </div>
+                )}
               </div>
               <div>
                 <p className="text-[18px] leading-7 font-bold text-text-black">{leader?.name}</p>
@@ -235,7 +301,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
             </p>
           </article>
 
-          <ProjectActionButtons initialLikeCount={24} />
+          <ProjectActionButtons initialLikeCount={project.likeCount ?? 24} />
         </aside>
       </div>
 
@@ -244,12 +310,12 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
           <h2 className="text-2xl leading-8 font-bold text-text-black">
             다른 프로젝트도 확인해보세요
           </h2>
-          <Link
+          <AuthLink
             href="/projects"
             className="text-sm leading-5 font-bold text-brand-500 transition-colors hover:text-brand-400"
           >
             전체보기
-          </Link>
+          </AuthLink>
         </div>
 
         <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

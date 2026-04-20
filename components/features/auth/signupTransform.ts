@@ -2,6 +2,8 @@ import type {
   ApiEnvelope,
   Interest,
   JobFieldOption,
+  OAuth2RegisterRequestPayload,
+  OAuthSignupFormValues,
   RegisterJobPositionPayload,
   RegisterRequestPayload,
   SignupFormValues,
@@ -37,11 +39,13 @@ export function normalizeUrl(value: string) {
   return `https://${trimmed}`;
 }
 
-export function buildRegisterRequestPayload(
-  values: SignupFormValues,
-  jobFields: JobFieldOption[],
-): RegisterRequestPayload {
-  const jobPositions = values.interests
+type JobPositionValues = {
+  interests: Interest[];
+  techStacksByInterest: Record<string, string[]>;
+};
+
+function buildJobPositionPayload(values: JobPositionValues, jobFields: JobFieldOption[]) {
+  return values.interests
     .filter((interest) => interest.major && interest.minor)
     .map<RegisterJobPositionPayload>((interest) => {
       const jobField = jobFields.find((field) => field.code === interest.major);
@@ -74,6 +78,13 @@ export function buildRegisterRequestPayload(
         }),
       };
     });
+}
+
+export function buildRegisterRequestPayload(
+  values: SignupFormValues,
+  jobFields: JobFieldOption[],
+): RegisterRequestPayload {
+  const jobPositions = buildJobPositionPayload(values, jobFields);
 
   return {
     email: values.email.trim(),
@@ -82,6 +93,23 @@ export function buildRegisterRequestPayload(
     birthDate: values.birth.trim(),
     gender: values.gender === 'female' ? 'FEMALE' : 'MALE',
     jobPositions,
+    projectExperienceCount: Number(values.projectExperienceCount || '0'),
+    githubUrl: normalizeUrl(values.githubUrl),
+    blogUrl: normalizeUrl(values.blogUrl),
+  };
+}
+
+export function buildOAuthRegisterRequestPayload(
+  values: OAuthSignupFormValues,
+  jobFields: JobFieldOption[],
+  code: string,
+): OAuth2RegisterRequestPayload {
+  return {
+    code,
+    name: values.name.trim(),
+    birthDate: values.birth.trim(),
+    gender: values.gender === 'female' ? 'FEMALE' : 'MALE',
+    jobPositions: buildJobPositionPayload(values, jobFields),
     projectExperienceCount: Number(values.projectExperienceCount || '0'),
     githubUrl: normalizeUrl(values.githubUrl),
     blogUrl: normalizeUrl(values.blogUrl),

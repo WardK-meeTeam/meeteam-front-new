@@ -14,6 +14,7 @@ export default function ProjectFindPage() {
     hasMore,
     isInitialLoading,
     isLoadingMore,
+    isAuthBlocked,
     errorMessage,
     hasActiveFilters,
     loadMoreRef,
@@ -25,6 +26,10 @@ export default function ProjectFindPage() {
     setSort,
     resetFilters,
   } = useProjectFinder();
+
+  if (isAuthBlocked) {
+    return null;
+  }
 
   return (
     <section className="space-y-6 pb-16 pt-2">

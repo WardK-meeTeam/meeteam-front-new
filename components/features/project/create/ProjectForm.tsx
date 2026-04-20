@@ -5,27 +5,38 @@ import { MessageCircle, Plus } from 'lucide-react';
 import GithubLoginIcon from '@/assets/GithubLogin.svg';
 import { OPTIONS } from '@/constants/interest';
 import type { Interest, JobFieldOption } from '@/types/auth';
+import type { ProjectFormValues, RecruitInterest, ReleasePlatform } from '@/types/project';
+import TechStackSection from '@/components/features/auth/TechStackSection';
+import { fetchJobOptions } from '@/components/features/auth/signupApi';
+import CategoryBox from '@/components/features/project/create/CategoryBox';
+import CoverImageUploader from '@/components/features/project/create/CoverImageUploader';
+import {
+  projectFormSchema,
+  type ProjectFormFieldErrors,
+} from '@/components/features/project/create/schema';
+import RecruitDeadlineField from '@/components/features/project/create/RecruitDeadlineField';
+import { PROJECT_CATEGORIES, RELEASE_PLATFORMS } from '@/components/features/project/constants';
+import {
+  getProjectJobFieldLabel,
+  getProjectJobPositionLabel,
+} from '@/components/features/project/projectJobOptions';
 import BaseButton from '@/components/shared/BaseButton';
 import BaseDropdown from '@/components/shared/BaseDropdown';
 import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
 import BaseTag from '@/components/shared/BaseTag';
 import BaseTextarea from '@/components/shared/BaseTextarea';
-import CategoryBox from '@/components/features/project/create/CategoryBox';
-import CoverImageUploader from '@/components/features/project/create/CoverImageUploader';
-import { PROJECT_CATEGORIES, RELEASE_PLATFORMS } from '@/components/features/project/constants';
-import RecruitDeadlineField from '@/components/features/project/create/RecruitDeadlineField';
-import TechStackSection from '@/components/features/auth/TechStackSection';
-import { fetchJobOptions } from '@/components/features/auth/signupApi';
-import type { ProjectFormValues, RecruitInterest, ReleasePlatform } from '@/types/project';
-type OpenDropdownKey = 'major' | 'minor' | null;
 
+type OpenDropdownKey = 'major' | 'minor' | null;
 type ProjectFormVariant = 'create' | 'edit';
 
 interface ProjectFormProps {
   variant?: ProjectFormVariant;
   initialValues?: ProjectFormValues;
-  onSubmit?: (values: ProjectFormValues) => void;
+  onSubmit?: (
+    values: ProjectFormValues,
+    context: { jobFields: JobFieldOption[] },
+  ) => void | Promise<void>;
 }
 
 const DEFAULT_FORM_VALUES: ProjectFormValues = {
@@ -40,6 +51,7 @@ const DEFAULT_FORM_VALUES: ProjectFormValues = {
   recruitTechStacks: {},
   recruitDeadline: '',
   isRecruitUntilComplete: false,
+  coverImage: null,
 };
 
 export default function ProjectForm({
@@ -50,7 +62,6 @@ export default function ProjectForm({
   const messageIcon = <MessageCircle className="h-5 w-5 text-muted-gray" />;
   const githubIcon = <GithubLoginIcon className="h-5 w-5 text-muted-gray" aria-hidden />;
   const isEdit = variant === 'edit';
-  const majors = OPTIONS.map((item) => item.major);
   const hydratedInitialValues = initialValues ?? DEFAULT_FORM_VALUES;
 
   const [projectName, setProjectName] = useState(hydratedInitialValues.projectName);
@@ -73,6 +84,9 @@ export default function ProjectForm({
   const [recruitTechStacks, setRecruitTechStacks] = useState<Record<string, string[]>>(
     hydratedInitialValues.recruitTechStacks,
   );
+  const [coverImage, setCoverImage] = useState<File | null>(
+    hydratedInitialValues.coverImage ?? null,
+  );
   const [openRecruitDropdown, setOpenRecruitDropdown] = useState<{
     index: number;
     key: Exclude<OpenDropdownKey, null>;
@@ -80,6 +94,8 @@ export default function ProjectForm({
   const [jobFields, setJobFields] = useState<JobFieldOption[]>([]);
   const [isLoadingJobOptions, setIsLoadingJobOptions] = useState(true);
   const [jobOptionsError, setJobOptionsError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<ProjectFormFieldErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -116,21 +132,41 @@ export default function ProjectForm({
     };
   }, []);
 
+  const majorOptions = isEdit
+    ? OPTIONS.map((item) => item.major)
+    : jobFields.map((field) => getProjectJobFieldLabel(field));
+
   const getMinors = (major: string) => {
-    const selected = OPTIONS.find((item) => item.major === major);
-    return selected?.minor ?? [];
+    if (isEdit) {
+      return OPTIONS.find((item) => item.major === major)?.minor ?? [];
+    }
+
+    const selectedField = jobFields.find((field) => getProjectJobFieldLabel(field) === major);
+    return selectedField?.positions.map((position) => getProjectJobPositionLabel(position)) ?? [];
+  };
+
+  const clearError = (...keys: Array<keyof ProjectFormFieldErrors>) => {
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+
+      keys.forEach((key) => {
+        delete next[key];
+      });
+
+      delete next.form;
+
+      return next;
+    });
   };
 
   const handlePlatformToggle = (platform: ReleasePlatform) => {
-    setSelectedPlatforms((current) =>
-      current.includes(platform)
-        ? current.filter((item) => item !== platform)
-        : [...current, platform],
-    );
+    setSelectedPlatforms([platform]);
+    clearError('releasePlatforms');
   };
 
   const addRecruitInterest = () => {
     setRecruitInterests((prev) => [...prev, { major: '', minor: '', count: 1 }]);
+    clearError('recruitInterests');
   };
 
   const updateRecruitInterest = (index: number, next: Interest) => {
@@ -139,6 +175,7 @@ export default function ProjectForm({
         itemIndex === index ? { ...item, major: next.major, minor: next.minor } : item,
       ),
     );
+    clearError('recruitInterests', 'recruitTechStacks');
   };
 
   const removeRecruitInterest = (index: number) => {
@@ -149,6 +186,7 @@ export default function ProjectForm({
       if (prev.index > index) return { ...prev, index: prev.index - 1 };
       return prev;
     });
+    clearError('recruitInterests', 'recruitTechStacks');
   };
 
   const updateRecruitCount = (index: number, delta: number) => {
@@ -157,6 +195,7 @@ export default function ProjectForm({
         itemIndex === index ? { ...item, count: Math.max(1, item.count + delta) } : item,
       ),
     );
+    clearError('recruitInterests');
   };
 
   const toggleMyDropdown = (key: Exclude<OpenDropdownKey, null>) => {
@@ -180,28 +219,98 @@ export default function ProjectForm({
     setMyOpenDropdown(null);
     setRecruitInterests(DEFAULT_FORM_VALUES.recruitInterests);
     setRecruitTechStacks(DEFAULT_FORM_VALUES.recruitTechStacks);
+    setCoverImage(DEFAULT_FORM_VALUES.coverImage ?? null);
     setOpenRecruitDropdown(null);
     setRecruitDeadline(DEFAULT_FORM_VALUES.recruitDeadline);
     setIsRecruitUntilComplete(DEFAULT_FORM_VALUES.isRecruitUntilComplete);
+    setFieldErrors({});
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    onSubmit?.({
+  const validateForm = () => {
+    const result = projectFormSchema.safeParse({
       projectName,
-      githubUrl,
-      communicationUrl,
       categoryId: projectCategoryId,
       description,
       releasePlatforms: selectedPlatforms,
       myInterest,
       recruitInterests,
-      recruitTechStacks,
       recruitDeadline,
       isRecruitUntilComplete,
     });
+
+    const nextErrors: ProjectFormFieldErrors = {};
+
+    if (!result.success) {
+      const flattened = result.error.flatten().fieldErrors;
+
+      nextErrors.projectName = flattened.projectName?.[0];
+      nextErrors.categoryId = flattened.categoryId?.[0];
+      nextErrors.description = flattened.description?.[0];
+      nextErrors.releasePlatforms = flattened.releasePlatforms?.[0];
+      nextErrors.myInterest = flattened.myInterest?.[0];
+      nextErrors.recruitInterests = flattened.recruitInterests?.[0];
+      nextErrors.recruitDeadline = flattened.recruitDeadline?.[0];
+    }
+
+    const hasMissingRecruitTechStacks = recruitInterests
+      .filter((interest) => interest.major && interest.minor)
+      .some((interest) => {
+        const techStacks = recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [];
+        return techStacks.length === 0;
+      });
+
+    if (hasMissingRecruitTechStacks) {
+      nextErrors.recruitTechStacks = '각 모집 분야별 기술 스택을 1개 이상 선택해 주세요.';
+    }
+
+    if (!isEdit && jobFields.length === 0) {
+      nextErrors.form = '프로젝트 등록 옵션을 아직 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+    }
+
+    setFieldErrors(nextErrors);
+
+    return Object.values(nextErrors).every((value) => !value);
   };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      clearError('form');
+
+      await onSubmit?.(
+        {
+          projectName,
+          githubUrl,
+          communicationUrl,
+          categoryId: projectCategoryId,
+          description,
+          releasePlatforms: selectedPlatforms,
+          myInterest,
+          recruitInterests,
+          recruitTechStacks,
+          recruitDeadline,
+          isRecruitUntilComplete,
+          coverImage,
+        },
+        { jobFields },
+      );
+    } catch (error) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        form: error instanceof Error ? error.message : '프로젝트 등록 중 오류가 발생했습니다.',
+      }));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const minRecruitDeadline = new Date().toISOString().slice(0, 10);
 
   return (
     <section
@@ -224,15 +333,13 @@ export default function ProjectForm({
         className={`${isEdit ? 'space-y-9' : 'mt-8 flex flex-col gap-8'}`}
         onSubmit={handleSubmit}
       >
-        <BaseField
-          errorText="프로젝트 이름을 입력 해주세요"
-          hintText=""
-          label="프로젝트 명"
-          required
-        >
+        <BaseField errorText={fieldErrors.projectName} hintText="" label="프로젝트 명" required>
           <BaseInput
             value={projectName}
-            onChange={(event) => setProjectName(event.target.value)}
+            onChange={(event) => {
+              setProjectName(event.target.value);
+              clearError('projectName');
+            }}
             placeholder="프로젝트 이름을 입력해주세요 (예: 여행 기록 공유 플랫폼, 트립로그)"
           />
         </BaseField>
@@ -255,7 +362,7 @@ export default function ProjectForm({
           />
         </BaseField>
 
-        <BaseField errorText="" hintText="" label="프로젝트 카테고리">
+        <BaseField errorText={fieldErrors.categoryId} hintText="" label="프로젝트 카테고리">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {PROJECT_CATEGORIES.map((category) => (
               <CategoryBox
@@ -263,22 +370,28 @@ export default function ProjectForm({
                 icon={category.icon}
                 label={category.label}
                 selected={projectCategoryId === category.id}
-                onClick={() => setProjectCategoryId(category.id)}
+                onClick={() => {
+                  setProjectCategoryId(category.id);
+                  clearError('categoryId');
+                }}
               />
             ))}
           </div>
         </BaseField>
 
-        <BaseField errorText="" hintText="" label="프로젝트 소개 글">
+        <BaseField errorText={fieldErrors.description} hintText="" label="프로젝트 소개 글">
           <BaseTextarea
             value={description}
-            onChange={(event) => setDescription(event.target.value)}
+            onChange={(event) => {
+              setDescription(event.target.value);
+              clearError('description');
+            }}
             placeholder="프로젝트를 설명해주세요"
             rows={isEdit ? 8 : 4}
           />
         </BaseField>
 
-        <BaseField errorText="" hintText="" label="출시 플랫폼">
+        <BaseField errorText={fieldErrors.releasePlatforms} hintText="" label="출시 플랫폼">
           <div className="flex flex-wrap gap-2">
             {RELEASE_PLATFORMS.map((platform) => {
               const selected = selectedPlatforms.includes(platform);
@@ -307,21 +420,22 @@ export default function ProjectForm({
         </BaseField>
 
         <BaseField errorText="" hintText="" label="프로젝트 커버 이미지">
-          <CoverImageUploader />
+          <CoverImageUploader value={coverImage} onChange={setCoverImage} />
         </BaseField>
 
         <div className={`w-full ${isEdit ? 'border-t border-border-gray pt-9' : ''}`}>
-          <BaseField errorText="" hintText="" label="나의 분야">
+          <BaseField errorText={fieldErrors.myInterest} hintText="" label="나의 분야">
             <div className="flex w-full gap-2">
               <BaseDropdown
                 value={myInterest.major}
                 placeholder="직군 선택"
                 open={myOpenDropdown === 'major'}
-                items={majors}
+                items={majorOptions}
                 onToggle={() => toggleMyDropdown('major')}
                 onSelect={(selectedMajor) => {
                   setMyInterest({ major: selectedMajor, minor: '' });
                   setMyOpenDropdown(null);
+                  clearError('myInterest');
                 }}
                 containerClassName={isEdit ? 'w-full max-w-52' : 'w-[30%]'}
                 buttonClassName="justify-between px-4 py-3.5"
@@ -338,6 +452,7 @@ export default function ProjectForm({
                   onSelect={(selectedMinor) => {
                     setMyInterest((prev) => ({ ...prev, minor: selectedMinor }));
                     setMyOpenDropdown(null);
+                    clearError('myInterest');
                   }}
                   disabled={!myInterest.major}
                   containerClassName="flex-1"
@@ -375,7 +490,7 @@ export default function ProjectForm({
                     open={
                       openRecruitDropdown?.index === index && openRecruitDropdown.key === 'major'
                     }
-                    items={majors}
+                    items={majorOptions}
                     onToggle={() => toggleRecruitDropdown(index, 'major')}
                     onSelect={(selectedMajor) => {
                       updateRecruitInterest(index, { major: selectedMajor, minor: '' });
@@ -438,6 +553,10 @@ export default function ProjectForm({
               </div>
             ))}
           </div>
+
+          {fieldErrors.recruitInterests ? (
+            <p className="text-sm leading-5 text-error-red">{fieldErrors.recruitInterests}</p>
+          ) : null}
         </div>
 
         <TechStackSection
@@ -445,23 +564,33 @@ export default function ProjectForm({
           jobFields={jobFields}
           interests={recruitInterests}
           value={recruitTechStacks}
-          onChange={setRecruitTechStacks}
-          errorText={jobOptionsError}
+          onChange={(nextValue) => {
+            setRecruitTechStacks(nextValue);
+            clearError('recruitTechStacks');
+          }}
+          errorText={fieldErrors.recruitTechStacks ?? jobOptionsError}
           disabled={isLoadingJobOptions}
         />
 
         <RecruitDeadlineField
           deadline={recruitDeadline}
-          onDeadlineChange={setRecruitDeadline}
+          onDeadlineChange={(nextValue) => {
+            setRecruitDeadline(nextValue);
+            clearError('recruitDeadline');
+          }}
           untilComplete={isRecruitUntilComplete}
           onUntilCompleteChange={(nextValue) => {
             setIsRecruitUntilComplete(nextValue);
             if (nextValue) {
               setRecruitDeadline('');
             }
+            clearError('recruitDeadline');
           }}
-          minDate="2026-01-01"
+          minDate={minRecruitDeadline}
+          errorText={fieldErrors.recruitDeadline}
         />
+
+        {fieldErrors.form ? <p className="text-sm leading-5 text-error-red">{fieldErrors.form}</p> : null}
 
         {isEdit ? (
           <div className="flex justify-center pt-2">
@@ -469,9 +598,10 @@ export default function ProjectForm({
               size="XL"
               variant="primary"
               type="submit"
+              disabled={isSubmitting || isLoadingJobOptions}
               className="w-full max-w-md shadow-xl shadow-brand-400/40"
             >
-              저장하기
+              {isSubmitting ? '저장 중...' : '저장하기'}
             </BaseButton>
           </div>
         ) : (
@@ -488,9 +618,10 @@ export default function ProjectForm({
                 variant="primary"
                 full
                 type="submit"
+                disabled={isSubmitting || isLoadingJobOptions}
                 className="shadow-xl shadow-brand-400/40"
               >
-                프로젝트 등록하기
+                {isSubmitting ? '프로젝트 등록 중...' : '프로젝트 등록하기'}
               </BaseButton>
             </div>
           </div>

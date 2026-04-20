@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Lock, Mail } from 'lucide-react';
 
 import BaseButton from '@/components/shared/BaseButton';
@@ -17,7 +17,13 @@ const INITIAL_FORM_VALUES: LoginFormValues = {
   password: '',
 };
 
-export default function LoginForm() {
+type LoginFormProps = {
+  redirectPath?: string;
+  onSuccess?: () => void | Promise<void>;
+};
+
+export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormProps) {
+  const pathname = usePathname();
   const router = useRouter();
   const setSession = useAuthStore((state) => state.setSession);
 
@@ -58,7 +64,12 @@ export default function LoginForm() {
     try {
       const session = await loginMember(formValues);
       setSession(session);
-      router.push('/');
+      await onSuccess?.();
+
+      if (redirectPath !== pathname) {
+        router.push(redirectPath);
+      }
+
       router.refresh();
     } catch (error) {
       setFieldErrors({

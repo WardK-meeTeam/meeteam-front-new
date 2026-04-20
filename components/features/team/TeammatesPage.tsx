@@ -18,6 +18,7 @@ export default function TeammatesPage() {
     filteredTeammatesCount,
     isInitialLoading,
     isLoadingMore,
+    isAuthBlocked,
     errorMessage,
     hasMore,
     loadMoreRef,
@@ -26,6 +27,10 @@ export default function TeammatesPage() {
     setSelectedSkills,
     setSort,
   } = useTeammateFinder();
+
+  if (isAuthBlocked) {
+    return null;
+  }
 
   return (
     <section className="space-y-6 pb-10 pt-2">

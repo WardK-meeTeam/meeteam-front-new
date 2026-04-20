@@ -10,6 +10,7 @@ interface RecruitDeadlineFieldProps {
   onUntilCompleteChange: (nextValue: boolean) => void;
   minDate?: string;
   maxDate?: string;
+  errorText?: string;
 }
 
 export default function RecruitDeadlineField({
@@ -19,6 +20,7 @@ export default function RecruitDeadlineField({
   onUntilCompleteChange,
   minDate,
   maxDate,
+  errorText,
 }: RecruitDeadlineFieldProps) {
   return (
     <div className="flex w-full flex-col gap-2">
@@ -59,6 +61,8 @@ export default function RecruitDeadlineField({
         maxDate={maxDate}
         disabled={untilComplete}
       />
+
+      {errorText ? <p className="text-sm leading-5 text-error-red">{errorText}</p> : null}
     </div>
   );
 }

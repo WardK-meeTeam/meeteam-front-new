@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bell } from 'lucide-react';
+import AuthLink from '@/components/features/auth/AuthLink';
 import ProfileMenu from '@/components/shared/ProfileMenu';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 const navItems = [
   { href: '/teammates', label: '팀원 찾기' },
-  { href: '/projects', label: '프로젝트 찾기' },
-  { href: '/projects/create', label: '프로젝트 등록하기' },
+  { href: '/projects', label: '프로젝트 찾기', authRequired: true },
+  { href: '/projects/create', label: '프로젝트 등록하기', authRequired: true },
 ];
 
 export function TemporaryNavBar() {
@@ -33,16 +34,29 @@ export function TemporaryNavBar() {
           <ul className="flex list-none items-center gap-6 p-0">
             {navItems.map((item) => (
               <li key={item.href}>
-                <Link
-                  className={
-                    isActiveLink(item.href)
-                      ? 'text-sm leading-5 font-semibold text-brand-500'
-                      : 'text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black'
-                  }
-                  href={item.href}
-                >
-                  {item.label}
-                </Link>
+                {item.authRequired ? (
+                  <AuthLink
+                    className={
+                      isActiveLink(item.href)
+                        ? 'text-sm leading-5 font-semibold text-brand-500'
+                        : 'text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black'
+                    }
+                    href={item.href}
+                  >
+                    {item.label}
+                  </AuthLink>
+                ) : (
+                  <Link
+                    className={
+                      isActiveLink(item.href)
+                        ? 'text-sm leading-5 font-semibold text-brand-500'
+                        : 'text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black'
+                    }
+                    href={item.href}
+                  >
+                    {item.label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>

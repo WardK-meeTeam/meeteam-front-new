@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import { useInfiniteScroll } from '@/components/shared/useInfiniteScroll';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
 import { collectTechStackNames } from '@/components/features/auth/jobOptionUtils';
@@ -10,6 +11,7 @@ import { fetchAllTeammates } from './teamApi';
 import { TEAMMATE_LIST_CONFIG, TEAMMATE_ROLE_OPTIONS } from './constants';
 
 export function useTeammateFinder() {
+  const handleAuthRequired = useAuthRequiredModal();
   const [teammates, setTeammates] = useState<Teammate[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [selectedRole, setSelectedRole] =
@@ -22,6 +24,7 @@ export function useTeammateFinder() {
   );
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isAuthBlocked, setIsAuthBlocked] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const loadMoreTimeoutRef = useRef<number | null>(null);
 
@@ -31,6 +34,7 @@ export function useTeammateFinder() {
     const loadTeammates = async () => {
       try {
         setIsInitialLoading(true);
+        setIsAuthBlocked(false);
         setErrorMessage(null);
 
         const nextTeammates = await fetchAllTeammates();
@@ -42,6 +46,14 @@ export function useTeammateFinder() {
         setTeammates(nextTeammates);
       } catch (error) {
         if (!active) {
+          return;
+        }
+
+        setTeammates([]);
+
+        if (handleAuthRequired(error, { redirectPath: '/teammates' })) {
+          setIsAuthBlocked(true);
+          setErrorMessage(null);
           return;
         }
 
@@ -58,7 +70,7 @@ export function useTeammateFinder() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [handleAuthRequired]);
 
   useEffect(() => {
     let active = true;
@@ -161,6 +173,7 @@ export function useTeammateFinder() {
     filteredTeammatesCount: filteredTeammates.length,
     isInitialLoading,
     isLoadingMore,
+    isAuthBlocked,
     errorMessage,
     hasMore,
     loadMoreRef,

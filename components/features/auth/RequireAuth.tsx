@@ -2,51 +2,38 @@
 
 import type { ReactNode } from 'react';
 
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useLoginModalStore } from '@/stores/useLoginModalStore';
+
+import { getLoginPromptCopy } from './protectedPaths';
+import { useAuthHydrated } from './useAuthHydrated';
 
 type RequireAuthProps = {
   children: ReactNode;
 };
 
 export default function RequireAuth({ children }: RequireAuthProps) {
-  const router = useRouter();
   const pathname = usePathname();
+  const hydrated = useAuthHydrated();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const [hydrated, setHydrated] = useState(false);
-
-  useEffect(() => {
-    const persistApi = useAuthStore.persist;
-
-    if (!persistApi) {
-      setHydrated(true);
-      return undefined;
-    }
-
-    const unsubscribeHydrate = persistApi.onHydrate(() => {
-      setHydrated(false);
-    });
-
-    const unsubscribeFinishHydration = persistApi.onFinishHydration(() => {
-      setHydrated(true);
-    });
-
-    setHydrated(persistApi.hasHydrated());
-
-    return () => {
-      unsubscribeHydrate();
-      unsubscribeFinishHydration();
-    };
-  }, []);
+  const openLoginModal = useLoginModalStore((state) => state.openLoginModal);
 
   useEffect(() => {
     if (hydrated && !isAuthenticated) {
-      router.replace('/auth/login');
+      openLoginModal({
+        redirectPath: pathname,
+        ...getLoginPromptCopy(pathname),
+      });
     }
-  }, [hydrated, isAuthenticated, pathname, router]);
+  }, [hydrated, isAuthenticated, openLoginModal, pathname]);
 
-  if (!hydrated || !isAuthenticated) {
+  if (!hydrated) {
+    return null;
+  }
+
+  if (!isAuthenticated) {
     return null;
   }
 
