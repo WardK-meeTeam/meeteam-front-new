@@ -81,8 +81,15 @@ export default function TechStackSection({
     onChange({ ...value, [label]: next });
   };
 
-  const orderedSelectedLabels = useMemo(
-    () => interestItems.filter((label) => (value[label] ?? []).length > 0),
+  const sections = useMemo(
+    () =>
+      interestItems
+        .map((label) => ({
+          key: label,
+          label,
+          items: value[label] ?? [],
+        }))
+        .filter((section) => section.items.length > 0),
     [interestItems, value],
   );
 
@@ -121,11 +128,7 @@ export default function TechStackSection({
         </div>
       </div>
 
-      <TechStackList
-        itemsByLabel={value}
-        orderedLabels={orderedSelectedLabels}
-        onRemove={handleRemoveTech}
-      />
+      <TechStackList sections={sections} onRemove={handleRemoveTech} />
     </BaseField>
   );
 }

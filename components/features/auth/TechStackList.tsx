@@ -1,36 +1,40 @@
 import { ChevronsLeftRight, X } from 'lucide-react';
 
-type TechStackListProps = {
-  itemsByLabel: Record<string, string[]>;
-  orderedLabels: string[];
-  onRemove: (label: string, tech: string) => void;
+type TechStackListSection = {
+  key: string;
+  label: string;
+  items: string[];
 };
 
-export default function TechStackList({
-  itemsByLabel,
-  orderedLabels,
-  onRemove,
-}: TechStackListProps) {
-  if (orderedLabels.length === 0) return null;
+type TechStackListProps = {
+  sections: TechStackListSection[];
+  onRemove: (key: string, tech: string) => void;
+};
+
+export default function TechStackList({ sections, onRemove }: TechStackListProps) {
+  if (sections.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-[#f1f5f9] bg-[rgba(248,250,252,0.5)] p-6">
+    <div className="rounded-2xl border border-border-soft bg-surface-soft p-6">
       <div className="flex flex-col gap-4">
-        {orderedLabels.map((label) => (
-          <div key={label} className="flex flex-col gap-2">
+        {sections.map((section) => (
+          <div key={section.key} className="flex flex-col gap-2">
             <div className="flex items-center gap-1.5 text-muted-gray font-bold text-[12px]">
-              <ChevronsLeftRight width={16} height={16} color="#94a3b8" />
-              <span>{label}</span>
+              <ChevronsLeftRight className="h-4 w-4" />
+              <span>{section.label}</span>
             </div>
             <div className="flex flex-wrap gap-1.5">
-              {(itemsByLabel[label] ?? []).map((tech) => (
+              {section.items.map((tech) => (
                 <button
                   key={tech}
                   type="button"
-                  className="flex items-center gap-1.5 rounded-xl border border-border-gray bg-white px-3 py-1.5 text-[#334155] shadow-sm"
+                  className="flex items-center gap-1.5 rounded-xl border border-border-gray bg-white px-3 py-1.5 text-text-body shadow-sm"
                 >
                   <span className="font-bold text-[12px]">{tech}</span>
-                  <X width={12} height={12} color="#94a3b8" onClick={() => onRemove(label, tech)} />
+                  <X
+                    className="h-3 w-3 text-muted-gray"
+                    onClick={() => onRemove(section.key, tech)}
+                  />
                 </button>
               ))}
             </div>

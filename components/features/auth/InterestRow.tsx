@@ -1,63 +1,91 @@
 import { useMemo, useState } from 'react';
 import { Trash2 } from 'lucide-react';
-import { OPTIONS } from '@/constants/interest';
-import { Interest } from '@/types/auth';
+import type { Interest, JobFieldOption } from '@/types/auth';
 import BaseDropdown from '@/components/shared/BaseDropdown';
 
 type OpenDropdown = 'major' | 'minor' | null;
 
 type InterestRowProps = {
+  jobFields: JobFieldOption[];
   value: Interest;
   onChange: (next: Interest) => void;
   onRemove: () => void;
   length: number;
+  disabled?: boolean;
 };
 
-export default function InterestRow({ value, onChange, onRemove, length }: InterestRowProps) {
+export default function InterestRow({
+  jobFields,
+  value,
+  onChange,
+  onRemove,
+  length,
+  disabled = false,
+}: InterestRowProps) {
   const [openDropdown, setOpenDropdown] = useState<OpenDropdown>(null);
 
-  const majors = OPTIONS.map((item) => item.major);
+  const majorNameByCode = useMemo(
+    () => new Map(jobFields.map((item) => [item.code, item.name])),
+    [jobFields],
+  );
+  const fieldByName = useMemo(() => new Map(jobFields.map((item) => [item.name, item])), [jobFields]);
+  const majors = jobFields.map((item) => item.name);
   const minors = useMemo(() => {
-    const selected = OPTIONS.find((item) => item.major === value.major);
-    return selected?.minor ?? [];
-  }, [value.major]);
+    const selected = jobFields.find((item) => item.code === value.major);
+    return selected?.positions.map((position) => position.name) ?? [];
+  }, [jobFields, value.major]);
+
+  const positionCodeByName = useMemo(() => {
+    const selected = jobFields.find((item) => item.code === value.major);
+    return new Map(selected?.positions.map((position) => [position.name, position.code]) ?? []);
+  }, [jobFields, value.major]);
 
   const toggleDropdown = (key: Exclude<OpenDropdown, null>) => {
     setOpenDropdown((prev) => (prev === key ? null : key));
   };
 
   const handleSelectMajor = (opt: string) => {
-    onChange({ major: opt, minor: '' });
+    const selectedField = fieldByName.get(opt);
+    if (!selectedField) return;
+
+    onChange({ major: selectedField.code, minor: '' });
     setOpenDropdown(null);
   };
 
   const handleSelectMinor = (opt: string) => {
-    onChange({ ...value, minor: opt });
+    const nextMinor = positionCodeByName.get(opt);
+    if (!nextMinor) return;
+
+    onChange({ ...value, minor: nextMinor });
     setOpenDropdown(null);
   };
 
   return (
     <div className="flex gap-2">
       <BaseDropdown
-        value={value.major}
+        value={majorNameByCode.get(value.major)}
         placeholder="직군"
         open={openDropdown === 'major'}
         items={majors}
-        onToggle={() => toggleDropdown('major')}
+        onToggle={() => !disabled && toggleDropdown('major')}
         onSelect={handleSelectMajor}
+        disabled={disabled}
         containerClassName="max-w-30 flex-1"
         buttonClassName="flex-1 justify-evenly pt-3.5 pb-3.5"
         textClassName="font-medium text-sm whitespace-nowrap"
       />
 
       <BaseDropdown
-        value={value.minor}
+        value={jobFields
+          .find((item) => item.code === value.major)
+          ?.positions.find((position) => position.code === value.minor)
+          ?.name}
         placeholder="상세 분야"
         open={openDropdown === 'minor'}
         items={minors}
-        onToggle={() => value.major && toggleDropdown('minor')}
+        onToggle={() => value.major && !disabled && toggleDropdown('minor')}
         onSelect={handleSelectMinor}
-        disabled={!value.major}
+        disabled={!value.major || disabled}
         containerClassName="max-w-78 flex-1"
         buttonClassName="justify-between pt-3.5 pb-3.5 pl-4 pr-4"
         textClassName="font-normal text-sm"
@@ -70,7 +98,7 @@ export default function InterestRow({ value, onChange, onRemove, length }: Inter
           className="ml-1 flex items-center"
           aria-label="관심 분야 삭제"
         >
-          <Trash2 width={17} height={20} color="#e12e2e" />
+          <Trash2 className="h-5 w-5 text-danger-500" />
         </button>
       )}
     </div>

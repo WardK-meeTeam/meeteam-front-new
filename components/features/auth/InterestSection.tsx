@@ -1,18 +1,25 @@
 import InterestRow from '@/components/features/auth/InterestRow';
 import { Interest } from '@/types/auth';
+import type { JobFieldOption } from '@/types/auth';
 
 type InterestSectionProps = {
+  jobFields: JobFieldOption[];
   interests: Interest[];
   onAdd: () => void;
   onChange: (index: number, next: Interest) => void;
   onRemove: (index: number) => void;
+  errorText?: string;
+  disabled?: boolean;
 };
 
 export default function InterestSection({
+  jobFields,
   interests,
   onAdd,
   onChange,
   onRemove,
+  errorText,
+  disabled = false,
 }: InterestSectionProps) {
   return (
     <div className="flex w-full flex-col gap-2">
@@ -21,7 +28,8 @@ export default function InterestSection({
         <button
           type="button"
           onClick={onAdd}
-          className="cursor-pointer text-brand-500 text-[12px] font-bold! leading-4"
+          disabled={disabled}
+          className="cursor-pointer text-brand-500 text-xs font-bold leading-4 disabled:cursor-not-allowed disabled:text-muted-gray"
         >
           + 분야 추가
         </button>
@@ -31,13 +39,17 @@ export default function InterestSection({
         {interests.map((it, i) => (
           <InterestRow
             key={`${i}-${it.major}-${it.minor}`}
+            jobFields={jobFields}
             value={it}
             onChange={(next) => onChange(i, next)}
             onRemove={() => onRemove(i)}
             length={interests.length}
+            disabled={disabled}
           />
         ))}
       </div>
+
+      {errorText ? <p className="text-sm text-error-red">{errorText}</p> : null}
     </div>
   );
 }

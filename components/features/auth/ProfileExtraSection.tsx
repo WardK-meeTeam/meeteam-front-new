@@ -4,6 +4,9 @@ import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
 
 type ProfileExtraSectionProps = {
+  project: string;
+  githubLink: string;
+  blogLink: string;
   onChangeProject: React.ChangeEventHandler<HTMLInputElement>;
   onChangeGithubLink: React.ChangeEventHandler<HTMLInputElement>;
   onChangeBlogLink: React.ChangeEventHandler<HTMLInputElement>;
@@ -11,9 +14,13 @@ type ProfileExtraSectionProps = {
   onRemoveProfileImage: () => void;
   profileImageName: string;
   profileImagePreviewUrl: string;
+  projectError?: string;
 };
 
 export default function ProfileExtraSection({
+  project,
+  githubLink,
+  blogLink,
   onChangeProject,
   onChangeGithubLink,
   onChangeBlogLink,
@@ -21,16 +28,19 @@ export default function ProfileExtraSection({
   onRemoveProfileImage,
   profileImageName,
   profileImagePreviewUrl,
+  projectError,
 }: ProfileExtraSectionProps) {
-  const githubIcon = <Github className="w-5 h-5 text-muted-gray" />;
+  const githubIcon = <Github className="h-5 w-5 text-muted-gray" />;
   const hasProfileImage = Boolean(profileImagePreviewUrl);
 
   return (
     <>
-      <BaseField label="프로젝트 경험 횟수" htmlFor="project">
+      <BaseField label="프로젝트 경험 횟수" htmlFor="project" errorText={projectError}>
         <BaseInput
           id="project"
           type="number"
+          min="0"
+          value={project}
           placeholder="0"
           rightIcon={'회'}
           onChange={onChangeProject}
@@ -42,6 +52,7 @@ export default function ProfileExtraSection({
           <BaseInput
             id="github"
             type="text"
+            value={githubLink}
             placeholder="github.com/..."
             leftIcon={githubIcon}
             onChange={onChangeGithubLink}
@@ -51,8 +62,9 @@ export default function ProfileExtraSection({
           <BaseInput
             id="blog"
             type="text"
+            value={blogLink}
             placeholder="URL 입력"
-            leftIcon={<Link width={20} height={20} color="#94a3b8" />}
+            leftIcon={<Link className="h-5 w-5 text-muted-gray" />}
             onChange={onChangeBlogLink}
           />
         </BaseField>
@@ -70,7 +82,7 @@ export default function ProfileExtraSection({
           <div className="flex p-5 items-center border border-border-gray justify-between rounded-2xl bg-surface-soft">
             <div className="flex items-center gap-4">
               <div className="bg-white border border-border-gray rounded-full w-12 h-12 flex items-center justify-center">
-                <Camera width={20} height={20} color="#94a3b8" />
+                <Camera className="h-5 w-5 text-muted-gray" />
               </div>
               <div className="flex flex-col gap-0.5">
                 <span className="text-text-black text-sm font-bold">
@@ -99,7 +111,7 @@ export default function ProfileExtraSection({
               <div className="flex flex-col min-w-0">
                 <span className="text-text-black text-[15px] font-bold">프로필 사진 등록 완료</span>
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <CircleCheck width={12} height={12} color="#4f46e5" />
+                  <CircleCheck className="h-3 w-3 text-brand-500" />
                   <span className="text-brand-500 text-[12px] font-bold">{profileImageName}</span>
                 </div>
               </div>
@@ -115,10 +127,10 @@ export default function ProfileExtraSection({
               <button
                 type="button"
                 onClick={onRemoveProfileImage}
-                className="w-10 h-10 rounded-xl bg-[#ef4444] flex items-center justify-center hover:opacity-90"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger-500 hover:opacity-90"
                 aria-label="프로필 사진 삭제"
               >
-                <Trash2 width={20} height={20} color="#ffffff" />
+                <Trash2 className="h-5 w-5 text-white" />
               </button>
             </div>
           </div>
