@@ -1,6 +1,7 @@
 import { BriefcaseBusiness } from 'lucide-react';
 import AuthLink from '@/components/features/auth/AuthLink';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import SkillChip from '@/components/shared/SkillChip';
 
 export interface UserCardProps {
   userId: string | number;
@@ -60,17 +61,9 @@ export default function UserCard({
           Main Skills
         </p>
         <div className="flex flex-wrap gap-2">
-          {primarySkill ? (
-            <span className="rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-500">
-              {primarySkill}
-            </span>
-          ) : null}
+          {primarySkill ? <SkillChip label={primarySkill} variant="primary" /> : null}
 
-          {secondarySkill ? (
-            <span className="rounded-md border border-border-gray bg-white px-2.5 py-1 text-xs font-medium text-text-black">
-              {secondarySkill}
-            </span>
-          ) : null}
+          {secondarySkill ? <SkillChip label={secondarySkill} variant="outline" /> : null}
         </div>
       </div>
     </AuthLink>

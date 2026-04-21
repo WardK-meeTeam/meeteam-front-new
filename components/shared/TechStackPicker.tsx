@@ -1,9 +1,10 @@
 'use client';
 
-import { Search, X } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import BaseInput from '@/components/shared/BaseInput';
+import SkillChip from '@/components/shared/SkillChip';
 
 type TechStackPickerProps = {
   options: string[];
@@ -137,16 +138,14 @@ export default function TechStackPicker({
       {showSelectedChips && value.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {value.map((techStack) => (
-            <button
+            <SkillChip
               key={techStack}
-              type="button"
-              onClick={() => handleRemove(techStack)}
-              className="inline-flex items-center gap-1 rounded-full border border-border-gray bg-white px-3 py-1.5 text-sm leading-5 font-medium text-text-body shadow-sm transition-colors hover:border-brand-400 hover:text-brand-500"
-              aria-label={`${techStack} 삭제`}
-            >
-              <span>{techStack}</span>
-              <X className="h-3.5 w-3.5" aria-hidden strokeWidth={2} />
-            </button>
+              label={techStack}
+              variant="outline"
+              size="md"
+              onRemove={() => handleRemove(techStack)}
+              className="shadow-sm transition-colors hover:border-brand-400 hover:text-brand-500"
+            />
           ))}
         </div>
       ) : null}

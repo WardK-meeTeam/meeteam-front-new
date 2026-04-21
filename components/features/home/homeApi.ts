@@ -4,6 +4,17 @@ import { extractApiData } from '@/components/features/auth/signupTransform';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
+export type HomeProjectCategory =
+  | '전체'
+  | 'AI/테크'
+  | '친환경'
+  | '헬스케어'
+  | '반려동물'
+  | '교육/학습'
+  | '패션/뷰티'
+  | '금융/핀테크'
+  | '기타';
+
 export type HomeProjectCard = {
   id: number;
   title: string;
@@ -79,6 +90,17 @@ type BackendMemberCardResponse = {
   }>;
 };
 
+const CATEGORY_API_VALUES: Partial<Record<HomeProjectCategory, string>> = {
+  'AI/테크': 'AI_TECH',
+  친환경: 'ENVIRONMENT',
+  헬스케어: 'HEALTHCARE',
+  반려동물: 'PET',
+  '교육/학습': 'EDUCATION',
+  '패션/뷰티': 'FASHION_BEAUTY',
+  '금융/핀테크': 'FINANCE_PRODUCTIVITY',
+  기타: 'ETC',
+};
+
 async function readPublicEnvelope<T>(response: Response, fallbackMessage: string) {
   const payload = (await response.json().catch(() => null)) as ApiEnvelope<T> | null;
 
@@ -144,12 +166,17 @@ function mapHomeMember(member: BackendMemberCardResponse): HomeMemberCard {
   };
 }
 
-export async function fetchHomeProjects(size = 4) {
+export async function fetchHomeProjects(size = 4, category: HomeProjectCategory = '전체') {
   const params = new URLSearchParams({
     page: '0',
     size: String(size),
     sort: 'createdAt,desc',
   });
+  const projectCategory = CATEGORY_API_VALUES[category];
+
+  if (projectCategory) {
+    params.set('projectCategory', projectCategory);
+  }
 
   const response = await fetch(`${API_BASE_URL}/api/v1/main/projects?${params.toString()}`, {
     method: 'GET',

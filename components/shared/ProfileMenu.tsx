@@ -143,7 +143,7 @@ export default function ProfileMenu() {
 
       {open ? (
         <div
-          className="absolute right-0 top-full z-30 mt-3 w-56 overflow-hidden rounded-2xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]"
+          className="absolute right-0 top-full z-50 mt-3 w-56 overflow-hidden rounded-2xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]"
           role="menu"
           aria-label="프로필 메뉴 목록"
         >

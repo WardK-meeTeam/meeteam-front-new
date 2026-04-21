@@ -1,3 +1,7 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
 interface ProfileAvatarProps {
   name: string;
   imageUrl?: string | null;
@@ -17,19 +21,26 @@ export default function ProfileAvatar({
   className = '',
   imageClassName = '',
 }: ProfileAvatarProps) {
+  const [hasImageError, setHasImageError] = useState(false);
   const fallbackLabel = name.trim().slice(0, 1) || '?';
   const shapeClassName = shape === 'rounded' ? 'rounded-3xl' : 'rounded-full';
+  const resolvedImageUrl = imageUrl && !hasImageError ? imageUrl : null;
+
+  useEffect(() => {
+    setHasImageError(false);
+  }, [imageUrl]);
 
   return (
     <span
       className={`inline-flex shrink-0 items-center justify-center overflow-hidden bg-brand-50 text-brand-500 ${sizeClassName} ${shapeClassName} ${className}`}
       aria-hidden
     >
-      {imageUrl ? (
+      {resolvedImageUrl ? (
         <img
           alt={name}
           className={`h-full w-full scale-125 object-cover ${imageClassName}`}
-          src={imageUrl}
+          src={resolvedImageUrl}
+          onError={() => setHasImageError(true)}
         />
       ) : (
         <span className={`font-bold leading-none ${textClassName}`}>{fallbackLabel}</span>

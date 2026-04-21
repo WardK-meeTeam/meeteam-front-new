@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BriefcaseBusiness, Users } from 'lucide-react';
+import CategoryBadge from '@/components/shared/CategoryBadge';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 
 interface JoinedProjectData {
@@ -87,9 +88,7 @@ export default function JoinedProjectCard({
 
         <div className="relative flex min-h-70 flex-col justify-between p-6">
           <div>
-            <span className="inline-flex rounded-full border border-white/10 bg-white/20 px-3 py-1 text-xs leading-4 font-bold text-white backdrop-blur-sm">
-              {project.category}
-            </span>
+            <CategoryBadge label={project.category} tone="onDark" />
           </div>
 
           <div className="space-y-4">

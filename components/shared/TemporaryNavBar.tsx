@@ -29,7 +29,7 @@ export function TemporaryNavBar() {
       !pathname.startsWith('/projects/create'));
 
   return (
-    <nav className="sticky top-0 z-20 border-b border-border-gray bg-white/80 backdrop-blur-sm">
+    <nav className="sticky top-0 z-50 border-b border-border-gray bg-white/80 backdrop-blur-sm">
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-8">
         <div className="flex items-center gap-8">
           <Link href="/" className="text-xl leading-7 font-bold tracking-tight text-text-black">

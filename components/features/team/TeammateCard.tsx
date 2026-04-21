@@ -1,6 +1,7 @@
 import { BriefcaseBusiness } from 'lucide-react';
 import AuthLink from '@/components/features/auth/AuthLink';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import SkillChip from '@/components/shared/SkillChip';
 import type { Teammate } from '@/types/team';
 
 export function TeammateCard({ teammate }: { teammate: Teammate }) {
@@ -44,16 +45,8 @@ export function TeammateCard({ teammate }: { teammate: Teammate }) {
           Main Skills
         </p>
         <div className="flex flex-wrap gap-2">
-          {primarySkill ? (
-            <span className="rounded-md bg-chip-bg px-2.5 py-1 text-xs leading-4 font-medium text-brand-500">
-              {primarySkill}
-            </span>
-          ) : null}
-          {secondarySkill ? (
-            <span className="rounded-md bg-surface-soft px-2.5 py-1 text-xs leading-4 font-medium text-label-dark">
-              {secondarySkill}
-            </span>
-          ) : null}
+          {primarySkill ? <SkillChip label={primarySkill} variant="primary" /> : null}
+          {secondarySkill ? <SkillChip label={secondarySkill} /> : null}
         </div>
       </div>
     </AuthLink>

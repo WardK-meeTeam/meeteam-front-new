@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Lock, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
+import CategoryBadge from '@/components/shared/CategoryBadge';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import StatusBadge from '@/components/shared/StatusBadge';
 
 interface ProjectCardProps {
   project: {
@@ -64,13 +67,9 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
       <div
         className={`absolute left-0 right-0 top-0 z-10 flex justify-between ${compact ? 'p-4' : 'p-6'}`}
       >
-        <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/20 px-3 py-1 text-xs font-bold text-white shadow-sm backdrop-blur-md">
-          {project.category}
-        </span>
+        <CategoryBadge label={project.category} tone="onDark" />
         {project.deadline ? (
-          <div className="inline-flex items-center rounded-md bg-brand-500/90 px-2 py-0.5 text-[10px] leading-4 font-bold text-white shadow-sm backdrop-blur-sm">
-            {project.deadline} 마감
-          </div>
+          <StatusBadge status="deadline" label={`${project.deadline} 마감`} />
         ) : null}
       </div>
 
@@ -87,21 +86,14 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {project.leader.avatar ? (
-                <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border border-white/30 bg-white/20">
-                  <Image
-                    alt={project.leader.name}
-                    className="object-cover"
-                    fill
-                    sizes="32px"
-                    src={project.leader.avatar}
-                  />
-                </span>
-              ) : (
-                <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-white/20 text-xs font-bold text-white">
-                  {project.leader.name.slice(0, 1)}
-                </span>
-              )}
+              <ProfileAvatar
+                name={project.leader.name}
+                imageUrl={project.leader.avatar}
+                sizeClassName="h-8 w-8"
+                textClassName="text-xs"
+                className="border border-white/30 bg-white/20 text-white"
+                imageClassName="scale-100"
+              />
               <span data-cy="project-card-leader" className="text-xs font-medium text-muted-gray">
                 {project.leader.name}
               </span>
@@ -161,14 +153,10 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
 
                       {info.status === 'open' ? (
                         <div className="flex items-center gap-2">
-                          <span className="rounded bg-brand-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
-                            {info.current}/{info.max}
-                          </span>
+                          <StatusBadge status="open" label={`${info.current}/${info.max}`} />
                         </div>
                       ) : (
-                        <div className="flex items-center gap-1 text-danger-500/90">
-                          <Lock className="h-3 w-3" aria-hidden strokeWidth={2} />
-                        </div>
+                        <StatusBadge status="closed" />
                       )}
                     </div>
                   ))

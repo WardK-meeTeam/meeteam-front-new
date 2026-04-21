@@ -25,6 +25,7 @@ export function useProjectFinder() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const hasLoadedRef = useRef(false);
   const loadMoreTimeoutRef = useRef<number | null>(null);
 
   const filters = { searchValue, category, recruitOnly, platform, field, sort };
@@ -43,7 +44,10 @@ export function useProjectFinder() {
 
     const loadInitialProjects = async () => {
       try {
-        setIsInitialLoading(true);
+        if (!hasLoadedRef.current) {
+          setIsInitialLoading(true);
+        }
+
         setErrorMessage(null);
 
         const result = await fetchProjectSearchResults(filters, 0, LOAD_MORE_COUNT * 2);
@@ -55,13 +59,16 @@ export function useProjectFinder() {
         setProjects(result.projects);
         setHasMore(result.hasMore);
         setPage(0);
+        hasLoadedRef.current = true;
       } catch (error) {
         if (!active) {
           return;
         }
 
-        setProjects([]);
-        setHasMore(false);
+        if (!hasLoadedRef.current) {
+          setProjects([]);
+          setHasMore(false);
+        }
 
         setErrorMessage(
           error instanceof Error ? error.message : '프로젝트 목록을 불러오지 못했습니다.',

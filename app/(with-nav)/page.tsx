@@ -1,75 +1,9 @@
 import Link from 'next/link';
 import AuthLink from '@/components/features/auth/AuthLink';
-import { fetchHomeMembers, fetchHomeProjects } from '@/components/features/home/homeApi';
+import HomeProjectSection from '@/components/features/home/HomeProjectSection';
+import { fetchHomeMembers } from '@/components/features/home/homeApi';
 import StartJourneyModalTrigger from '@/components/features/home/StartJourneyModalTrigger';
-import { ProjectCard } from '@/components/features/project/ProjectCard';
-import BaseTag from '@/components/shared/BaseTag';
 import UserCard from '@/components/shared/UserCard';
-
-const categoryChips = [
-  { emoji: '✨', label: '전체', active: true },
-  { emoji: '🤖', label: 'AI/테크' },
-  { emoji: '🍀', label: '친환경' },
-  { emoji: '💪', label: '헬스케어' },
-  { emoji: '🐱', label: '반려동물' },
-  { emoji: '📚', label: '교육/학습' },
-  { emoji: '💄', label: '패션/뷰티' },
-];
-
-const fallbackProjectCards = [
-  {
-    id: 1,
-    title: 'AI 기반 뉴스 요약 서비스 개발',
-    imageUrl: '/file.svg',
-    category: 'AI/테크',
-    deadline: '2026-01-23',
-    currentMembers: 2,
-    maxMembers: 4,
-    leader: {
-      name: '정연준',
-      avatar: '/next.svg',
-    },
-  },
-  {
-    id: 2,
-    title: 'meeTeam: 사이드 프로젝트 모집 플랫폼',
-    imageUrl: '/window.svg',
-    category: 'AI/테크',
-    deadline: '2025-11-19',
-    currentMembers: 2,
-    maxMembers: 9,
-    leader: {
-      name: '이우진',
-      avatar: '/vercel.svg',
-    },
-  },
-  {
-    id: 3,
-    title: '트립게더: 여행 동행 구하기',
-    imageUrl: '/globe.svg',
-    category: '여행',
-    deadline: '2025-11-19',
-    currentMembers: 1,
-    maxMembers: 10,
-    leader: {
-      name: '주경현',
-      avatar: '/next.svg',
-    },
-  },
-  {
-    id: 4,
-    title: '반려식물 케어 다이어리',
-    imageUrl: '/file.svg',
-    category: '친환경',
-    deadline: '2025-12-01',
-    currentMembers: 3,
-    maxMembers: 4,
-    leader: {
-      name: '김서연',
-      avatar: '/vercel.svg',
-    },
-  },
-];
 
 const fallbackTeammateCards = Array.from({ length: 5 }).map((_, index) => ({
   userId: index + 1,
@@ -81,14 +15,9 @@ const fallbackTeammateCards = Array.from({ length: 5 }).map((_, index) => ({
 }));
 
 export default async function Page() {
-  const [projectCardsResult, teammateCardsResult] = await Promise.allSettled([
-    fetchHomeProjects(4),
-    fetchHomeMembers(5),
-  ]);
-  const projectCards =
-    projectCardsResult.status === 'fulfilled' && projectCardsResult.value.length > 0
-      ? projectCardsResult.value
-      : fallbackProjectCards;
+  const teammateCardsResult = await fetchHomeMembers(5)
+    .then((cards) => ({ status: 'fulfilled' as const, value: cards }))
+    .catch(() => ({ status: 'rejected' as const }));
   const teammateCards =
     teammateCardsResult.status === 'fulfilled' && teammateCardsResult.value.length > 0
       ? teammateCardsResult.value
@@ -158,37 +87,7 @@ export default async function Page() {
         </div>
       </section>
 
-      <section className="sticky top-0 z-10 -mx-4 border-y border-border-gray bg-white px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {categoryChips.map((chip) => (
-            <BaseTag
-              key={chip.label}
-              size="M"
-              selected={chip.active}
-              leftIcon={<span>{chip.emoji}</span>}
-              className="shrink-0"
-            >
-              {chip.label}
-            </BaseTag>
-          ))}
-        </div>
-      </section>
-
-      <section className="space-y-6">
-        <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-bold text-text-black">프로젝트</h2>
-          <AuthLink href="/projects" className="text-sm font-semibold text-brand-500">
-            전체보기 &gt;
-          </AuthLink>
-        </div>
-        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {projectCards.map((project) => (
-            <li key={project.id}>
-              <ProjectCard project={project} />
-            </li>
-          ))}
-        </ul>
-      </section>
+      <HomeProjectSection />
 
       <section className="space-y-6">
         <div className="flex items-end justify-between">

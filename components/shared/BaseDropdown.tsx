@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import SelectMenu from '@/components/shared/SelectMenu';
 
@@ -30,23 +33,52 @@ export default function BaseDropdown({
   selectMenuClassName = '',
   dataCy,
 }: BaseDropdownProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const label = value || placeholder;
 
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (containerRef.current?.contains(event.target as Node)) {
+        return;
+      }
+
+      onToggle();
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onToggle();
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onToggle, open]);
+
   return (
-    <div className={`relative ${containerClassName}`}>
+    <div ref={containerRef} className={`relative ${containerClassName}`}>
       <button
         type="button"
         onClick={onToggle}
         disabled={disabled}
         data-cy={dataCy}
-        className={`flex w-full rounded-xl border border-border-gray text-[#334155]
-          disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-gray ${buttonClassName}`}
+        className={`flex w-full rounded-xl border border-border-gray text-text-body
+          disabled:cursor-not-allowed disabled:bg-surface-soft disabled:text-muted-gray ${buttonClassName}`}
       >
         <span className={textClassName}>{label}</span>
         {open ? (
-          <ChevronUp width={16} height={16} color="#94a3b8" />
+          <ChevronUp className="h-4 w-4 text-muted-gray" aria-hidden strokeWidth={1.8} />
         ) : (
-          <ChevronDown width={16} height={16} color="#94a3b8" />
+          <ChevronDown className="h-4 w-4 text-muted-gray" aria-hidden strokeWidth={1.8} />
         )}
       </button>
       {open && items.length > 0 && (

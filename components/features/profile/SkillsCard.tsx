@@ -1,7 +1,8 @@
 'use client';
 
-import { CodeXml, X } from 'lucide-react';
+import { CodeXml } from 'lucide-react';
 import ProfileCard from '@/components/features/profile/ProfileCard';
+import SkillChip from '@/components/shared/SkillChip';
 import TechStackPicker from '@/components/shared/TechStackPicker';
 
 interface SkillGroupData {
@@ -39,27 +40,20 @@ export default function SkillsCard({
 
             <div className="flex flex-wrap gap-2">
               {group.skills.map((skill) => (
-                <span
+                <SkillChip
                   key={`${group.category}-${skill}`}
-                  className="inline-flex items-center gap-1 rounded-lg bg-surface-soft px-3 py-1.5 text-sm leading-5 font-medium text-label-dark"
-                >
-                  {skill}
-                  {editable ? (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        onSkillsChange?.(
-                          groupIndex,
-                          group.skills.filter((currentSkill) => currentSkill !== skill),
-                        )
-                      }
-                      className="text-muted-gray transition-colors hover:text-danger-400"
-                      aria-label={`${skill} 삭제`}
-                    >
-                      <X className="h-3.5 w-3.5" aria-hidden strokeWidth={2} />
-                    </button>
-                  ) : null}
-                </span>
+                  label={skill}
+                  size="md"
+                  onRemove={
+                    editable
+                      ? () =>
+                          onSkillsChange?.(
+                            groupIndex,
+                            group.skills.filter((currentSkill) => currentSkill !== skill),
+                          )
+                      : undefined
+                  }
+                />
               ))}
             </div>
 

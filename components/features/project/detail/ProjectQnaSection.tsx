@@ -243,7 +243,7 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
   };
 
   return (
-    <section className="flex w-full flex-col gap-8 pt-34" data-node-id="97:1090">
+    <section className="flex w-full flex-col gap-8" data-node-id="97:1090">
       {errorMessage ? (
         <div className="rounded-2xl border border-border-gray bg-danger-soft px-5 py-4 text-sm leading-6 text-danger-500">
           {errorMessage}

@@ -19,15 +19,17 @@ import ProjectDetailContent from '@/components/features/project/detail/ProjectDe
 import ProjectDetailSkeleton from '@/components/features/project/detail/ProjectDetailSkeleton';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
 import { fetchProjectDetail } from '@/components/features/project/projectApi';
+import CategoryBadge from '@/components/shared/CategoryBadge';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import SkillChip from '@/components/shared/SkillChip';
 import { useProjectStore } from '@/components/features/project/store';
 import type { ProjectRecord } from '@/types/project';
 
 export default function ProjectDetailPage({ projectId }: { projectId: string }) {
   const projectsById = useProjectStore((state) => state.projectsById);
   const localProject = projectsById[projectId] ?? null;
-  const [project, setProject] = useState<ProjectRecord | null>(localProject);
-  const [isLoading, setIsLoading] = useState(!localProject);
+  const [project, setProject] = useState<ProjectRecord | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const recommendedProjects = useMemo(
     () =>
@@ -58,9 +60,8 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
 
     const loadProject = async () => {
       try {
-        if (!localProject) {
-          setIsLoading(true);
-        }
+        setIsLoading(true);
+        setProject(null);
 
         const nextProject = await fetchProjectDetail(projectId);
 
@@ -148,16 +149,9 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
 
         <div className="relative z-10 flex h-full flex-col items-start justify-center">
           <div className="mb-4 flex flex-wrap items-center gap-2">
-            <span className="rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-bold leading-4 text-white">
-              {getProjectCategoryLabel(project.categoryId)}
-            </span>
+            <CategoryBadge label={getProjectCategoryLabel(project.categoryId)} tone="onDark" />
             {project.releasePlatforms.map((releasePlatform) => (
-              <span
-                key={releasePlatform}
-                className="rounded-full border border-brand-400/30 bg-brand-400/30 px-3 py-1 text-xs font-bold leading-4 text-chip-bg"
-              >
-                {releasePlatform}
-              </span>
+              <CategoryBadge key={releasePlatform} label={releasePlatform} tone="accent" />
             ))}
           </div>
 
@@ -207,18 +201,11 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
               <p className="text-xs leading-4 font-bold text-text-gray">리더의 주력 스킬</p>
               <div className="flex flex-wrap gap-1.5">
                 {leaderSkills.length > 0 ? (
-                  leaderSkills.slice(0, 3).map((tech) => (
-                    <span
-                      key={tech}
-                      className="rounded-md border border-border-gray bg-white px-2.5 py-1 text-xs leading-4 font-medium text-project-status-closed"
-                    >
-                      {tech}
-                    </span>
-                  ))
+                  leaderSkills
+                    .slice(0, 3)
+                    .map((tech) => <SkillChip key={tech} label={tech} variant="outline" />)
                 ) : (
-                  <span className="rounded-md border border-border-gray bg-white px-2.5 py-1 text-xs leading-4 font-medium text-project-status-closed">
-                    {project.myInterest.major}
-                  </span>
+                  <SkillChip label={project.myInterest.major} variant="outline" />
                 )}
               </div>
             </div>

@@ -8,7 +8,12 @@ export default function Page() {
   return (
     <section className="space-y-6 md:space-y-8 bg-white p-10 max-w-md w-full rounded-3xl flex flex-col shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]">
       <div className="flex flex-col items-center justify-end pt-16 gap-2">
-        <h1 className="text-text-black font-bold text-2xl leading-6 text-center">meeTeam</h1>
+        <Link
+          href="/"
+          className="text-text-black font-bold text-2xl leading-6 text-center transition-colors hover:text-brand-500"
+        >
+          meeTeam
+        </Link>
         <h2 className="text-text-gray font-medium text-[16px] text-center">
           다시 오신 것을 환영합니다!
         </h2>

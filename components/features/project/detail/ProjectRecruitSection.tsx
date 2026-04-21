@@ -1,6 +1,8 @@
 import type { ProjectRecord } from '@/types/project';
 import AuthLink from '@/components/features/auth/AuthLink';
 import BaseButton from '@/components/shared/BaseButton';
+import SkillChip from '@/components/shared/SkillChip';
+import StatusBadge from '@/components/shared/StatusBadge';
 
 type RecruitPositionStatus = 'open' | 'closed';
 
@@ -13,30 +15,6 @@ type RecruitPosition = {
   status: RecruitPositionStatus;
   techStack: string[];
 };
-
-function RecruitStatusBadge({ status }: { status: RecruitPositionStatus }) {
-  if (status === 'open') {
-    return (
-      <span className="inline-flex items-center rounded-full bg-project-recruiting-bg px-2 py-0.5 text-[10px] leading-4 font-bold text-project-status-progress">
-        모집중
-      </span>
-    );
-  }
-
-  return (
-    <span className="inline-flex items-center rounded-full bg-surface-soft px-2 py-0.5 text-[10px] leading-4 font-bold text-muted-gray">
-      마감
-    </span>
-  );
-}
-
-function RecruitTechChip({ label }: { label: string }) {
-  return (
-    <span className="inline-flex items-center rounded-md bg-surface-soft px-2.5 py-1 text-xs leading-4 font-medium text-label-dark">
-      {label}
-    </span>
-  );
-}
 
 function buildApplyHref(projectId: string, position: RecruitPosition) {
   const params = new URLSearchParams({
@@ -90,7 +68,7 @@ export default function ProjectRecruitSection({ project }: { project: ProjectRec
                   <h3 className="text-base leading-5 font-bold text-text-black">
                     {position.role} ({position.specialty})
                   </h3>
-                  <RecruitStatusBadge status={position.status} />
+                  <StatusBadge status={position.status} />
                 </div>
 
                 <p className="text-base leading-5 font-medium text-text-black">
@@ -118,7 +96,7 @@ export default function ProjectRecruitSection({ project }: { project: ProjectRec
               </span>
               <div className="flex flex-wrap items-center gap-2">
                 {position.techStack.map((tech) => (
-                  <RecruitTechChip key={tech} label={tech} />
+                  <SkillChip key={tech} label={tech} />
                 ))}
               </div>
             </div>

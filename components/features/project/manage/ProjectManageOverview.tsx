@@ -10,6 +10,7 @@ import {
   type ProjectTeamManagement,
 } from '@/components/features/project/projectApi';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import StatusBadge from '@/components/shared/StatusBadge';
 import ProjectManageShell, { ProjectManageNotice } from './ProjectManageShell';
 import { ProjectManageOverviewSkeleton } from './ProjectManageSkeletons';
 import ProjectMemberRemovalModal from './ProjectMemberRemovalModal';
@@ -221,10 +222,10 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
                           {member.name}
                         </p>
                         {member.isLeader ? (
-                          <span className="inline-flex items-center gap-1 rounded-md bg-role-leader-bg px-1.5 py-0.5 text-[10px] leading-4 font-bold text-role-leader-text">
-                            <Crown className="h-3 w-3" aria-hidden strokeWidth={1.8} />
-                            리더
-                          </span>
+                          <StatusBadge
+                            status="leader"
+                            icon={<Crown className="h-3 w-3" aria-hidden strokeWidth={1.8} />}
+                          />
                         ) : null}
                       </div>
                       <p className="text-sm leading-5 text-text-gray">
