@@ -5,6 +5,7 @@ const PROTECTED_PATH_PATTERNS = [
   /^\/projects\/[^/]+\/apply(?:\/|$)/,
   /^\/projects\/[^/]+\/manage(?:\/|$)/,
   /^\/profile\/?$/,
+  /^\/profile\/[^/]+(?:\/|$)/,
   /^\/settings(?:\/|$)/,
 ];
 
@@ -53,6 +54,13 @@ export function getLoginPromptCopy(path: string) {
     return {
       title: '내 프로필은 로그인 후 열 수 있어요',
       description: '로그인하고 프로필을 등록해 스카웃 제안을 받아보세요.',
+    };
+  }
+
+  if (normalizedPath.startsWith('/profile/')) {
+    return {
+      title: '사용자 프로필은 로그인 후 볼 수 있어요',
+      description: '로그인하고 팀원의 상세 프로필과 프로젝트 경험을 확인해 보세요.',
     };
   }
 

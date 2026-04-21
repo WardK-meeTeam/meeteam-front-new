@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
+import AuthRequiredFallback from '@/components/features/auth/AuthRequiredFallback';
 import { TEAMMATE_PAGE_COPY } from './constants';
 import { TeammateFinderPanel } from './TeammateFinderPanel';
 import { TeammateListSection } from './TeammateListSection';
@@ -29,7 +30,12 @@ export default function TeammatesPage() {
   } = useTeammateFinder();
 
   if (isAuthBlocked) {
-    return null;
+    return (
+      <AuthRequiredFallback
+        title="팀원 찾기는 로그인 후 이용할 수 있어요"
+        description="로그인하고 함께할 팀원의 프로필과 기술 스택을 확인해 보세요."
+      />
+    );
   }
 
   return (

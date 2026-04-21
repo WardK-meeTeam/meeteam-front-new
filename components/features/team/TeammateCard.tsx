@@ -1,13 +1,13 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { BriefcaseBusiness } from 'lucide-react';
+import AuthLink from '@/components/features/auth/AuthLink';
 import type { Teammate } from '@/types/team';
 
 export function TeammateCard({ teammate }: { teammate: Teammate }) {
   const [primarySkill, secondarySkill] = teammate.skills;
 
   return (
-    <Link
+    <AuthLink
       href={`/profile/${teammate.id}`}
       data-cy="teammate-card"
       data-teammate-id={teammate.id}
@@ -62,6 +62,6 @@ export function TeammateCard({ teammate }: { teammate: Teammate }) {
           ) : null}
         </div>
       </div>
-    </Link>
+    </AuthLink>
   );
 }

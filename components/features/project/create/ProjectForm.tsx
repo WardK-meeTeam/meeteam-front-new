@@ -17,6 +17,7 @@ import {
 import RecruitDeadlineField from '@/components/features/project/create/RecruitDeadlineField';
 import { PROJECT_CATEGORIES, RELEASE_PLATFORMS } from '@/components/features/project/constants';
 import {
+  findProjectJobField,
   getProjectJobFieldLabel,
   getProjectJobPositionLabel,
 } from '@/components/features/project/projectJobOptions';
@@ -33,6 +34,9 @@ type ProjectFormVariant = 'create' | 'edit';
 interface ProjectFormProps {
   variant?: ProjectFormVariant;
   initialValues?: ProjectFormValues;
+  initialCoverImageUrl?: string;
+  editable?: boolean;
+  notEditableReason?: string | null;
   onSubmit?: (
     values: ProjectFormValues,
     context: { jobFields: JobFieldOption[] },
@@ -57,6 +61,9 @@ const DEFAULT_FORM_VALUES: ProjectFormValues = {
 export default function ProjectForm({
   variant = 'create',
   initialValues,
+  initialCoverImageUrl = '',
+  editable = true,
+  notEditableReason,
   onSubmit,
 }: ProjectFormProps) {
   const messageIcon = <MessageCircle className="h-5 w-5 text-muted-gray" />;
@@ -132,16 +139,17 @@ export default function ProjectForm({
     };
   }, []);
 
-  const majorOptions = isEdit
-    ? OPTIONS.map((item) => item.major)
-    : jobFields.map((field) => getProjectJobFieldLabel(field));
+  const majorOptions =
+    jobFields.length > 0
+      ? jobFields.map((field) => getProjectJobFieldLabel(field))
+      : OPTIONS.map((item) => item.major);
 
   const getMinors = (major: string) => {
-    if (isEdit) {
+    if (jobFields.length === 0) {
       return OPTIONS.find((item) => item.major === major)?.minor ?? [];
     }
 
-    const selectedField = jobFields.find((field) => getProjectJobFieldLabel(field) === major);
+    const selectedField = findProjectJobField(jobFields, major);
     return selectedField?.positions.map((position) => getProjectJobPositionLabel(position)) ?? [];
   };
 
@@ -192,7 +200,9 @@ export default function ProjectForm({
   const updateRecruitCount = (index: number, delta: number) => {
     setRecruitInterests((prev) =>
       prev.map((item, itemIndex) =>
-        itemIndex === index ? { ...item, count: Math.max(1, item.count + delta) } : item,
+        itemIndex === index
+          ? { ...item, count: Math.max(item.minRecruitmentCount ?? 1, item.count + delta) }
+          : item,
       ),
     );
     clearError('recruitInterests');
@@ -267,6 +277,10 @@ export default function ProjectForm({
       nextErrors.form = '프로젝트 등록 옵션을 아직 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
     }
 
+    if (isEdit && !recruitDeadline) {
+      nextErrors.recruitDeadline = '프로젝트 마감일을 선택해 주세요.';
+    }
+
     setFieldErrors(nextErrors);
 
     return Object.values(nextErrors).every((value) => !value);
@@ -303,7 +317,12 @@ export default function ProjectForm({
     } catch (error) {
       setFieldErrors((prev) => ({
         ...prev,
-        form: error instanceof Error ? error.message : '프로젝트 등록 중 오류가 발생했습니다.',
+        form:
+          error instanceof Error
+            ? error.message
+            : isEdit
+              ? '프로젝트 수정 중 오류가 발생했습니다.'
+              : '프로젝트 등록 중 오류가 발생했습니다.',
       }));
     } finally {
       setIsSubmitting(false);
@@ -333,6 +352,12 @@ export default function ProjectForm({
         className={`${isEdit ? 'space-y-9' : 'mt-8 flex flex-col gap-8'}`}
         onSubmit={handleSubmit}
       >
+        {!editable && notEditableReason ? (
+          <div className="rounded-2xl border border-border-gray bg-surface-soft px-5 py-4 text-sm leading-6 font-medium text-project-status-closed">
+            {notEditableReason}
+          </div>
+        ) : null}
+
         <BaseField errorText={fieldErrors.projectName} hintText="" label="프로젝트 명" required>
           <BaseInput
             value={projectName}
@@ -420,7 +445,11 @@ export default function ProjectForm({
         </BaseField>
 
         <BaseField errorText="" hintText="" label="프로젝트 커버 이미지">
-          <CoverImageUploader value={coverImage} onChange={setCoverImage} />
+          <CoverImageUploader
+            value={coverImage}
+            initialPreviewUrl={initialCoverImageUrl}
+            onChange={setCoverImage}
+          />
         </BaseField>
 
         <div className={`w-full ${isEdit ? 'border-t border-border-gray pt-9' : ''}`}>
@@ -437,29 +466,27 @@ export default function ProjectForm({
                   setMyOpenDropdown(null);
                   clearError('myInterest');
                 }}
-                containerClassName={isEdit ? 'w-full max-w-52' : 'w-[30%]'}
+                containerClassName="w-[30%]"
                 buttonClassName="justify-between px-4 py-3.5"
                 textClassName="text-sm font-medium whitespace-nowrap"
               />
 
-              {!isEdit ? (
-                <BaseDropdown
-                  value={myInterest.minor}
-                  placeholder="상세 분야 선택"
-                  open={myOpenDropdown === 'minor'}
-                  items={getMinors(myInterest.major)}
-                  onToggle={() => myInterest.major && toggleMyDropdown('minor')}
-                  onSelect={(selectedMinor) => {
-                    setMyInterest((prev) => ({ ...prev, minor: selectedMinor }));
-                    setMyOpenDropdown(null);
-                    clearError('myInterest');
-                  }}
-                  disabled={!myInterest.major}
-                  containerClassName="flex-1"
-                  buttonClassName="justify-between px-4 py-3.5"
-                  textClassName="text-sm font-normal"
-                />
-              ) : null}
+              <BaseDropdown
+                value={myInterest.minor}
+                placeholder="상세 분야 선택"
+                open={myOpenDropdown === 'minor'}
+                items={getMinors(myInterest.major)}
+                onToggle={() => myInterest.major && toggleMyDropdown('minor')}
+                onSelect={(selectedMinor) => {
+                  setMyInterest((prev) => ({ ...prev, minor: selectedMinor }));
+                  setMyOpenDropdown(null);
+                  clearError('myInterest');
+                }}
+                disabled={!myInterest.major}
+                containerClassName="flex-1"
+                buttonClassName="justify-between px-4 py-3.5"
+                textClassName="text-sm font-normal"
+              />
             </div>
           </BaseField>
         </div>
@@ -544,7 +571,9 @@ export default function ProjectForm({
                   <button
                     type="button"
                     onClick={() => removeRecruitInterest(index)}
-                    className="self-start text-xs font-bold text-error-red md:self-auto"
+                    disabled={interest.deletable === false}
+                    title={interest.notDeletableReason ?? undefined}
+                    className="self-start text-xs font-bold text-error-red disabled:cursor-not-allowed disabled:text-muted-gray md:self-auto"
                     aria-label="모집 분야 삭제"
                   >
                     삭제
@@ -580,6 +609,9 @@ export default function ProjectForm({
           }}
           untilComplete={isRecruitUntilComplete}
           onUntilCompleteChange={(nextValue) => {
+            if (isEdit) {
+              return;
+            }
             setIsRecruitUntilComplete(nextValue);
             if (nextValue) {
               setRecruitDeadline('');
@@ -587,6 +619,7 @@ export default function ProjectForm({
             clearError('recruitDeadline');
           }}
           minDate={minRecruitDeadline}
+          showUntilComplete={!isEdit}
           errorText={fieldErrors.recruitDeadline}
         />
 
@@ -598,7 +631,7 @@ export default function ProjectForm({
               size="XL"
               variant="primary"
               type="submit"
-              disabled={isSubmitting || isLoadingJobOptions}
+              disabled={!editable || isSubmitting || isLoadingJobOptions}
               className="w-full max-w-md shadow-xl shadow-brand-400/40"
             >
               {isSubmitting ? '저장 중...' : '저장하기'}
@@ -618,7 +651,7 @@ export default function ProjectForm({
                 variant="primary"
                 full
                 type="submit"
-                disabled={isSubmitting || isLoadingJobOptions}
+                disabled={!editable || isSubmitting || isLoadingJobOptions}
                 className="shadow-xl shadow-brand-400/40"
               >
                 {isSubmitting ? '프로젝트 등록 중...' : '프로젝트 등록하기'}

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
+import AuthRequiredFallback from '@/components/features/auth/AuthRequiredFallback';
 import { ProjectFindFilters } from './ProjectFindFilters';
 import { ProjectFindResults } from './ProjectFindResults';
 import { useProjectFinder } from './useProjectFinder';
@@ -28,7 +29,12 @@ export default function ProjectFindPage() {
   } = useProjectFinder();
 
   if (isAuthBlocked) {
-    return null;
+    return (
+      <AuthRequiredFallback
+        title="프로젝트 찾기는 로그인 후 이용할 수 있어요"
+        description="로그인하고 참여할 프로젝트를 찾아보세요."
+      />
+    );
   }
 
   return (

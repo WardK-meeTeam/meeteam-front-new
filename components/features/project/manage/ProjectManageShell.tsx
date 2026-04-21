@@ -2,9 +2,14 @@
 
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Check, ChevronDown, ChevronLeft, Info, Settings, UserPlus, Users } from 'lucide-react';
-import { useProjectManageStore } from './store';
-import type { ProjectStatus } from '@/types/project';
+import { ChevronDown, ChevronLeft, Info, Settings, UserPlus, Users } from 'lucide-react';
+import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
+import {
+  fetchProjectDetail,
+  fetchProjectTeamManagement,
+  toggleProjectRecruitmentStatus,
+} from '@/components/features/project/projectApi';
+import type { ProjectRecruitmentStatus } from '@/types/project';
 
 type ProjectManageShellProps = {
   projectId: string;
@@ -32,7 +37,7 @@ const TABS: ManageTab[] = [
     href: '/applicants',
     label: '지원자 관리',
     icon: UserPlus,
-    count: 2,
+    count: 0,
   },
   {
     key: 'edit',
@@ -42,10 +47,11 @@ const TABS: ManageTab[] = [
   },
 ];
 
-const STATUS_OPTIONS: Array<{ value: ProjectStatus; label: string }> = [
-  { value: 'recruiting', label: '모집 중' },
-  { value: 'closed', label: '모집 완료' },
-];
+const STATUS_COPY: Record<ProjectRecruitmentStatus, { label: string; actionLabel?: string }> = {
+  RECRUITING: { label: '모집 중', actionLabel: '모집 중단' },
+  SUSPENDED: { label: '모집 중단', actionLabel: '모집 재개' },
+  CLOSED: { label: '모집 완료' },
+};
 
 export function ProjectManageNotice() {
   return (
@@ -67,16 +73,17 @@ export default function ProjectManageShell({
   activeTab,
   children,
 }: ProjectManageShellProps) {
+  const handleAuthRequired = useAuthRequiredModal();
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
+  const [isStatusUpdating, setIsStatusUpdating] = useState(false);
+  const [projectTitle, setProjectTitle] = useState(`프로젝트 ${projectId}`);
+  const [projectSubtitle, setProjectSubtitle] = useState('프로젝트 통합 관리');
+  const [projectStatus, setProjectStatus] = useState<ProjectRecruitmentStatus>('RECRUITING');
+  const [pendingApplicants, setPendingApplicants] = useState(0);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const statusMenuRef = useRef<HTMLDivElement>(null);
-  const project = useProjectManageStore((state) => state.getProject(projectId));
-  const updateProjectStatus = useProjectManageStore((state) => state.updateProjectStatus);
-  const pendingApplicants =
-    project?.applicants.filter((item) => item.status === 'pending').length ?? 0;
-  const projectTitle = project?.title ?? `프로젝트 ${projectId}`;
-  const projectSubtitle = project?.subtitle ?? '프로젝트 통합 관리';
-  const projectStatus = project?.status ?? 'recruiting';
-  const projectStatusLabel = projectStatus === 'closed' ? '모집 완료' : '모집 중';
+  const statusCopy = STATUS_COPY[projectStatus];
+  const canToggleStatus = projectStatus !== 'CLOSED' && Boolean(statusCopy.actionLabel);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -88,6 +95,76 @@ export default function ProjectManageShell({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const loadManageHeader = async () => {
+      try {
+        setErrorMessage(null);
+
+        const [project, team] = await Promise.all([
+          fetchProjectDetail(projectId),
+          fetchProjectTeamManagement(projectId),
+        ]);
+
+        if (!active) {
+          return;
+        }
+
+        setProjectTitle(project.title);
+        setProjectSubtitle('프로젝트 통합 관리');
+        setProjectStatus(project.recruitmentStatus ?? 'RECRUITING');
+        setPendingApplicants(team.pendingApplicationCount);
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+
+        if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
+          setErrorMessage(null);
+          return;
+        }
+
+        setErrorMessage(
+          error instanceof Error ? error.message : '프로젝트 관리 정보를 불러오지 못했습니다.',
+        );
+      }
+    };
+
+    void loadManageHeader();
+
+    return () => {
+      active = false;
+    };
+  }, [handleAuthRequired, projectId]);
+
+  const handleToggleStatus = async () => {
+    if (!canToggleStatus || isStatusUpdating) {
+      setIsStatusMenuOpen(false);
+      return;
+    }
+
+    try {
+      setIsStatusUpdating(true);
+      setErrorMessage(null);
+
+      const nextStatus = await toggleProjectRecruitmentStatus(projectId);
+
+      setProjectStatus(nextStatus.recruitmentStatus);
+      setIsStatusMenuOpen(false);
+    } catch (error) {
+      if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
+        return;
+      }
+
+      setErrorMessage(
+        error instanceof Error ? error.message : '모집 상태 변경 중 오류가 발생했습니다.',
+      );
+    } finally {
+      setIsStatusUpdating(false);
+    }
+  };
 
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6 lg:px-8">
@@ -115,13 +192,14 @@ export default function ProjectManageShell({
                 <button
                   type="button"
                   onClick={() => setIsStatusMenuOpen((prev) => !prev)}
+                  disabled={isStatusUpdating}
                   className={`inline-flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm leading-5 font-bold text-white shadow-md transition-colors ${
-                    projectStatus === 'closed'
+                    projectStatus === 'CLOSED'
                       ? 'bg-project-status-closed hover:opacity-95'
                       : 'bg-brand-500 hover:bg-brand-400'
-                  }`}
+                  } disabled:cursor-not-allowed disabled:opacity-70`}
                 >
-                  {projectStatusLabel}
+                  {isStatusUpdating ? '변경 중' : statusCopy.label}
                   <ChevronDown
                     className={`h-4 w-4 transition-transform ${isStatusMenuOpen ? 'rotate-180' : ''}`}
                     aria-hidden
@@ -131,37 +209,14 @@ export default function ProjectManageShell({
 
                 {isStatusMenuOpen ? (
                   <div className="absolute right-0 top-[calc(100%+8px)] z-30 min-w-32 rounded-2xl border border-border-gray bg-white p-2 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.12),0_8px_10px_-6px_rgba(15,23,42,0.12)]">
-                    <ul className="space-y-1">
-                      {STATUS_OPTIONS.map((option) => {
-                        const isSelected = option.value === projectStatus;
-                        const toneClass =
-                          option.value === 'closed'
-                            ? isSelected
-                              ? 'bg-project-status-closed text-white shadow-md'
-                              : 'bg-project-status-closed/10 text-project-status-closed hover:bg-project-status-closed/15'
-                            : isSelected
-                              ? 'bg-brand-500 text-white shadow-md'
-                              : 'bg-brand-50 text-brand-500 hover:bg-brand-100';
-
-                        return (
-                          <li key={option.value}>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                updateProjectStatus(projectId, option.value);
-                                setIsStatusMenuOpen(false);
-                              }}
-                              className={`flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-sm leading-5 font-bold transition-colors ${toneClass}`}
-                            >
-                              <span>{option.label}</span>
-                              {isSelected ? (
-                                <Check className="h-4 w-4" aria-hidden strokeWidth={2.2} />
-                              ) : null}
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
+                    <button
+                      type="button"
+                      onClick={handleToggleStatus}
+                      disabled={!canToggleStatus || isStatusUpdating}
+                      className="flex w-full items-center justify-between rounded-xl bg-brand-50 px-4 py-2.5 text-sm leading-5 font-bold text-brand-500 transition-colors hover:bg-brand-100 disabled:cursor-not-allowed disabled:bg-surface-soft disabled:text-text-gray"
+                    >
+                      {statusCopy.actionLabel ?? '변경 불가'}
+                    </button>
                   </div>
                 ) : null}
               </div>
@@ -198,6 +253,12 @@ export default function ProjectManageShell({
             </ul>
           </nav>
         </header>
+
+        {errorMessage ? (
+          <p className="rounded-xl border border-border-gray bg-danger-soft px-4 py-3 text-sm leading-5 font-medium text-danger-500">
+            {errorMessage}
+          </p>
+        ) : null}
 
         {children}
       </div>

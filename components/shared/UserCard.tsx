@@ -1,6 +1,6 @@
 import Image from 'next/image';
-import Link from 'next/link';
 import { BriefcaseBusiness } from 'lucide-react';
+import AuthLink from '@/components/features/auth/AuthLink';
 
 export interface UserCardProps {
   userId: string | number;
@@ -22,7 +22,7 @@ export default function UserCard({
   const [primarySkill, secondarySkill] = skills;
 
   return (
-    <Link
+    <AuthLink
       href={`/profile/${userId}`}
       className="group block h-full rounded-2xl border border-border-gray bg-white px-6 pt-6 pb-14 shadow-sm transition-shadow hover:shadow-md"
     >
@@ -73,6 +73,6 @@ export default function UserCard({
           ) : null}
         </div>
       </div>
-    </Link>
+    </AuthLink>
   );
 }

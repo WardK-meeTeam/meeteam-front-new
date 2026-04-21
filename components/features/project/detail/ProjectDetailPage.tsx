@@ -27,6 +27,29 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   const [project, setProject] = useState<ProjectRecord | null>(localProject);
   const [isLoading, setIsLoading] = useState(!localProject);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const recommendedProjects = useMemo(
+    () =>
+      Object.values(projectsById)
+        .filter((item) => item.id !== projectId)
+        .slice(0, 4)
+        .map((item) => ({
+          id: item.id,
+          title: item.title,
+          imageUrl: item.coverImageUrl,
+          category: getProjectCategoryLabel(item.categoryId),
+          deadline: item.recruitDeadline,
+          currentMembers: item.members.length,
+          maxMembers: item.targetMemberCount,
+          leader: {
+            name: item.members.find((member) => member.isLeader)?.name ?? '팀장',
+            avatar:
+              item.members.find((member) => member.isLeader)?.avatarUrl ??
+              item.members[0]?.avatarUrl ??
+              '',
+          },
+        })),
+    [projectId, projectsById],
+  );
 
   useEffect(() => {
     let active = true;
@@ -101,29 +124,6 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   const leader = project.members.find((member) => member.isLeader) ?? project.members[0];
   const leaderSkillKey = `${project.myInterest.major} - ${project.myInterest.minor}`;
   const leaderSkills = project.leaderTechStacks ?? project.recruitTechStacks[leaderSkillKey] ?? [];
-  const recommendedProjects = useMemo(
-    () =>
-      Object.values(projectsById)
-        .filter((item) => item.id !== projectId)
-        .slice(0, 4)
-        .map((item) => ({
-          id: item.id,
-          title: item.title,
-          imageUrl: item.coverImageUrl,
-          category: getProjectCategoryLabel(item.categoryId),
-          deadline: item.recruitDeadline,
-          currentMembers: item.members.length,
-          maxMembers: item.targetMemberCount,
-          leader: {
-            name: item.members.find((member) => member.isLeader)?.name ?? '팀장',
-            avatar:
-              item.members.find((member) => member.isLeader)?.avatarUrl ??
-              item.members[0]?.avatarUrl ??
-              '',
-          },
-        })),
-    [projectId, projectsById],
-  );
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-8 pb-20">
@@ -189,7 +189,10 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
           <article className="rounded-3xl border border-border-gray bg-white p-6 shadow-sm">
             <h2 className="text-sm font-bold text-text-black">프로젝트 리더</h2>
 
-            <Link href={`/profile/${project.leaderProfileId ?? 1}`} className="mt-4 flex items-center gap-4">
+            <AuthLink
+              href={`/profile/${project.leaderProfileId ?? 1}`}
+              className="mt-4 flex items-center gap-4"
+            >
               <div className="relative h-16 w-16 overflow-hidden rounded-2xl bg-brand-50">
                 {leader?.avatarUrl ? (
                   <img
@@ -207,7 +210,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
                 <p className="text-[18px] leading-7 font-bold text-text-black">{leader?.name}</p>
                 <p className="text-sm text-text-gray">{project.leaderRole}</p>
               </div>
-            </Link>
+            </AuthLink>
 
             <div className="mt-4 space-y-2">
               <p className="text-xs leading-4 font-bold text-text-gray">리더의 주력 스킬</p>

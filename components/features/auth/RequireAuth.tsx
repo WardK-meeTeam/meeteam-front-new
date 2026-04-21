@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useLoginModalStore } from '@/stores/useLoginModalStore';
 
+import AuthRequiredFallback from './AuthRequiredFallback';
 import { getLoginPromptCopy } from './protectedPaths';
 import { useAuthHydrated } from './useAuthHydrated';
 
@@ -34,7 +35,7 @@ export default function RequireAuth({ children }: RequireAuthProps) {
   }
 
   if (!isAuthenticated) {
-    return null;
+    return <AuthRequiredFallback {...getLoginPromptCopy(pathname)} />;
   }
 
   return <>{children}</>;

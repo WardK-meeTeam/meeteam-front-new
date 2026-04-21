@@ -1,8 +1,17 @@
 import type { Interest } from './auth';
 
-export type RecruitInterest = Interest & { count: number };
+export type RecruitInterest = Interest & {
+  count: number;
+  recruitmentStateId?: number | null;
+  currentCount?: number;
+  pendingApplicationCount?: number;
+  minRecruitmentCount?: number;
+  deletable?: boolean;
+  notDeletableReason?: string | null;
+};
 
 export type ProjectStatus = 'recruiting' | 'closed';
+export type ProjectRecruitmentStatus = 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
 
 export type ProjectCategoryId =
   | 'ai-tech'
@@ -79,6 +88,7 @@ export type ProjectRecord = ManagedProject & {
   coverImageUrl: string;
   createdAt: string;
   leaderRole: string;
+  recruitmentStatus?: ProjectRecruitmentStatus;
   leaderProfileId?: number;
   leaderTechStacks?: string[];
   likeCount?: number;

@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import { Bell, UserRound } from 'lucide-react';
+import AuthLink from '@/components/features/auth/AuthLink';
 
 export default function ProfileSettingsPage() {
   return (
@@ -14,7 +14,7 @@ export default function ProfileSettingsPage() {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Link
+        <AuthLink
           href="/profile"
           className="flex min-h-32 flex-col gap-3 rounded-2xl border border-border-gray bg-surface-soft p-5 transition-colors hover:border-brand-100 hover:bg-brand-50"
         >
@@ -25,9 +25,9 @@ export default function ProfileSettingsPage() {
               프로필 정보와 참여 프로젝트 상태를 확인할 수 있습니다.
             </p>
           </div>
-        </Link>
+        </AuthLink>
 
-        <Link
+        <AuthLink
           href="/notifications"
           className="flex min-h-32 flex-col gap-3 rounded-2xl border border-border-gray bg-surface-soft p-5 transition-colors hover:border-brand-100 hover:bg-brand-50"
         >
@@ -38,7 +38,7 @@ export default function ProfileSettingsPage() {
               새 지원자와 프로젝트 업데이트 알림을 바로 확인할 수 있습니다.
             </p>
           </div>
-        </Link>
+        </AuthLink>
       </div>
     </section>
   );
