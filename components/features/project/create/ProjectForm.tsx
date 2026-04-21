@@ -265,24 +265,6 @@ export default function ProjectForm({
     );
   };
 
-  const handleReset = () => {
-    setProjectName(DEFAULT_FORM_VALUES.projectName);
-    setGithubUrl(DEFAULT_FORM_VALUES.githubUrl);
-    setCommunicationUrl(DEFAULT_FORM_VALUES.communicationUrl);
-    setDescription(DEFAULT_FORM_VALUES.description);
-    setProjectCategoryId(DEFAULT_FORM_VALUES.categoryId);
-    setSelectedPlatforms(DEFAULT_FORM_VALUES.releasePlatforms);
-    setMyInterest(DEFAULT_FORM_VALUES.myInterest);
-    setMyOpenDropdown(null);
-    setRecruitInterests(DEFAULT_FORM_VALUES.recruitInterests);
-    setRecruitTechStacks(DEFAULT_FORM_VALUES.recruitTechStacks);
-    setCoverImage(DEFAULT_FORM_VALUES.coverImage ?? null);
-    setOpenRecruitDropdown(null);
-    setRecruitDeadline(DEFAULT_FORM_VALUES.recruitDeadline);
-    setIsRecruitUntilComplete(DEFAULT_FORM_VALUES.isRecruitUntilComplete);
-    setFieldErrors({});
-  };
-
   const validateForm = () => {
     const result = projectFormSchema.safeParse({
       projectName,
@@ -707,25 +689,16 @@ export default function ProjectForm({
             </BaseButton>
           </div>
         ) : (
-          <div className="flex items-start gap-4 pt-8">
-            <div className="w-1/3">
-              <BaseButton size="XL" variant="gray" full onClick={handleReset}>
-                취소
-              </BaseButton>
-            </div>
-
-            <div className="flex-1">
-              <BaseButton
-                size="XL"
-                variant="primary"
-                full
-                type="submit"
-                disabled={!editable || isSubmitting || isLoadingJobOptions}
-                className="shadow-xl shadow-brand-400/40"
-              >
-                {isSubmitting ? '프로젝트 등록 중...' : '프로젝트 등록하기'}
-              </BaseButton>
-            </div>
+          <div className="flex justify-center pt-8">
+            <BaseButton
+              size="XL"
+              variant="primary"
+              type="submit"
+              disabled={!editable || isSubmitting || isLoadingJobOptions}
+              className="w-full max-w-md shadow-xl shadow-brand-400/40"
+            >
+              {isSubmitting ? '프로젝트 등록 중...' : '프로젝트 등록하기'}
+            </BaseButton>
           </div>
         )}
       </form>

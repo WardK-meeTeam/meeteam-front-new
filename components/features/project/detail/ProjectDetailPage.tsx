@@ -108,15 +108,17 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
         setTeamMembers(nextProject.members);
         setErrorMessage(null);
 
-        try {
-          const nextTeamManagement = await fetchProjectTeamManagement(projectId);
+        if (nextProject.isLeader) {
+          try {
+            const nextTeamManagement = await fetchProjectTeamManagement(projectId);
 
-          if (active) {
-            setTeamMembers(nextTeamManagement.members);
-          }
-        } catch {
-          if (active) {
-            setTeamMembers(nextProject.members);
+            if (active) {
+              setTeamMembers(nextTeamManagement.members);
+            }
+          } catch {
+            if (active) {
+              setTeamMembers(nextProject.members);
+            }
           }
         }
       } catch (error) {
