@@ -3,6 +3,7 @@
 import type { RefObject } from 'react';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
 import { ProjectCardSkeleton } from '@/components/features/project/ProjectCardSkeleton';
+import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectSearchCard } from './projectFindApi';
 import type { SortFilter } from './types';
 
@@ -64,6 +65,8 @@ export function ProjectFindResults({
 
   return (
     <>
+      <ToastMessage message={errorMessage} />
+
       <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <p
           data-cy="project-total-count"
@@ -74,12 +77,6 @@ export function ProjectFindResults({
 
         <SortSelect sort={sort} onSortChange={onSortChange} />
       </div>
-
-      {errorMessage ? (
-        <div className="rounded-2xl border border-border-gray bg-danger-soft px-6 py-16 text-center text-sm leading-6 text-danger-500 shadow-sm">
-          {errorMessage}
-        </div>
-      ) : null}
 
       {isInitialLoading ? (
         <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">

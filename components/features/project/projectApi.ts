@@ -201,6 +201,26 @@ type BackendAppliedProjectResponse = {
   appliedAt: string;
 };
 
+type BackendApplicationPageResponse = {
+  applicant: {
+    profileImageUrl: string | null;
+    name: string;
+    jobFieldNames: string[];
+    jobPositionNames: string[];
+    age: number | null;
+    gender: string | null;
+    email: string;
+    profileSummary: string | null;
+  };
+  recruitments: Array<{
+    id: number;
+    jobFieldName: string;
+    jobPositionName: string;
+    techStacks: string[];
+    isClosed: boolean;
+  }>;
+};
+
 type ProjectCreateRequestPayload = {
   projectName: string;
   githubRepositoryUrl?: string;
@@ -261,6 +281,26 @@ export type AppliedProject = {
   appliedAt: string;
 };
 
+export type ProjectApplicationPage = {
+  applicant: {
+    profileImageUrl: string;
+    name: string;
+    jobFieldNames: string[];
+    jobPositionNames: string[];
+    age: number | null;
+    gender: string | null;
+    email: string;
+    profileSummary: string | null;
+  };
+  recruitments: Array<{
+    id: number;
+    jobFieldName: string;
+    jobPositionName: string;
+    techStacks: string[];
+    isClosed: boolean;
+  }>;
+};
+
 export type ProjectEditPrefill = {
   values: ProjectFormValues;
   coverImageUrl: string;
@@ -290,6 +330,27 @@ async function readEnvelope<T>(response: Response, fallbackMessage: string) {
 
   if (!response.ok) {
     throw createApiError(response, payload, fallbackMessage);
+  }
+
+  if (!payload) {
+    throw new Error('응답 형식을 해석할 수 없습니다.');
+  }
+
+  return extractApiData(payload);
+}
+
+async function readApplicationPageEnvelope(response: Response) {
+  const payload = (await response
+    .json()
+    .catch(() => null)) as ApiEnvelope<BackendApplicationPageResponse> | null;
+  const fallbackMessage = '지원 정보를 불러오지 못했습니다.';
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw createApiError(response, payload, fallbackMessage);
+    }
+
+    throw new Error(typeof payload?.message === 'string' ? payload.message : fallbackMessage);
   }
 
   if (!payload) {
@@ -640,6 +701,26 @@ export async function applyToProject(
   };
 }
 
+export async function fetchProjectApplicationPage(
+  projectId: string | number,
+): Promise<ProjectApplicationPage> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/application`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const page = await readApplicationPageEnvelope(response);
+
+  return {
+    applicant: {
+      ...page.applicant,
+      profileImageUrl: page.applicant.profileImageUrl ?? '',
+    },
+    recruitments: page.recruitments,
+  };
+}
+
 export async function fetchProjectApplications(
   projectId: string | number,
 ): Promise<ProjectApplicant[]> {
@@ -976,6 +1057,7 @@ export async function fetchProjectDetail(projectId: string | number): Promise<Pr
     leaderRole: leaderPosition?.jobPositionName ?? leaderPosition?.jobFieldName ?? 'Project Lead',
     recruitmentStatus: project.recruitmentStatus,
     leaderProfileId: project.leader.id,
+    isLeader: project.isLeader,
     leaderTechStacks: project.leader.techStacks,
     likeCount: project.likeCount,
     isLiked: project.isLiked,

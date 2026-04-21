@@ -1,12 +1,13 @@
 'use client';
 
 import { type FormEvent, useEffect, useState } from 'react';
-import { MessageCircle, Send } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import BaseButton from '@/components/shared/BaseButton';
 import BaseTextarea from '@/components/shared/BaseTextarea';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
+import ToastMessage from '@/components/shared/ToastMessage';
 import { useAuthStore } from '@/stores/useAuthStore';
 import type { ProjectRecord } from '@/types/project';
 import {
@@ -55,7 +56,7 @@ function Avatar({
 
 function QnaAnswerItem({ answer }: { answer: ProjectQnaAnswer }) {
   return (
-    <div className="flex w-full items-start gap-3 rounded-xl bg-surface-soft p-3">
+    <div className="flex w-full items-start gap-3 rounded-xl bg-surface-soft px-4 py-3">
       <Avatar
         name={answer.writerName}
         imageUrl={answer.writerProfileImageUrl}
@@ -81,22 +82,120 @@ function QnaAnswerItem({ answer }: { answer: ProjectQnaAnswer }) {
 
 function ProjectQnaSkeleton() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-3">
       {Array.from({ length: 3 }).map((_, index) => (
-        <article key={`qna-skeleton-${index}`} className="flex items-start gap-4">
-          <SkeletonBlock className="h-10 w-10 rounded-full" />
-          <div className="flex min-w-0 flex-1 flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <SkeletonBlock className="h-5 w-24" />
-              <SkeletonBlock className="h-4 w-20" />
+        <article
+          key={`qna-skeleton-${index}`}
+          className="rounded-2xl border border-border-gray bg-white px-5 py-4 shadow-sm"
+        >
+          <div className="flex items-start gap-3">
+            <SkeletonBlock className="h-9 w-9 rounded-full" />
+            <div className="flex min-w-0 flex-1 flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <SkeletonBlock className="h-5 w-24" />
+                <SkeletonBlock className="h-4 w-20" />
+              </div>
+              <SkeletonBlock className="h-5 w-full" />
+              <SkeletonBlock className="h-5 w-4/5" />
             </div>
-            <SkeletonBlock className="h-5 w-full" />
-            <SkeletonBlock className="h-5 w-4/5" />
-            <SkeletonBlock className="h-20 w-full rounded-xl" />
           </div>
         </article>
       ))}
     </div>
+  );
+}
+
+function AnswerComposer({
+  value,
+  isSubmitting,
+  onChange,
+  onCancel,
+  onSubmit,
+}: {
+  value: string;
+  isSubmitting: boolean;
+  onChange: (value: string) => void;
+  onCancel: () => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <div className="w-full rounded-xl border border-border-gray bg-white px-4 py-3">
+      <BaseTextarea
+        textareaSize="S"
+        rows={2}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="min-h-20 resize-none border-transparent bg-transparent px-0 py-0 focus:border-transparent focus:ring-0"
+        placeholder="답변을 입력해 주세요."
+        disabled={isSubmitting}
+      />
+      <div className="mt-3 flex justify-end gap-2 border-t border-surface-soft pt-3">
+        <BaseButton
+          type="button"
+          size="XS"
+          variant="gray"
+          onClick={onCancel}
+          disabled={isSubmitting}
+          className="h-8 rounded-md px-3 text-xs font-semibold shadow-none hover:bg-surface-soft hover:text-text-black"
+        >
+          취소
+        </BaseButton>
+        <BaseButton
+          size="XS"
+          onClick={onSubmit}
+          disabled={isSubmitting}
+          className="h-8 rounded-md border-none bg-text-black px-3.5 text-xs font-semibold text-white shadow-none hover:bg-label-dark"
+        >
+          {isSubmitting ? '등록 중' : '답변 등록'}
+        </BaseButton>
+      </div>
+    </div>
+  );
+}
+
+function QuestionComposer({
+  value,
+  isSubmitting,
+  onChange,
+  onSubmit,
+}: {
+  value: string;
+  isSubmitting: boolean;
+  onChange: (value: string) => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <form
+      className="rounded-2xl border border-border-gray bg-white px-5 py-4 shadow-sm"
+      onSubmit={onSubmit}
+    >
+      <div className="flex items-center gap-2 text-sm leading-5 font-bold text-text-black">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-500">
+          <MessageCircle className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+        </span>
+        <span>질문 작성</span>
+      </div>
+      <BaseTextarea
+        textareaSize="M"
+        rows={2}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="mt-3 min-h-20 w-full resize-none rounded-none border-transparent bg-transparent px-0 py-0 text-sm text-text-black placeholder:text-muted-gray focus:border-transparent focus:ring-0"
+        placeholder="프로젝트에 대해 궁금한 점을 남겨주세요."
+        disabled={isSubmitting}
+      />
+
+      <div className="mt-3 flex justify-end border-t border-surface-soft pt-3">
+        <BaseButton
+          type="submit"
+          size="XS"
+          disabled={isSubmitting || !value.trim()}
+          className="h-8 rounded-md border-none bg-text-black px-3.5 text-xs font-semibold text-white shadow-none hover:bg-label-dark disabled:bg-divider-soft"
+        >
+          {isSubmitting ? '등록 중' : '등록'}
+        </BaseButton>
+      </div>
+    </form>
   );
 }
 
@@ -118,6 +217,7 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [questionDraft, setQuestionDraft] = useState('');
   const [answerDrafts, setAnswerDrafts] = useState<Record<number, string>>({});
+  const [activeAnswerQnaId, setActiveAnswerQnaId] = useState<number | null>(null);
   const [isQuestionSubmitting, setIsQuestionSubmitting] = useState(false);
   const [submittingAnswerId, setSubmittingAnswerId] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -208,6 +308,7 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
 
       replaceQna(nextQna);
       setAnswerDrafts((current) => ({ ...current, [qnaId]: '' }));
+      setActiveAnswerQnaId(null);
     } catch (error) {
       if (handleAuthRequired(error, { redirectPath: `/projects/${project.id}` })) {
         return;
@@ -244,83 +345,94 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
 
   return (
     <section className="flex w-full flex-col gap-8" data-node-id="97:1090">
-      {errorMessage ? (
-        <div className="rounded-2xl border border-border-gray bg-danger-soft px-5 py-4 text-sm leading-6 text-danger-500">
-          {errorMessage}
-        </div>
-      ) : null}
+      <ToastMessage message={errorMessage} />
 
       {isLoading ? (
         <ProjectQnaSkeleton />
       ) : qnas.length > 0 ? (
-        <div className="space-y-8">
+        <div className="space-y-3">
           {qnas.map((qna) => {
             const canAnswer = canWriteAnswer(project, qna, memberId);
+            const isAnswerComposerOpen = activeAnswerQnaId === qna.id;
 
             return (
-              <article key={qna.id} className="flex items-start gap-4" data-node-id="97:1455">
-                <Avatar name={qna.questionerName} imageUrl={qna.questionerProfileImageUrl} />
+              <article
+                key={qna.id}
+                className="rounded-2xl border border-border-gray bg-white px-5 py-4 shadow-sm"
+                data-node-id="97:1455"
+              >
+                <div className="flex items-start gap-3" data-node-id="97:1458">
+                  <Avatar
+                    name={qna.questionerName}
+                    imageUrl={qna.questionerProfileImageUrl}
+                    sizeClassName="h-9 w-9"
+                  />
 
-                <div
-                  className="flex min-w-0 flex-1 flex-col gap-3 self-stretch"
-                  data-node-id="97:1458"
-                >
-                  <div className="flex w-full items-center gap-2" data-node-id="97:1459">
-                    <p
-                      className="text-base leading-6 font-bold text-text-black"
-                      data-node-id="97:1461"
+                  <div className="min-w-0 flex-1">
+                    <div
+                      className="flex flex-wrap items-center gap-x-2 gap-y-1"
+                      data-node-id="97:1459"
                     >
-                      {qna.questionerName}
-                    </p>
+                      <p
+                        className="text-sm leading-5 font-bold text-text-black"
+                        data-node-id="97:1461"
+                      >
+                        {qna.questionerName}
+                      </p>
+                      <p
+                        className="text-xs leading-4 font-normal text-muted-gray"
+                        data-node-id="97:1463"
+                      >
+                        {formatQnaDate(qna.createdAt)}
+                      </p>
+                      {qna.answers.length > 0 ? (
+                        <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] leading-4 font-bold text-brand-500">
+                          답변 {qna.answers.length}
+                        </span>
+                      ) : null}
+                    </div>
+
                     <p
-                      className="text-xs leading-4 font-normal text-muted-gray"
-                      data-node-id="97:1463"
+                      className="mt-2 w-full text-sm leading-6 font-normal whitespace-pre-wrap text-text-body"
+                      data-node-id="97:1465"
                     >
-                      {formatQnaDate(qna.createdAt)}
+                      {qna.question}
                     </p>
                   </div>
-
-                  <p
-                    className="w-full text-sm leading-5 font-normal whitespace-pre-wrap text-text-body"
-                    data-node-id="97:1465"
-                  >
-                    {qna.question}
-                  </p>
-
-                  {qna.answers.map((answer) => (
-                    <QnaAnswerItem key={answer.id} answer={answer} />
-                  ))}
-
-                  {canAnswer ? (
-                    <div className="rounded-2xl border border-border-gray bg-white p-3">
-                      <BaseTextarea
-                        textareaSize="S"
-                        rows={2}
-                        value={answerDrafts[qna.id] ?? ''}
-                        onChange={(event) =>
-                          setAnswerDrafts((current) => ({
-                            ...current,
-                            [qna.id]: event.target.value,
-                          }))
-                        }
-                        className="min-h-16 resize-none border-transparent bg-transparent px-0 py-0 focus:border-transparent focus:ring-0"
-                        placeholder="답변을 남겨주세요."
-                        disabled={submittingAnswerId === qna.id}
-                      />
-                      <div className="mt-3 flex justify-end border-t border-surface-soft pt-3">
-                        <BaseButton
-                          size="XS"
-                          onClick={() => void handleAnswerSubmit(qna.id)}
-                          disabled={submittingAnswerId === qna.id}
-                          className="h-8 rounded-lg border-none bg-brand-500 px-4 text-sm font-bold text-white shadow-none hover:bg-brand-400"
-                        >
-                          <Send className="mr-1 h-3.5 w-3.5" aria-hidden strokeWidth={1.8} />
-                          {submittingAnswerId === qna.id ? '등록 중' : '답변'}
-                        </BaseButton>
-                      </div>
-                    </div>
-                  ) : null}
                 </div>
+
+                {qna.answers.length > 0 ? (
+                  <div className="mt-4 space-y-2 border-t border-border-soft pt-3">
+                    {qna.answers.map((answer) => (
+                      <QnaAnswerItem key={answer.id} answer={answer} />
+                    ))}
+                  </div>
+                ) : null}
+
+                {canAnswer ? (
+                  <div className="mt-3 flex justify-end">
+                    {isAnswerComposerOpen ? (
+                      <AnswerComposer
+                        value={answerDrafts[qna.id] ?? ''}
+                        isSubmitting={submittingAnswerId === qna.id}
+                        onChange={(value) =>
+                          setAnswerDrafts((current) => ({ ...current, [qna.id]: value }))
+                        }
+                        onCancel={() => setActiveAnswerQnaId(null)}
+                        onSubmit={() => void handleAnswerSubmit(qna.id)}
+                      />
+                    ) : (
+                      <BaseButton
+                        size="XS"
+                        variant="gray"
+                        onClick={() => setActiveAnswerQnaId(qna.id)}
+                        className="h-8 rounded-md px-3 text-xs font-semibold shadow-none hover:bg-surface-soft hover:text-text-black"
+                      >
+                        답변하기
+                      </BaseButton>
+                    )}
+                  </div>
+                ) : null}
               </article>
             );
           })}
@@ -349,38 +461,12 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
         </BaseButton>
       ) : null}
 
-      <form className="group/qna relative" onSubmit={handleQuestionSubmit}>
-        <div
-          className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-brand-400 to-brand-500"
-          aria-hidden
-        >
-          <Send className="h-4 w-4 rotate-[-45deg] text-white" aria-hidden strokeWidth={2} />
-        </div>
-
-        <div className="ml-14 rounded-2xl border border-border-gray bg-white p-4 shadow-sm transition-colors focus-within:border-brand-500 focus-within:bg-surface-soft">
-          <BaseTextarea
-            textareaSize="M"
-            rows={3}
-            value={questionDraft}
-            onChange={(event) => setQuestionDraft(event.target.value)}
-            className="min-h-15 w-full resize-none rounded-none border-transparent bg-transparent px-0 py-0 pr-2 text-sm text-text-black placeholder:text-muted-gray focus:border-transparent focus:ring-0"
-            placeholder="프로젝트에 대해 궁금한 점을 남겨주세요."
-            disabled={isQuestionSubmitting}
-          />
-
-          <div className="mt-4 flex justify-end border-t border-surface-soft pt-3">
-            <BaseButton
-              type="submit"
-              size="XS"
-              disabled={isQuestionSubmitting}
-              className="h-8 rounded-lg border-none bg-divider-soft px-4 text-sm font-bold text-white shadow-none hover:bg-divider-soft group-focus-within/qna:bg-brand-500 group-focus-within/qna:hover:bg-brand-500"
-            >
-              <Send className="mr-1 h-3.5 w-3.5" aria-hidden strokeWidth={1.8} />
-              {isQuestionSubmitting ? '등록 중' : '등록'}
-            </BaseButton>
-          </div>
-        </div>
-      </form>
+      <QuestionComposer
+        value={questionDraft}
+        isSubmitting={isQuestionSubmitting}
+        onChange={setQuestionDraft}
+        onSubmit={handleQuestionSubmit}
+      />
     </section>
   );
 }

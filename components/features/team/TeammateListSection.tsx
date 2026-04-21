@@ -1,5 +1,6 @@
 import type { RefObject } from 'react';
 import { ChevronDown } from 'lucide-react';
+import ToastMessage from '@/components/shared/ToastMessage';
 import type { TeammateSort } from '@/types/team';
 import type { Teammate } from '@/types/team';
 import { TEAMMATE_LIST_CONFIG, TEAMMATE_PAGE_COPY, TEAMMATE_SORT_OPTIONS } from './constants';
@@ -33,6 +34,8 @@ export function TeammateListSection({
 
   return (
     <>
+      <ToastMessage message={errorMessage} />
+
       <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <p
           data-cy="teammate-total-count"
@@ -61,12 +64,6 @@ export function TeammateListSection({
           />
         </div>
       </div>
-
-      {errorMessage ? (
-        <div className="rounded-2xl border border-border-gray bg-danger-soft px-6 py-12 text-center text-sm leading-6 text-danger-500 shadow-sm">
-          {errorMessage}
-        </div>
-      ) : null}
 
       {isInitialLoading ? (
         <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">

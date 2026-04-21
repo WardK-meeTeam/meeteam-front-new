@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import BaseButton from '@/components/shared/BaseButton';
+import ToastMessage from '@/components/shared/ToastMessage';
 import type { Interest, JobFieldOption, OAuthSignupFormValues } from '@/types/auth';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { fetchMyProfile } from '@/components/features/profile/profileApi';
@@ -302,7 +303,7 @@ export default function OAuthSignupForm() {
         projectError={fieldErrors.projectExperienceCount}
       />
 
-      {fieldErrors.form ? <p className="text-sm text-error-red">{fieldErrors.form}</p> : null}
+      <ToastMessage message={fieldErrors.form} />
 
       <BaseButton
         size="L"

@@ -11,6 +11,7 @@ import {
 } from '@/components/features/project/projectApi';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import StatusBadge from '@/components/shared/StatusBadge';
+import ToastMessage from '@/components/shared/ToastMessage';
 import ProjectManageShell, { ProjectManageNotice } from './ProjectManageShell';
 import { ProjectManageOverviewSkeleton } from './ProjectManageSkeletons';
 import ProjectMemberRemovalModal from './ProjectMemberRemovalModal';
@@ -152,6 +153,8 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
   return (
     <ProjectManageShell projectId={projectId} activeTab="members">
       <div className="space-y-6 md:space-y-8">
+        <ToastMessage message={errorMessage} />
+
         <div className="grid gap-4 md:grid-cols-3">
           {summaryCards.map((card) => {
             const content = (
@@ -193,12 +196,6 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
             <h2 className="text-base leading-6 font-bold text-text-black">팀원 목록</h2>
             <p className="text-xs leading-4 text-text-gray">리더는 방출할 수 없습니다.</p>
           </div>
-
-          {errorMessage ? (
-            <p className="border-b border-border-gray/40 bg-danger-soft px-6 py-3 text-sm leading-5 font-medium text-danger-500">
-              {errorMessage}
-            </p>
-          ) : null}
 
           <ul>
             {teamManagement.members.map((member, index) => (

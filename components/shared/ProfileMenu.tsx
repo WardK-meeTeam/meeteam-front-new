@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronDown, LogOut, Settings, UserRound } from 'lucide-react';
+import { ChevronDown, LogOut, UserRound } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { logoutMember } from '@/components/features/auth/loginApi';
 import { fetchMyProfile } from '@/components/features/profile/profileApi';
@@ -14,11 +14,6 @@ const MENU_ITEMS = [
     href: '/profile',
     label: '내 프로필',
     icon: UserRound,
-  },
-  {
-    href: '/settings',
-    label: '설정',
-    icon: Settings,
   },
 ] as const;
 

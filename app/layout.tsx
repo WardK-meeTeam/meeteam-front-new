@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import LoginPromptModal from '@/components/features/auth/LoginPromptModal';
+import ToastViewport from '@/components/shared/ToastViewport';
 
 import './globals.css';
 
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={`${inter.className} ${inter.variable} antialiased`}>
         {children}
         <LoginPromptModal />
+        <ToastViewport />
       </body>
     </html>
   );

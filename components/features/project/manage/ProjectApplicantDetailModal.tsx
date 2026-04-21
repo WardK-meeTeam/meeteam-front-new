@@ -2,6 +2,7 @@
 
 import { ExternalLink, Mail, UserRound } from 'lucide-react';
 import BaseModal from '@/components/shared/BaseModal';
+import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectApplicant } from '@/types/project';
 
 type ProjectApplicantDetailModalProps = {
@@ -38,6 +39,8 @@ export default function ProjectApplicantDetailModal({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <div className="overflow-hidden rounded-[28px] bg-white shadow-2xl">
+        <ToastMessage message={errorMessage} />
+
         <div className="border-b border-border-gray bg-surface-soft px-6 py-5">
           <p className="text-sm font-bold text-brand-500">지원서 상세</p>
           <h2 className="mt-1 text-2xl font-extrabold text-text-black">{applicant.name}</h2>
@@ -47,12 +50,6 @@ export default function ProjectApplicantDetailModal({
         </div>
 
         <div className="space-y-5 px-6 py-6">
-          {errorMessage ? (
-            <p className="rounded-xl border border-border-gray bg-danger-soft px-4 py-3 text-sm leading-5 font-medium text-danger-500">
-              {errorMessage}
-            </p>
-          ) : null}
-
           <div className="flex flex-wrap gap-3 text-sm text-text-gray">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 font-medium text-brand-500">
               <UserRound className="h-4 w-4" aria-hidden strokeWidth={1.8} />

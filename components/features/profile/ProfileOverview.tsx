@@ -13,6 +13,7 @@ import ParticipationStatusCard from '@/components/features/profile/Participation
 import ProfileHeader from '@/components/features/profile/ProfileHeader';
 import ProfileOverviewSkeleton from '@/components/features/profile/ProfileOverviewSkeleton';
 import SkillsCard from '@/components/features/profile/SkillsCard';
+import ToastMessage from '@/components/shared/ToastMessage';
 import {
   fetchMemberProfile,
   fetchMyProfile,
@@ -387,6 +388,8 @@ export default function ProfileOverview({
   if (!profileForm || !profile) {
     return (
       <section className="bg-surface-soft px-4 py-6 sm:px-6 sm:py-8">
+        <ToastMessage message={errorMessage} />
+
         <div className="mx-auto w-full max-w-5xl rounded-2xl border border-border-gray bg-white px-6 py-8 text-sm leading-6 text-danger-500">
           {errorMessage ?? '프로필을 불러오지 못했습니다.'}
         </div>
@@ -396,13 +399,9 @@ export default function ProfileOverview({
 
   return (
     <section className="bg-surface-soft px-4 py-6 sm:px-6 sm:py-8">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        {errorMessage ? (
-          <div className="rounded-2xl border border-border-gray bg-danger-soft px-5 py-4 text-sm leading-6 text-danger-500">
-            {errorMessage}
-          </div>
-        ) : null}
+      <ToastMessage message={errorMessage} />
 
+      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
         <ProfileHeader
           name={profileForm.name}
           role={roleLabel}

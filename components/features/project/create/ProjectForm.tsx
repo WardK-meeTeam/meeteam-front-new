@@ -27,6 +27,7 @@ import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
 import BaseTag from '@/components/shared/BaseTag';
 import BaseTextarea from '@/components/shared/BaseTextarea';
+import ToastMessage from '@/components/shared/ToastMessage';
 
 type OpenDropdownKey = 'major' | 'minor' | null;
 type ProjectFormVariant = 'create' | 'edit';
@@ -274,7 +275,8 @@ export default function ProjectForm({
     }
 
     if (!isEdit && jobFields.length === 0) {
-      nextErrors.form = '프로젝트 등록 옵션을 아직 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
+      nextErrors.form =
+        '프로젝트 등록 옵션을 아직 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
     }
 
     if (isEdit && !recruitDeadline) {
@@ -623,7 +625,7 @@ export default function ProjectForm({
           errorText={fieldErrors.recruitDeadline}
         />
 
-        {fieldErrors.form ? <p className="text-sm leading-5 text-error-red">{fieldErrors.form}</p> : null}
+        <ToastMessage message={fieldErrors.form} />
 
         {isEdit ? (
           <div className="flex justify-center pt-2">

@@ -10,6 +10,7 @@ import {
   type ProjectEditPrefill,
   updateProject,
 } from '@/components/features/project/projectApi';
+import ToastMessage from '@/components/shared/ToastMessage';
 import ProjectManageShell from './ProjectManageShell';
 import { ProjectManageEditSkeleton } from './ProjectManageSkeletons';
 
@@ -77,6 +78,8 @@ export default function ProjectManageEdit({ projectId }: ProjectManageEditProps)
   if (!prefill) {
     return (
       <ProjectManageShell projectId={projectId} activeTab="edit">
+        <ToastMessage message={errorMessage} />
+
         <section className="rounded-3xl border border-border-gray bg-white px-8 py-12 text-center shadow-sm">
           <h2 className="text-xl font-bold text-text-black">프로젝트를 찾을 수 없습니다.</h2>
           <p className="mt-2 text-sm text-text-gray">

@@ -6,6 +6,7 @@ import { Lock, Mail } from 'lucide-react';
 
 import BaseButton from '@/components/shared/BaseButton';
 import BaseInput from '@/components/shared/BaseInput';
+import ToastMessage from '@/components/shared/ToastMessage';
 import { useAuthStore } from '@/stores/useAuthStore';
 import type { LoginFormValues } from '@/types/auth';
 
@@ -87,6 +88,8 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
       onSubmit={handleSubmit}
       data-cy="login-form"
     >
+      <ToastMessage message={fieldErrors.form} />
+
       <div className="flex flex-col gap-1.5">
         <label htmlFor="email" className="font-bold text-text-black">
           이메일
@@ -130,16 +133,6 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
           </p>
         ) : null}
       </div>
-
-      {fieldErrors.form ? (
-        <div
-          className="rounded-2xl border border-border-gray bg-danger-soft px-4 py-3 text-sm text-danger-500"
-          role="alert"
-          aria-live="polite"
-        >
-          {fieldErrors.form}
-        </div>
-      ) : null}
 
       <BaseButton size="L" full={true} type="submit" disabled={isSubmitting} data-cy="login-submit">
         {isSubmitting ? '로그인 중...' : '로그인'}

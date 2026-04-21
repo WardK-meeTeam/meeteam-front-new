@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import {
   CalendarDays,
   ChevronLeft,
@@ -22,10 +22,74 @@ import { fetchProjectDetail } from '@/components/features/project/projectApi';
 import CategoryBadge from '@/components/shared/CategoryBadge';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import SkillChip from '@/components/shared/SkillChip';
+import ToastMessage from '@/components/shared/ToastMessage';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { useToastStore } from '@/stores/useToastStore';
 import { useProjectStore } from '@/components/features/project/store';
 import type { ProjectRecord } from '@/types/project';
 
+type ExternalProjectLinkProps = {
+  label: string;
+  url: string;
+  icon: ReactNode;
+  onCopy: (url: string, label: string) => void;
+};
+
+function ExternalProjectLink({ label, url, icon, onCopy }: ExternalProjectLinkProps) {
+  const hasUrl = Boolean(url);
+  const content = (
+    <>
+      <span className="flex min-w-0 items-center gap-2">
+        {icon}
+        <span className="truncate">{hasUrl ? url : '등록된 링크가 없습니다.'}</span>
+      </span>
+      <ExternalLink
+        className={`h-3.5 w-3.5 shrink-0 ${hasUrl ? 'text-muted-gray' : 'text-divider-soft'}`}
+        aria-hidden
+        strokeWidth={1.8}
+      />
+    </>
+  );
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs leading-4 font-bold text-muted-gray">
+        <span>{label}</span>
+        <button
+          type="button"
+          onClick={() => onCopy(url, label)}
+          disabled={!hasUrl}
+          className="rounded-md p-1 text-muted-gray transition-colors hover:bg-surface-soft hover:text-text-black disabled:cursor-not-allowed disabled:text-divider-soft disabled:hover:bg-transparent"
+          aria-label={`${label} 복사`}
+        >
+          <Copy className="h-3.5 w-3.5" aria-hidden strokeWidth={1.8} />
+        </button>
+      </div>
+
+      {hasUrl ? (
+        <a
+          href={url}
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center justify-between rounded-xl border border-brand-50 bg-brand-50 px-4 py-3 text-xs leading-4 font-normal text-text-gray transition-colors hover:bg-white"
+        >
+          {content}
+        </a>
+      ) : (
+        <div
+          className="flex items-center justify-between rounded-xl border border-border-gray bg-surface-soft px-4 py-3 text-xs leading-4 font-normal text-muted-gray"
+          aria-disabled
+        >
+          {content}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ProjectDetailPage({ projectId }: { projectId: string }) {
+  const memberId = useAuthStore((state) => state.memberId);
+  const showToast = useToastStore((state) => state.showToast);
   const projectsById = useProjectStore((state) => state.projectsById);
   const localProject = projectsById[projectId] ?? null;
   const [project, setProject] = useState<ProjectRecord | null>(null);
@@ -104,6 +168,8 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   if (!project) {
     return (
       <section className="mx-auto flex w-full max-w-7xl flex-col items-center gap-4 py-24 text-center">
+        <ToastMessage message={errorMessage} />
+
         <h1 className="text-3xl font-bold text-text-black">프로젝트를 찾을 수 없어요.</h1>
         <p className="text-base leading-6 text-text-gray">
           {errorMessage ?? '목록으로 돌아가서 다른 프로젝트를 확인해보세요.'}
@@ -122,6 +188,21 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   const leader = project.members.find((member) => member.isLeader) ?? project.members[0];
   const leaderSkillKey = `${project.myInterest.major} - ${project.myInterest.minor}`;
   const leaderSkills = project.leaderTechStacks ?? project.recruitTechStacks[leaderSkillKey] ?? [];
+  const canManageProject =
+    project.isLeader === true || (memberId !== null && memberId === project.leaderProfileId);
+
+  const handleCopyExternalUrl = async (url: string, label: string) => {
+    if (!url) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast({ tone: 'success', message: `${label}를 복사했어요.` });
+    } catch {
+      showToast({ message: '주소를 복사하지 못했습니다. 다시 시도해 주세요.' });
+    }
+  };
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-8 pb-20">
@@ -139,13 +220,11 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
         {project.coverImageUrl ? (
           <img
             alt={project.title}
-            className="absolute inset-0 h-full w-full object-cover opacity-60"
+            className="absolute inset-0 h-full w-full object-cover"
             src={project.coverImageUrl}
           />
         ) : null}
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-r from-text-black via-label-dark to-label-dark" />
-        <div className="pointer-events-none absolute -right-20 -top-20 h-96 w-96 rounded-full bg-brand-400/20 blur-3xl" />
-        <div className="pointer-events-none absolute -left-20 bottom-0 h-80 w-80 rounded-full bg-brand-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute inset-0 bg-black/45" />
 
         <div className="relative z-10 flex h-full flex-col items-start justify-center">
           <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -164,13 +243,15 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
           </div>
         </div>
 
-        <AuthLink
-          href={`/projects/${project.id}/manage`}
-          className="absolute right-10 top-8 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-2.5 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-        >
-          <Settings className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-          프로젝트 관리
-        </AuthLink>
+        {canManageProject ? (
+          <AuthLink
+            href={`/projects/${project.id}/manage`}
+            className="absolute right-10 top-8 z-20 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-2.5 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+          >
+            <Settings className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+            프로젝트 관리
+          </AuthLink>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-1 gap-8 pb-14 xl:grid-cols-[minmax(0,1fr)_24rem]">
@@ -218,63 +299,31 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
             </h2>
 
             <div className="mt-4 space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs leading-4 font-bold text-muted-gray">
-                  <span>깃허브 주소</span>
-                  <Copy className="h-3.5 w-3.5 text-muted-gray" aria-hidden strokeWidth={1.8} />
-                </div>
-                <Link
-                  href={project.githubUrl || '#'}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-between rounded-xl border border-brand-50 bg-brand-50 px-4 py-3 text-xs leading-4 font-normal text-text-gray transition-colors hover:bg-white"
-                >
-                  <span className="flex min-w-0 items-center gap-2">
-                    <Github
-                      className="h-4 w-4 shrink-0 text-text-black"
-                      aria-hidden
-                      strokeWidth={1.8}
-                    />
-                    <span className="truncate">
-                      {project.githubUrl || '등록된 링크가 없습니다.'}
-                    </span>
-                  </span>
-                  <ExternalLink
-                    className="h-3.5 w-3.5 shrink-0 text-muted-gray"
+              <ExternalProjectLink
+                label="깃허브 주소"
+                url={project.githubUrl}
+                onCopy={handleCopyExternalUrl}
+                icon={
+                  <Github
+                    className="h-4 w-4 shrink-0 text-text-black"
                     aria-hidden
                     strokeWidth={1.8}
                   />
-                </Link>
-              </div>
+                }
+              />
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs leading-4 font-bold text-muted-gray">
-                  <span>소통 채널 주소</span>
-                  <Copy className="h-3.5 w-3.5 text-muted-gray" aria-hidden strokeWidth={1.8} />
-                </div>
-                <Link
-                  href={project.communicationUrl || '#'}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-between rounded-xl border border-brand-50 bg-brand-50 px-4 py-3 text-xs leading-4 font-normal text-text-gray transition-colors hover:bg-white"
-                >
-                  <span className="flex min-w-0 items-center gap-2">
-                    <Link2
-                      className="h-4 w-4 shrink-0 text-brand-500"
-                      aria-hidden
-                      strokeWidth={1.8}
-                    />
-                    <span className="truncate">
-                      {project.communicationUrl || '등록된 링크가 없습니다.'}
-                    </span>
-                  </span>
-                  <ExternalLink
-                    className="h-3.5 w-3.5 shrink-0 text-muted-gray"
+              <ExternalProjectLink
+                label="소통 채널 주소"
+                url={project.communicationUrl}
+                onCopy={handleCopyExternalUrl}
+                icon={
+                  <Link2
+                    className="h-4 w-4 shrink-0 text-brand-500"
                     aria-hidden
                     strokeWidth={1.8}
                   />
-                </Link>
-              </div>
+                }
+              />
             </div>
 
             <p className="mt-4 text-center text-[10px] leading-4 text-muted-gray">

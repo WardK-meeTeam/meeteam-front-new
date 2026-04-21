@@ -9,6 +9,7 @@ import {
   fetchProjectTeamManagement,
   toggleProjectRecruitmentStatus,
 } from '@/components/features/project/projectApi';
+import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectRecruitmentStatus } from '@/types/project';
 
 type ProjectManageShellProps = {
@@ -177,6 +178,8 @@ export default function ProjectManageShell({
   return (
     <section className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6 lg:px-8">
       <div className="space-y-6 md:space-y-8">
+        <ToastMessage message={errorMessage} />
+
         <header className="flex flex-col gap-5 border-b border-border-gray pb-6 md:gap-6">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div className="flex items-start gap-4">
@@ -261,12 +264,6 @@ export default function ProjectManageShell({
             </ul>
           </nav>
         </header>
-
-        {errorMessage ? (
-          <p className="rounded-xl border border-border-gray bg-danger-soft px-4 py-3 text-sm leading-5 font-medium text-danger-500">
-            {errorMessage}
-          </p>
-        ) : null}
 
         {children}
       </div>

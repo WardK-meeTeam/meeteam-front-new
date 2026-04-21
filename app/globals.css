@@ -57,6 +57,29 @@ body {
   height: auto;
 }
 
+.project-card-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-divider-soft) 70%, transparent) transparent;
+}
+
+.project-card-scrollbar::-webkit-scrollbar {
+  width: 0.375rem;
+}
+
+.project-card-scrollbar::-webkit-scrollbar-track {
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-divider-soft) 12%, transparent);
+}
+
+.project-card-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-divider-soft) 65%, transparent);
+}
+
+.project-card-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--color-divider-soft) 85%, transparent);
+}
+
 input,
 button,
 textarea,

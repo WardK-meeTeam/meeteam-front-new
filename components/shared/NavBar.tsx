@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bell } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import AuthLink from '@/components/features/auth/AuthLink';
 import { useNotificationStore } from '@/components/features/notification/store';
 import { useNotificationSync } from '@/components/features/notification/useNotificationSync';
@@ -15,11 +16,25 @@ const navItems = [
   { href: '/projects/create', label: '프로젝트 등록하기', authRequired: true },
 ];
 
-export function TemporaryNavBar() {
+export function NavBar() {
   const pathname = usePathname();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const unreadCount = useNotificationStore((state) => state.unreadCount);
+  const [isAtTop, setIsAtTop] = useState(true);
   useNotificationSync(isAuthenticated);
+
+  useEffect(() => {
+    const updateNavVisibility = () => {
+      setIsAtTop(window.scrollY <= 8);
+    };
+
+    updateNavVisibility();
+    window.addEventListener('scroll', updateNavVisibility, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', updateNavVisibility);
+    };
+  }, [pathname]);
 
   const isActiveLink = (href: string) =>
     pathname === href ||
@@ -29,7 +44,11 @@ export function TemporaryNavBar() {
       !pathname.startsWith('/projects/create'));
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border-gray bg-white/80 backdrop-blur-sm">
+    <nav
+      className={`sticky top-0 z-[100] border-b border-border-gray bg-white shadow-[0_1px_0_var(--color-border-gray),0_10px_24px_rgba(15,23,42,0.04)] transition-transform duration-300 ease-out ${
+        isAtTop ? 'translate-y-0' : '-translate-y-full'
+      }`}
+    >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-8">
         <div className="flex items-center gap-8">
           <Link href="/" className="text-xl leading-7 font-bold tracking-tight text-text-black">

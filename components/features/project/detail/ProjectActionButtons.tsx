@@ -8,6 +8,7 @@ import {
   fetchProjectLikeStatus,
   toggleProjectLike,
 } from '@/components/features/project/projectApi';
+import ToastMessage from '@/components/shared/ToastMessage';
 
 interface ProjectActionButtonsProps {
   projectId: string | number;
@@ -88,6 +89,8 @@ export default function ProjectActionButtons({
 
   return (
     <div className="space-y-2">
+      <ToastMessage message={errorMessage} />
+
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -117,10 +120,6 @@ export default function ProjectActionButtons({
           <Share2 className="h-5 w-5" aria-hidden strokeWidth={1.8} />
         </button>
       </div>
-
-      {errorMessage ? (
-        <p className="text-xs leading-4 font-medium text-danger-500">{errorMessage}</p>
-      ) : null}
     </div>
   );
 }

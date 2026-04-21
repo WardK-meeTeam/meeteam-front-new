@@ -96,6 +96,7 @@ export type ProjectRecord = ManagedProject & {
   leaderRole: string;
   recruitmentStatus?: ProjectRecruitmentStatus;
   leaderProfileId?: number;
+  isLeader?: boolean;
   leaderTechStacks?: string[];
   likeCount?: number;
   isLiked?: boolean;

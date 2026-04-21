@@ -72,29 +72,46 @@ export default function BasicInfoCard({
         <div className="mt-4 space-y-4">
           <a
             href={emailContact.href}
-            className="flex items-center gap-3 border-y border-border-soft py-4 text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black"
+            className="flex min-w-0 items-center gap-3 border-y border-border-soft py-4 text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black"
           >
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-soft text-text-gray">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-border-soft text-text-gray">
               <EmailIcon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
             </span>
-            <span>{emailContact.value}</span>
+            <span className="min-w-0 truncate">{emailContact.value}</span>
           </a>
 
           <div className="space-y-3">
             {socialContacts.map((item) => {
               const Icon = item.icon;
+              const hasLink = item.href !== '#';
+              const className =
+                'flex min-w-0 items-center gap-3 text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black';
+              const content = (
+                <>
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-border-soft text-text-gray">
+                    <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+                  </span>
+                  <span className="min-w-0 truncate">{item.value}</span>
+                </>
+              );
 
-              return (
+              return hasLink ? (
                 <a
                   key={`${item.href}-${item.value}`}
                   href={item.href}
-                  className="flex items-center gap-3 text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black"
+                  className={className}
+                  target="_blank"
+                  rel="noreferrer"
                 >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-soft text-text-gray">
-                    <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-                  </span>
-                  <span>{item.value}</span>
+                  {content}
                 </a>
+              ) : (
+                <div
+                  key={`${item.href}-${item.value}`}
+                  className="flex min-w-0 items-center gap-3 text-sm leading-5 font-medium text-muted-gray"
+                >
+                  {content}
+                </div>
               );
             })}
           </div>

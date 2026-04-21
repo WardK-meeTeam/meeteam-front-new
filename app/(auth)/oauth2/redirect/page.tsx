@@ -5,6 +5,7 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { fetchMyProfile } from '@/components/features/profile/profileApi';
+import ToastMessage from '@/components/shared/ToastMessage';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { exchangeOAuthToken, type OAuthRedirectType } from '@/components/features/auth/oauthApi';
 
@@ -63,12 +64,11 @@ function OAuthRedirectContent() {
 
   return (
     <section className="flex w-full max-w-md flex-col gap-4 rounded-3xl bg-white p-10 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]">
+      <ToastMessage message={errorMessage} />
+
       <h1 className="text-2xl font-bold text-text-black">소셜 로그인</h1>
       {errorMessage ? (
         <>
-          <p className="rounded-2xl border border-border-gray bg-danger-soft px-4 py-3 text-sm text-danger-500">
-            {errorMessage}
-          </p>
           <Link
             href="/auth/login"
             className="inline-flex h-12 items-center justify-center rounded-xl bg-brand-500 px-5 text-sm font-bold text-white"

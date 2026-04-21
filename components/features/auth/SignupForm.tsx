@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import BaseButton from '@/components/shared/BaseButton';
+import ToastMessage from '@/components/shared/ToastMessage';
 import type { Interest, JobFieldOption, SignupFormValues } from '@/types/auth';
 
 import AuthSection from '@/components/features/auth/AuthSection';
@@ -376,7 +377,7 @@ export default function SignupForm() {
         projectError={fieldErrors.projectExperienceCount}
       />
 
-      {fieldErrors.form ? <p className="text-sm text-error-red">{fieldErrors.form}</p> : null}
+      <ToastMessage message={fieldErrors.form} />
 
       <BaseButton
         size="L"

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronLeft, RotateCw } from 'lucide-react';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
+import ToastMessage from '@/components/shared/ToastMessage';
 import { NotificationCard } from './NotificationCard';
 import { fetchNotifications } from './notificationApi';
 import { useNotificationStore } from './store';
@@ -88,6 +89,8 @@ export default function NotificationsPage() {
 
   return (
     <section className="rounded-3xl bg-surface-soft px-4 py-4 md:px-6 md:py-8">
+      <ToastMessage message={errorMessage} />
+
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <Link
           href="/"
@@ -116,12 +119,6 @@ export default function NotificationsPage() {
             모두 읽음 처리
           </button>
         </div>
-
-        {errorMessage ? (
-          <div className="rounded-2xl border border-danger-soft bg-white px-4 py-3 text-sm leading-5 font-medium text-danger-500">
-            {errorMessage}
-          </div>
-        ) : null}
 
         <div className="space-y-4">
           {isLoading ? (

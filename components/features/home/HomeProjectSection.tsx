@@ -9,6 +9,7 @@ import {
   type HomeProjectCard,
   type HomeProjectCategory,
 } from '@/components/features/home/homeApi';
+import ToastMessage from '@/components/shared/ToastMessage';
 
 const CATEGORY_CHIPS: Array<{ emoji: string; label: HomeProjectCategory }> = [
   { emoji: '✨', label: '전체' },
@@ -100,18 +101,14 @@ export default function HomeProjectSection() {
       </section>
 
       <section className="space-y-6">
+        <ToastMessage message={errorMessage} />
+
         <div className="flex items-end justify-between">
           <h2 className="text-2xl font-bold text-text-black">프로젝트</h2>
           <Link href="/projects" className="text-sm font-semibold text-brand-500">
             전체보기 &gt;
           </Link>
         </div>
-
-        {errorMessage ? (
-          <div className="rounded-2xl border border-border-gray bg-danger-soft px-5 py-4 text-sm leading-6 text-danger-500">
-            {errorMessage}
-          </div>
-        ) : null}
 
         {isInitialLoading ? (
           <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">

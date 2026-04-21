@@ -7,10 +7,10 @@ import { ChevronLeft, Info } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
 import {
-  fetchMyProfile,
-  type MemberProfileResponse,
-} from '@/components/features/profile/profileApi';
-import { applyToProject, fetchProjectDetail } from '@/components/features/project/projectApi';
+  applyToProject,
+  fetchProjectApplicationPage,
+  type ProjectApplicationPage,
+} from '@/components/features/project/projectApi';
 import {
   findProjectJobField,
   findProjectJobPosition,
@@ -19,8 +19,8 @@ import { projectApplicationSchema } from '@/components/features/project/apply/sc
 import BaseButton from '@/components/shared/BaseButton';
 import BaseTextarea from '@/components/shared/BaseTextarea';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import ToastMessage from '@/components/shared/ToastMessage';
 import type { JobFieldOption } from '@/types/auth';
-import type { ProjectRecord, ProjectRecruitmentDetail } from '@/types/project';
 
 type ProjectApplyPageProps = {
   projectId: string;
@@ -63,48 +63,33 @@ function ApplicantInfoRow({ label, value }: { label: string; value: string | Rea
   );
 }
 
-function calculateAge(birthDate: string | null) {
-  if (!birthDate) {
+function formatAge(age: number | null | undefined) {
+  if (typeof age !== 'number') {
     return '-';
-  }
-
-  const today = new Date();
-  const birth = new Date(birthDate);
-  let age = today.getFullYear() - birth.getFullYear();
-  const monthDiff = today.getMonth() - birth.getMonth();
-
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-    age -= 1;
   }
 
   return `${age}세`;
 }
 
-function getGenderLabel(gender: MemberProfileResponse['gender']) {
-  return gender === 'FEMALE' ? '여성' : '남성';
-}
-
 function buildApplicationPositions(
-  project: ProjectRecord | null,
+  applicationPage: ProjectApplicationPage | null,
   jobFields: JobFieldOption[],
 ): ApplicationPositionOption[] {
-  if (!project?.recruitmentDetails || jobFields.length === 0) {
+  if (!applicationPage || jobFields.length === 0) {
     return [];
   }
 
-  return project.recruitmentDetails
-    .filter((recruitment) => !recruitment.isClosed && project.status !== 'closed')
+  return applicationPage.recruitments
+    .filter((recruitment) => !recruitment.isClosed)
     .map((recruitment) => mapRecruitmentToPositionOption(recruitment, jobFields))
     .filter((option): option is ApplicationPositionOption => option !== null);
 }
 
 function mapRecruitmentToPositionOption(
-  recruitment: ProjectRecruitmentDetail,
+  recruitment: ProjectApplicationPage['recruitments'][number],
   jobFields: JobFieldOption[],
 ) {
-  const field =
-    jobFields.find((item) => item.code === recruitment.jobFieldCode) ??
-    findProjectJobField(jobFields, recruitment.jobFieldName);
+  const field = findProjectJobField(jobFields, recruitment.jobFieldName);
 
   if (!field) {
     return null;
@@ -133,8 +118,7 @@ export default function ProjectApplyPage({
 }: ProjectApplyPageProps) {
   const router = useRouter();
   const handleAuthRequired = useAuthRequiredModal();
-  const [profile, setProfile] = useState<MemberProfileResponse | null>(null);
-  const [project, setProject] = useState<ProjectRecord | null>(null);
+  const [applicationPage, setApplicationPage] = useState<ProjectApplicationPage | null>(null);
   const [jobFields, setJobFields] = useState<JobFieldOption[]>([]);
   const [selectedJobPositionCode, setSelectedJobPositionCode] = useState('');
   const [motivation, setMotivation] = useState('');
@@ -143,19 +127,16 @@ export default function ProjectApplyPage({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const positionOptions = useMemo(
-    () => buildApplicationPositions(project, jobFields),
-    [jobFields, project],
+    () => buildApplicationPositions(applicationPage, jobFields),
+    [applicationPage, jobFields],
   );
   const selectedPosition = positionOptions.find(
     (option) => option.code === selectedJobPositionCode,
   );
-  const primarySkillGroup = profile?.groupedSkills[0];
-  const profileRole = [
-    primarySkillGroup?.jobFieldName,
-    primarySkillGroup?.jobPositionName ?? profile?.representativePosition,
-  ]
-    .filter(Boolean)
-    .join(' / ');
+  const applicant = applicationPage?.applicant;
+  const profileRole =
+    applicant?.profileSummary ||
+    [applicant?.jobFieldNames[0], applicant?.jobPositionNames[0]].filter(Boolean).join(' / ');
 
   useEffect(() => {
     let active = true;
@@ -165,9 +146,8 @@ export default function ProjectApplyPage({
         setIsLoading(true);
         setErrorMessage(null);
 
-        const [nextProfile, nextProject, nextJobFields] = await Promise.all([
-          fetchMyProfile(),
-          fetchProjectDetail(projectId),
+        const [nextApplicationPage, nextJobFields] = await Promise.all([
+          fetchProjectApplicationPage(projectId),
           fetchJobOptions(),
         ]);
 
@@ -175,8 +155,7 @@ export default function ProjectApplyPage({
           return;
         }
 
-        setProfile(nextProfile);
-        setProject(nextProject);
+        setApplicationPage(nextApplicationPage);
         setJobFields(nextJobFields);
       } catch (error) {
         if (!active) {
@@ -267,6 +246,35 @@ export default function ProjectApplyPage({
     );
   }
 
+  if (!applicationPage) {
+    return (
+      <section className="min-h-screen">
+        <ToastMessage message={errorMessage} />
+
+        <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-12">
+          <Link
+            href={`/projects/${projectId}`}
+            className="inline-flex items-center gap-2 text-sm leading-5 font-bold text-text-gray transition-colors hover:text-text-black"
+          >
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border-gray bg-surface-soft">
+              <ChevronLeft className="h-5 w-5" aria-hidden strokeWidth={1.8} />
+            </span>
+            프로젝트로 돌아가기
+          </Link>
+
+          <div className="rounded-3xl border border-border-soft bg-white px-8 py-12 text-center shadow-sm">
+            <h1 className="text-2xl leading-8 font-extrabold text-text-black">
+              지원 정보를 불러오지 못했습니다.
+            </h1>
+            <p className="mt-2 text-sm leading-6 text-text-gray">
+              {errorMessage ?? '프로젝트 상태를 확인한 뒤 다시 시도해 주세요.'}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="min-h-screen">
       <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-12">
@@ -282,10 +290,10 @@ export default function ProjectApplyPage({
           </Link>
 
           <div>
-            <p className="text-sm leading-5 font-bold text-brand-500">
-              {project?.title ?? '프로젝트'}
-            </p>
             <h1 className="text-2xl leading-8 font-extrabold text-text-black">프로젝트 지원하기</h1>
+            <p className="mt-1 text-sm leading-5 text-text-gray">
+              지원 가능한 포지션만 선택할 수 있습니다.
+            </p>
           </div>
         </div>
 
@@ -310,8 +318,8 @@ export default function ProjectApplyPage({
           <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:gap-8">
             <div className="flex w-full shrink-0 flex-col items-center gap-3 sm:w-24">
               <ProfileAvatar
-                name={profile?.name ?? 'M'}
-                imageUrl={profile?.profileImageUrl}
+                name={applicant?.name ?? 'M'}
+                imageUrl={applicant?.profileImageUrl}
                 sizeClassName="h-24 w-24"
                 shape="rounded"
                 textClassName="text-2xl"
@@ -320,7 +328,7 @@ export default function ProjectApplyPage({
 
               <div className="space-y-1 text-center">
                 <p className="text-2xl leading-7 font-bold text-text-black">
-                  {profile?.name ?? '-'}
+                  {applicant?.name ?? '-'}
                 </p>
                 <p className="text-xs leading-4 font-medium text-muted-gray">지원자</p>
               </div>
@@ -340,12 +348,9 @@ export default function ProjectApplyPage({
                   )
                 }
               />
-              <ApplicantInfoRow label="나이" value={calculateAge(profile?.birthDate ?? null)} />
-              <ApplicantInfoRow
-                label="성별"
-                value={profile ? getGenderLabel(profile.gender) : '-'}
-              />
-              <ApplicantInfoRow label="이메일" value={profile?.email ?? '-'} />
+              <ApplicantInfoRow label="나이" value={formatAge(applicant?.age)} />
+              <ApplicantInfoRow label="성별" value={applicant?.gender ?? '-'} />
+              <ApplicantInfoRow label="이메일" value={applicant?.email ?? '-'} />
               <ApplicantInfoRow label="프로필" value={profileRole || '-'} />
             </div>
           </div>
@@ -403,11 +408,7 @@ export default function ProjectApplyPage({
             />
           </div>
 
-          {errorMessage ? (
-            <p className="mt-4 rounded-xl border border-border-gray bg-danger-soft px-4 py-3 text-sm leading-5 font-medium text-danger-500">
-              {errorMessage}
-            </p>
-          ) : null}
+          <ToastMessage message={errorMessage} />
 
           <div className="mt-6 space-y-4">
             <BaseButton

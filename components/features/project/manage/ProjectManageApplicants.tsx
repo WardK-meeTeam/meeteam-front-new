@@ -11,6 +11,7 @@ import {
 } from '@/components/features/project/projectApi';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
+import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectApplicant } from '@/types/project';
 import ProjectApplicantDetailModal from './ProjectApplicantDetailModal';
 import ProjectManageShell, { ProjectManageNotice } from './ProjectManageShell';
@@ -200,6 +201,8 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
       pendingApplicantsCount={pendingApplicants.length}
     >
       <div className="space-y-6">
+        <ToastMessage message={errorMessage} />
+
         {isLoading && pendingApplicants.length === 0 ? (
           <ProjectManageApplicantsSkeleton />
         ) : (
@@ -209,12 +212,6 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
                 지원자 목록 <span className="ml-1 text-brand-500">{pendingApplicants.length}</span>
               </h2>
             </header>
-
-            {errorMessage ? (
-              <p className="border-b border-border-gray/40 bg-danger-soft px-6 py-3 text-sm leading-5 font-medium text-danger-500">
-                {errorMessage}
-              </p>
-            ) : null}
 
             {pendingApplicants.length === 0 ? (
               <div className="px-6 py-12 text-center">
