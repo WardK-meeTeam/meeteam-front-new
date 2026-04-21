@@ -1,6 +1,6 @@
-import Image from 'next/image';
 import { BriefcaseBusiness } from 'lucide-react';
 import AuthLink from '@/components/features/auth/AuthLink';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import type { Teammate } from '@/types/team';
 
 export function TeammateCard({ teammate }: { teammate: Teammate }) {
@@ -14,21 +14,15 @@ export function TeammateCard({ teammate }: { teammate: Teammate }) {
       className="group flex h-full min-h-72 flex-col rounded-2xl border border-border-soft bg-white px-6 pt-6 pb-14 shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="relative h-16 w-16 overflow-hidden rounded-2xl shadow-sm">
-          {teammate.imageUrl ? (
-            <Image
-              alt={teammate.name}
-              className="object-cover transition-transform duration-300 group-hover:scale-105"
-              fill
-              sizes="64px"
-              src={teammate.imageUrl}
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-brand-50 text-xl leading-none font-bold text-brand-500">
-              {teammate.name.slice(0, 1)}
-            </div>
-          )}
-        </div>
+        <ProfileAvatar
+          name={teammate.name}
+          imageUrl={teammate.imageUrl}
+          sizeClassName="h-16 w-16"
+          shape="rounded"
+          textClassName="text-xl"
+          className="shadow-sm"
+          imageClassName="transition-transform duration-300 group-hover:scale-135"
+        />
 
         <span className="rounded-lg bg-surface-soft px-2 py-1 text-xs leading-4 font-medium text-text-gray">
           {teammate.role}

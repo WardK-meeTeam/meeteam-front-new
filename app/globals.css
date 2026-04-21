@@ -51,10 +51,7 @@ body {
   background-color: #fff;
 }
 
-img,
-svg,
-video,
-canvas {
+:where(img, svg, video, canvas) {
   display: block;
   max-width: 100%;
   height: auto;

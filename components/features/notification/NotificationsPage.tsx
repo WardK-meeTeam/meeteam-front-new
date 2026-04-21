@@ -1,50 +1,90 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
-import { ChevronLeft } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { ChevronLeft, RotateCw } from 'lucide-react';
+import SkeletonBlock from '@/components/shared/SkeletonBlock';
 import { NotificationCard } from './NotificationCard';
-import type { NotificationCardProps } from './types';
+import { fetchNotifications } from './notificationApi';
+import { useNotificationStore } from './store';
+import type { NotificationItem } from './types';
 
-const INITIAL_NOTIFICATIONS: NotificationCardProps[] = [
-  {
-    title: '🎉 프로젝트 합류를 환영합니다!',
-    description:
-      "'트립게더' 프로젝트의 프론트엔드 포지션 지원이 승인되었습니다. 팀 리더와 대화를 시작해보세요.",
-    timestamp: '방금 전',
-    variant: 'welcome',
-    unread: true,
-    actionHref: '/projects',
-    actionLabel: '자세히 보기',
-  },
-  {
-    title: '새로운 지원자가 있습니다.',
-    description:
-      "운영 중인 'meeTeam' 프로젝트에 새로운 디자이너 지원자가 있습니다. 프로필을 확인해보세요.",
-    timestamp: '2시간 전',
-    variant: 'applicant',
-    unread: true,
-    actionHref: '/projects',
-    actionLabel: '자세히 보기',
-  },
-  {
-    title: '지원 결과 안내',
-    description:
-      "'반려식물 케어 다이어리' 프로젝트 지원이 아쉽게도 거절되었습니다. 다른 멋진 팀들이 기다리고 있어요!",
-    timestamp: '1일 전',
-    variant: 'rejected',
-  },
-  {
-    title: '지원이 완료되었습니다.',
-    description: "'AI 뉴스 요약 서비스'에 성공적으로 지원했습니다. 결과는 알림으로 알려드릴게요.",
-    timestamp: '3일 전',
-    variant: 'submitted',
-  },
-];
+const NOTIFICATION_PAGE_SIZE = 20;
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const latestNotification = useNotificationStore((state) => state.latestNotification);
+  const setGlobalUnreadCount = useNotificationStore((state) => state.setUnreadCount);
   const unreadCount = notifications.filter((notification) => notification.unread).length;
+
+  const loadNotifications = useCallback(
+    async (nextPage = 0) => {
+      const isFirstPage = nextPage === 0;
+
+      try {
+        if (isFirstPage) {
+          setIsLoading(true);
+        } else {
+          setIsLoadingMore(true);
+        }
+
+        setErrorMessage(null);
+
+        const result = await fetchNotifications(nextPage, NOTIFICATION_PAGE_SIZE);
+
+        setNotifications((current) =>
+          isFirstPage ? result.notifications : [...current, ...result.notifications],
+        );
+        setPage(result.page);
+        setHasMore(result.hasMore);
+
+        if (isFirstPage) {
+          setGlobalUnreadCount(0);
+        }
+      } catch (error) {
+        setErrorMessage(
+          error instanceof Error ? error.message : '알림 목록을 불러오지 못했습니다.',
+        );
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    [setGlobalUnreadCount],
+  );
+
+  useEffect(() => {
+    void loadNotifications(0);
+  }, [loadNotifications]);
+
+  useEffect(() => {
+    if (!latestNotification) {
+      return;
+    }
+
+    setNotifications((current) => {
+      if (current.some((notification) => notification.id === latestNotification.id)) {
+        return current;
+      }
+
+      return [latestNotification, ...current];
+    });
+  }, [latestNotification]);
+
+  const handleMarkAllRead = () => {
+    setNotifications((current) =>
+      current.map((notification) => ({
+        ...notification,
+        unread: false,
+      })),
+    );
+    setGlobalUnreadCount(0);
+  };
 
   return (
     <section className="rounded-3xl bg-surface-soft px-4 py-4 md:px-6 md:py-8">
@@ -69,28 +109,58 @@ export default function NotificationsPage() {
 
           <button
             type="button"
-            onClick={() =>
-              setNotifications((current) =>
-                current.map((notification) => ({
-                  ...notification,
-                  unread: false,
-                })),
-              )
-            }
+            onClick={handleMarkAllRead}
+            disabled={unreadCount === 0}
             className="w-fit text-sm leading-5 font-semibold text-brand-500 transition-colors hover:text-brand-700"
           >
             모두 읽음 처리
           </button>
         </div>
 
+        {errorMessage ? (
+          <div className="rounded-2xl border border-danger-soft bg-white px-4 py-3 text-sm leading-5 font-medium text-danger-500">
+            {errorMessage}
+          </div>
+        ) : null}
+
         <div className="space-y-4">
-          {notifications.map((notification) => (
-            <NotificationCard
-              key={`${notification.title}-${notification.timestamp}`}
-              {...notification}
-            />
-          ))}
+          {isLoading ? (
+            <>
+              <SkeletonBlock className="h-30 w-full bg-white" />
+              <SkeletonBlock className="h-30 w-full bg-white" />
+              <SkeletonBlock className="h-30 w-full bg-white" />
+            </>
+          ) : null}
+
+          {!isLoading && notifications.length === 0 ? (
+            <div className="rounded-2xl border border-border-gray bg-white px-5 py-12 text-center">
+              <p className="text-base leading-6 font-bold text-text-black">
+                도착한 알림이 없습니다.
+              </p>
+              <p className="mt-2 text-sm leading-5 text-text-gray">
+                프로젝트 지원과 팀 합류 소식이 생기면 이곳에 표시됩니다.
+              </p>
+            </div>
+          ) : null}
+
+          {!isLoading
+            ? notifications.map((notification) => (
+                <NotificationCard key={notification.id} {...notification} />
+              ))
+            : null}
         </div>
+
+        {hasMore && !isLoading ? (
+          <button
+            type="button"
+            onClick={() => void loadNotifications(page + 1)}
+            disabled={isLoadingMore}
+            className="mx-auto inline-flex h-10 w-fit items-center justify-center gap-2 rounded-xl border border-border-gray bg-white px-4 text-sm leading-5 font-bold text-text-gray shadow-sm transition-colors hover:text-text-black disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <RotateCw className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+            {isLoadingMore ? '불러오는 중' : '더보기'}
+          </button>
+        ) : null}
       </div>
     </section>
   );

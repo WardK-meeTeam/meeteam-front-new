@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BriefcaseBusiness, Users } from 'lucide-react';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 
 interface JoinedProjectData {
   id: number;
@@ -96,20 +97,16 @@ export default function JoinedProjectCard({
 
             <div className="flex items-end justify-between gap-4">
               <div className="flex items-center gap-2">
-                <span className="h-8 w-8 overflow-hidden rounded-full border border-white/30">
-                  {project.leaderImageUrl ? (
-                    <img
-                      alt={project.leader}
-                      className="h-full w-full object-cover"
-                      src={project.leaderImageUrl}
-                    />
-                  ) : (
-                    <span className="flex h-full w-full items-center justify-center bg-white/20 text-xs font-bold text-white">
-                      {project.leader.slice(0, 1)}
-                    </span>
-                  )}
+                <ProfileAvatar
+                  name={project.leader}
+                  imageUrl={project.leaderImageUrl}
+                  sizeClassName="h-8 w-8"
+                  textClassName="text-xs"
+                  className="border border-white/30 bg-white/20 text-white"
+                />
+                <span className="text-xs leading-4 font-medium text-white/90">
+                  {project.leader}
                 </span>
-                <span className="text-xs leading-4 font-medium text-white/90">{project.leader}</span>
               </div>
 
               <div className="space-y-1">
@@ -119,7 +116,10 @@ export default function JoinedProjectCard({
                 </div>
 
                 <div className="h-1.5 w-20 overflow-hidden rounded-full bg-white/20">
-                  <div className="h-full rounded-full bg-brand-400" style={{ width: progressWidth }} />
+                  <div
+                    className="h-full rounded-full bg-brand-400"
+                    style={{ width: progressWidth }}
+                  />
                 </div>
               </div>
             </div>

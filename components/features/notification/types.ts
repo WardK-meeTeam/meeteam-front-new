@@ -5,12 +5,7 @@ export type NotificationType =
   | 'PROJECT_REJECT'
   | 'PROJECT_END';
 
-export type NotificationCardVariant =
-  | 'welcome'
-  | 'applicant'
-  | 'rejected'
-  | 'submitted'
-  | 'ended';
+export type NotificationCardVariant = 'welcome' | 'applicant' | 'rejected' | 'submitted' | 'ended';
 
 export interface NotificationCardProps {
   title: string;

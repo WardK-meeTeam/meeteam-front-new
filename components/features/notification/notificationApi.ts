@@ -133,7 +133,8 @@ export function mapNotificationEvent(event: MessageEvent<string>): NotificationI
   }
 
   const payload = envelope.data ?? {};
-  const createdAt = envelope.createdAt ?? payload.date ?? payload.localDate ?? payload.occurredAt ?? '';
+  const createdAt =
+    envelope.createdAt ?? payload.date ?? payload.localDate ?? payload.occurredAt ?? '';
   const timestamp = formatNotificationTimestamp(createdAt);
   const copy = getNotificationCopy(type, payload);
 

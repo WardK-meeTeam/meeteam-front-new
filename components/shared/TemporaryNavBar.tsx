@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bell } from 'lucide-react';
 import AuthLink from '@/components/features/auth/AuthLink';
+import { useNotificationStore } from '@/components/features/notification/store';
+import { useNotificationSync } from '@/components/features/notification/useNotificationSync';
 import ProfileMenu from '@/components/shared/ProfileMenu';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -16,6 +18,9 @@ const navItems = [
 export function TemporaryNavBar() {
   const pathname = usePathname();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const unreadCount = useNotificationStore((state) => state.unreadCount);
+  useNotificationSync(isAuthenticated);
+
   const isActiveLink = (href: string) =>
     pathname === href ||
     (href !== '/projects' && pathname.startsWith(`${href}/`)) ||
@@ -71,7 +76,12 @@ export function TemporaryNavBar() {
                 aria-label="알림"
               >
                 <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-                <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-danger-500 shadow-[0_0_0_2px_white]" />
+                {unreadCount > 0 ? (
+                  <span
+                    className="absolute right-2.5 top-2.5 flex min-h-2 min-w-2 items-center justify-center rounded-full border-2 border-white bg-danger-500"
+                    aria-hidden
+                  />
+                ) : null}
               </button>
             </Link>
             <span className="h-6 w-px bg-border-gray" aria-hidden />

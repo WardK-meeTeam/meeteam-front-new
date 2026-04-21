@@ -1,7 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { ChevronRight, CircleCheck, CircleX, Clock3, UserRoundPlus } from 'lucide-react';
+import {
+  ChevronRight,
+  CircleAlert,
+  CircleCheck,
+  CircleX,
+  Clock3,
+  UserRoundPlus,
+} from 'lucide-react';
 import type { NotificationCardProps, NotificationCardVariant } from './types';
 
 const CARD_VARIANT_STYLES: Record<
@@ -44,6 +51,14 @@ const CARD_VARIANT_STYLES: Record<
     iconWrapperClassName: 'bg-border-soft',
     icon: Clock3,
     iconClassName: 'text-text-gray',
+    titleClassName: 'text-text-body',
+    descriptionClassName: 'text-text-gray',
+  },
+  ended: {
+    containerClassName: 'border-border-gray opacity-80',
+    iconWrapperClassName: 'bg-border-soft',
+    icon: CircleAlert,
+    iconClassName: 'text-project-status-closed',
     titleClassName: 'text-text-body',
     descriptionClassName: 'text-text-gray',
   },

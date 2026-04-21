@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
@@ -19,6 +18,7 @@ import {
 import { projectApplicationSchema } from '@/components/features/project/apply/schema';
 import BaseButton from '@/components/shared/BaseButton';
 import BaseTextarea from '@/components/shared/BaseTextarea';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import type { JobFieldOption } from '@/types/auth';
 import type { ProjectRecord, ProjectRecruitmentDetail } from '@/types/project';
 
@@ -309,21 +309,14 @@ export default function ProjectApplyPage({
 
           <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:gap-8">
             <div className="flex w-full shrink-0 flex-col items-center gap-3 sm:w-24">
-              <div className="relative h-24 w-24 overflow-hidden rounded-3xl border-4 border-white bg-border-gray shadow-lg">
-                {profile?.profileImageUrl ? (
-                  <Image
-                    alt={profile.name}
-                    className="object-cover"
-                    fill
-                    sizes="96px"
-                    src={profile.profileImageUrl}
-                  />
-                ) : (
-                  <span className="flex h-full w-full items-center justify-center text-2xl font-bold text-text-gray">
-                    {profile?.name.slice(0, 1) ?? 'M'}
-                  </span>
-                )}
-              </div>
+              <ProfileAvatar
+                name={profile?.name ?? 'M'}
+                imageUrl={profile?.profileImageUrl}
+                sizeClassName="h-24 w-24"
+                shape="rounded"
+                textClassName="text-2xl"
+                className="border-4 border-white bg-border-gray text-text-gray shadow-lg"
+              />
 
               <div className="space-y-1 text-center">
                 <p className="text-2xl leading-7 font-bold text-text-black">

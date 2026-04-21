@@ -5,6 +5,7 @@ interface ProfileAvatarProps {
   shape?: 'circle' | 'rounded';
   textClassName?: string;
   className?: string;
+  imageClassName?: string;
 }
 
 export default function ProfileAvatar({
@@ -14,6 +15,7 @@ export default function ProfileAvatar({
   shape = 'circle',
   textClassName = 'text-base',
   className = '',
+  imageClassName = '',
 }: ProfileAvatarProps) {
   const fallbackLabel = name.trim().slice(0, 1) || '?';
   const shapeClassName = shape === 'rounded' ? 'rounded-3xl' : 'rounded-full';
@@ -24,7 +26,11 @@ export default function ProfileAvatar({
       aria-hidden
     >
       {imageUrl ? (
-        <img alt={name} className="h-full w-full object-cover" src={imageUrl} />
+        <img
+          alt={name}
+          className={`h-full w-full scale-125 object-cover ${imageClassName}`}
+          src={imageUrl}
+        />
       ) : (
         <span className={`font-bold leading-none ${textClassName}`}>{fallbackLabel}</span>
       )}

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import { CalendarDays, CheckCircle2, ExternalLink, Mail, XCircle } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
@@ -10,6 +9,7 @@ import {
   fetchProjectApplications,
   type ProjectApplicationDecision,
 } from '@/components/features/project/projectApi';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
 import type { ProjectApplicant } from '@/types/project';
 import ProjectApplicantDetailModal from './ProjectApplicantDetailModal';
@@ -232,21 +232,14 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
                   >
                     <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
                       <div className="flex min-w-0 gap-4 lg:w-52">
-                        <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-2xl bg-border-gray">
-                          {applicant.avatarUrl ? (
-                            <Image
-                              alt={applicant.name}
-                              className="object-cover"
-                              fill
-                              sizes="56px"
-                              src={applicant.avatarUrl}
-                            />
-                          ) : (
-                            <span className="flex h-full w-full items-center justify-center text-base font-bold text-text-gray">
-                              {applicant.name.slice(0, 1)}
-                            </span>
-                          )}
-                        </div>
+                        <ProfileAvatar
+                          name={applicant.name}
+                          imageUrl={applicant.avatarUrl}
+                          sizeClassName="h-14 w-14"
+                          shape="rounded"
+                          textClassName="text-base"
+                          className="bg-border-gray text-text-gray"
+                        />
 
                         <div className="min-w-0 space-y-0.5">
                           <p className="truncate text-xl leading-7 font-bold text-text-black">

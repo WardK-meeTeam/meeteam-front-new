@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronRight, Crown, Trash2 } from 'lucide-react';
@@ -10,6 +9,7 @@ import {
   fetchProjectTeamManagement,
   type ProjectTeamManagement,
 } from '@/components/features/project/projectApi';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import ProjectManageShell, { ProjectManageNotice } from './ProjectManageShell';
 import { ProjectManageOverviewSkeleton } from './ProjectManageSkeletons';
 import ProjectMemberRemovalModal from './ProjectMemberRemovalModal';
@@ -207,21 +207,13 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-full bg-border-gray">
-                      {member.avatarUrl ? (
-                        <Image
-                          alt={member.name}
-                          className="object-cover"
-                          fill
-                          sizes="48px"
-                          src={member.avatarUrl}
-                        />
-                      ) : (
-                        <span className="flex h-full w-full items-center justify-center text-sm font-bold text-text-gray">
-                          {member.name.slice(0, 1)}
-                        </span>
-                      )}
-                    </div>
+                    <ProfileAvatar
+                      name={member.name}
+                      imageUrl={member.avatarUrl}
+                      sizeClassName="h-12 w-12"
+                      textClassName="text-sm"
+                      className="bg-border-gray text-text-gray"
+                    />
 
                     <div className="space-y-0.5">
                       <div className="flex flex-wrap items-center gap-2">

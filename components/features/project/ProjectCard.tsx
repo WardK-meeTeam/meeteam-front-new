@@ -86,15 +86,17 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
           </h3>
 
           <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               {project.leader.avatar ? (
-                <Image
-                  alt="Leader"
-                  className="h-8 w-8 rounded-full border border-white/30 object-cover"
-                  height={32}
-                  src={project.leader.avatar}
-                  width={32}
-                />
+                <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-full border border-white/30 bg-white/20">
+                  <Image
+                    alt={project.leader.name}
+                    className="object-cover"
+                    fill
+                    sizes="32px"
+                    src={project.leader.avatar}
+                  />
+                </span>
               ) : (
                 <span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-white/20 text-xs font-bold text-white">
                   {project.leader.name.slice(0, 1)}

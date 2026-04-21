@@ -5,6 +5,7 @@ import { MessageCircle, Send } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import BaseButton from '@/components/shared/BaseButton';
 import BaseTextarea from '@/components/shared/BaseTextarea';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
 import { useAuthStore } from '@/stores/useAuthStore';
 import type { ProjectRecord } from '@/types/project';
@@ -42,15 +43,13 @@ function Avatar({
   sizeClassName?: string;
 }) {
   return (
-    <div
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-border-gray text-sm leading-5 font-bold text-text-gray ${sizeClassName}`}
-    >
-      {imageUrl ? (
-        <img alt={name} className="h-full w-full object-cover" src={imageUrl} />
-      ) : (
-        name.slice(0, 1)
-      )}
-    </div>
+    <ProfileAvatar
+      name={name}
+      imageUrl={imageUrl}
+      sizeClassName={sizeClassName}
+      textClassName="text-sm"
+      className="bg-border-gray text-text-gray"
+    />
   );
 }
 

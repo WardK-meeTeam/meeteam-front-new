@@ -19,6 +19,7 @@ import ProjectDetailContent from '@/components/features/project/detail/ProjectDe
 import ProjectDetailSkeleton from '@/components/features/project/detail/ProjectDetailSkeleton';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
 import { fetchProjectDetail } from '@/components/features/project/projectApi';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import { useProjectStore } from '@/components/features/project/store';
 import type { ProjectRecord } from '@/types/project';
 
@@ -189,19 +190,13 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
               href={`/profile/${project.leaderProfileId ?? 1}`}
               className="mt-4 flex items-center gap-4"
             >
-              <div className="relative h-16 w-16 overflow-hidden rounded-2xl bg-brand-50">
-                {leader?.avatarUrl ? (
-                  <img
-                    alt={leader?.name ?? '프로젝트 리더'}
-                    className="h-full w-full object-cover"
-                    src={leader.avatarUrl}
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-lg font-bold text-brand-500">
-                    {leader?.name?.slice(0, 1) ?? 'L'}
-                  </div>
-                )}
-              </div>
+              <ProfileAvatar
+                name={leader?.name ?? '프로젝트 리더'}
+                imageUrl={leader?.avatarUrl}
+                sizeClassName="h-16 w-16"
+                shape="rounded"
+                textClassName="text-lg"
+              />
               <div>
                 <p className="text-[18px] leading-7 font-bold text-text-black">{leader?.name}</p>
                 <p className="text-sm text-text-gray">{project.leaderRole}</p>
