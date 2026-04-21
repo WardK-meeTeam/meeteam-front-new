@@ -300,7 +300,11 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
             </p>
           </article>
 
-          <ProjectActionButtons initialLikeCount={project.likeCount ?? 24} />
+          <ProjectActionButtons
+            projectId={project.id}
+            initialLikeCount={project.likeCount ?? 0}
+            initialLiked={project.isLiked ?? false}
+          />
         </aside>
       </div>
 

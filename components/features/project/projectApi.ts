@@ -181,6 +181,17 @@ type BackendApplicationDecisionResponse = {
   decision: BackendApplicationStatus;
 };
 
+type BackendProjectLikeStatusResponse = {
+  isLiked?: boolean;
+  liked?: boolean;
+};
+
+type BackendProjectLikeToggleResponse = {
+  projectId: number;
+  liked: boolean;
+  likeCount: number;
+};
+
 type BackendAppliedProjectResponse = {
   applicationId: number;
   projectId: number;
@@ -732,6 +743,35 @@ export async function toggleProjectRecruitmentStatus(projectId: string | number)
   }>(response, '모집 상태 변경 중 오류가 발생했습니다.');
 }
 
+export async function fetchProjectLikeStatus(projectId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/project/like/${projectId}`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const status = await readEnvelope<BackendProjectLikeStatusResponse>(
+    response,
+    '좋아요 상태를 불러오지 못했습니다.',
+  );
+
+  return {
+    isLiked: status.isLiked ?? status.liked ?? false,
+  };
+}
+
+export async function toggleProjectLike(projectId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/project/like/${projectId}`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+
+  return readEnvelope<BackendProjectLikeToggleResponse>(
+    response,
+    '좋아요 처리 중 오류가 발생했습니다.',
+  );
+}
+
 export async function fetchProjectTeamManagement(
   projectId: string | number,
 ): Promise<ProjectTeamManagement> {
@@ -938,6 +978,7 @@ export async function fetchProjectDetail(projectId: string | number): Promise<Pr
     leaderProfileId: project.leader.id,
     leaderTechStacks: project.leader.techStacks,
     likeCount: project.likeCount,
+    isLiked: project.isLiked,
     recruitmentDetails: project.recruitments.map((recruitment, index) => ({
       id: `${project.id}-${index + 1}`,
       jobFieldCode: recruitment.jobFieldCode,
