@@ -3,14 +3,26 @@ import ProjectApplyPage from '@/components/features/project/apply/ProjectApplyPa
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ projectId: string }>;
+  searchParams: Promise<{
+    jobField?: string;
+    jobPosition?: string;
+    jobPositionCode?: string;
+  }>;
 }) {
   const { projectId } = await params;
+  const { jobField, jobPosition, jobPositionCode } = await searchParams;
 
   return (
     <RequireAuth>
-      <ProjectApplyPage projectId={projectId} />
+      <ProjectApplyPage
+        projectId={projectId}
+        initialJobField={jobField}
+        initialJobPosition={jobPosition}
+        initialJobPositionCode={jobPositionCode}
+      />
     </RequireAuth>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { fetchMyProfile } from '@/components/features/profile/profileApi';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useLoginModalStore } from '@/stores/useLoginModalStore';
 
@@ -12,7 +13,44 @@ export function useProtectedNavigation() {
   const router = useRouter();
   const hydrated = useAuthHydrated();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const setSession = useAuthStore((state) => state.setSession);
   const openLoginModal = useLoginModalStore((state) => state.openLoginModal);
+
+  const openAuthRequiredModal = useCallback(
+    (path: string) => {
+      const normalizedPath = normalizeProtectedPath(path);
+
+      openLoginModal({
+        redirectPath: normalizedPath,
+        ...getLoginPromptCopy(normalizedPath),
+      });
+    },
+    [openLoginModal],
+  );
+
+  const ensureBackendSession = useCallback(
+    async (path: string) => {
+      if (isAuthenticated) {
+        return true;
+      }
+
+      try {
+        const profile = await fetchMyProfile();
+
+        setSession({
+          memberId: profile.memberId,
+          name: profile.name,
+          email: profile.email,
+        });
+
+        return true;
+      } catch {
+        openAuthRequiredModal(path);
+        return false;
+      }
+    },
+    [isAuthenticated, openAuthRequiredModal, setSession],
+  );
 
   const maybeOpenLoginModal = useCallback(
     (path: string) => {
@@ -23,33 +61,43 @@ export function useProtectedNavigation() {
       }
 
       if (!hydrated) {
-        return true;
+        return false;
       }
 
       if (isAuthenticated) {
         return false;
       }
 
-      openLoginModal({
-        redirectPath: normalizedPath,
-        ...getLoginPromptCopy(normalizedPath),
-      });
+      openAuthRequiredModal(normalizedPath);
 
       return true;
     },
-    [hydrated, isAuthenticated, openLoginModal],
+    [hydrated, isAuthenticated, openAuthRequiredModal],
   );
 
   const navigateWithProtection = useCallback(
-    (path: string) => {
-      if (maybeOpenLoginModal(path)) {
+    async (path: string) => {
+      const normalizedPath = normalizeProtectedPath(path);
+
+      if (!isProtectedPath(normalizedPath)) {
+        router.push(path);
+        return true;
+      }
+
+      if (!hydrated) {
+        return false;
+      }
+
+      const canNavigate = await ensureBackendSession(normalizedPath);
+
+      if (!canNavigate) {
         return false;
       }
 
       router.push(path);
       return true;
     },
-    [maybeOpenLoginModal, router],
+    [ensureBackendSession, hydrated, router],
   );
 
   return {

@@ -9,7 +9,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 
 const navItems = [
   { href: '/teammates', label: '팀원 찾기' },
-  { href: '/projects', label: '프로젝트 찾기', authRequired: true },
+  { href: '/projects', label: '프로젝트 찾기' },
   { href: '/projects/create', label: '프로젝트 등록하기', authRequired: true },
 ];
 

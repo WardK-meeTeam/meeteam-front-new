@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
+import { useEffect, useRef, useState } from 'react';
 import { useInfiniteScroll } from '@/components/shared/useInfiniteScroll';
 import { fetchProjectSearchResults, type ProjectSearchCard } from './projectFindApi';
 import { LOAD_DELAY_MS, LOAD_MORE_COUNT } from './projectFinder';
@@ -14,7 +13,6 @@ import type {
 } from './types';
 
 export function useProjectFinder() {
-  const handleAuthRequired = useAuthRequiredModal();
   const [searchValue, setSearchValue] = useState('');
   const [category, setCategory] = useState<CategoryFilter>('모든 카테고리');
   const [recruitOnly, setRecruitOnly] = useState<RecruitFilter>('all');
@@ -25,7 +23,6 @@ export function useProjectFinder() {
   const [page, setPage] = useState(0);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [isAuthBlocked, setIsAuthBlocked] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const loadMoreTimeoutRef = useRef<number | null>(null);
@@ -47,7 +44,6 @@ export function useProjectFinder() {
     const loadInitialProjects = async () => {
       try {
         setIsInitialLoading(true);
-        setIsAuthBlocked(false);
         setErrorMessage(null);
 
         const result = await fetchProjectSearchResults(filters, 0, LOAD_MORE_COUNT * 2);
@@ -67,13 +63,9 @@ export function useProjectFinder() {
         setProjects([]);
         setHasMore(false);
 
-        if (handleAuthRequired(error, { redirectPath: '/projects' })) {
-          setIsAuthBlocked(true);
-          setErrorMessage(null);
-          return;
-        }
-
-        setErrorMessage(error instanceof Error ? error.message : '프로젝트 목록을 불러오지 못했습니다.');
+        setErrorMessage(
+          error instanceof Error ? error.message : '프로젝트 목록을 불러오지 못했습니다.',
+        );
       } finally {
         if (active) {
           setIsInitialLoading(false);
@@ -86,7 +78,7 @@ export function useProjectFinder() {
     return () => {
       active = false;
     };
-  }, [category, field, handleAuthRequired, platform, recruitOnly, searchValue, sort]);
+  }, [category, field, platform, recruitOnly, searchValue, sort]);
 
   useEffect(
     () => () => {
@@ -116,13 +108,9 @@ export function useProjectFinder() {
             setHasMore(result.hasMore);
             setPage(nextPage);
           } catch (error) {
-            if (handleAuthRequired(error, { redirectPath: '/projects' })) {
-              setIsAuthBlocked(true);
-              setErrorMessage(null);
-              return;
-            }
-
-            setErrorMessage(error instanceof Error ? error.message : '프로젝트 목록을 더 불러오지 못했습니다.');
+            setErrorMessage(
+              error instanceof Error ? error.message : '프로젝트 목록을 더 불러오지 못했습니다.',
+            );
           } finally {
             setIsLoadingMore(false);
             loadMoreTimeoutRef.current = null;
@@ -147,7 +135,6 @@ export function useProjectFinder() {
     hasMore,
     isInitialLoading,
     isLoadingMore,
-    isAuthBlocked,
     errorMessage,
     countLabel: hasMore ? `${projects.length}+` : String(projects.length),
     hasActiveFilters:

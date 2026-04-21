@@ -1,5 +1,6 @@
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 import OAuthSignupForm from '@/components/features/auth/OAuthSignupForm';
 
@@ -16,7 +17,11 @@ export default function Page() {
           추가 정보를 입력하면 바로 meeTeam을 시작할 수 있어요.
         </h2>
       </div>
-      <OAuthSignupForm />
+      <Suspense
+        fallback={<p className="text-sm leading-6 font-medium text-text-gray">불러오는 중...</p>}
+      >
+        <OAuthSignupForm />
+      </Suspense>
     </section>
   );
 }

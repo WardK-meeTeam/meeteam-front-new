@@ -37,6 +37,7 @@ export type ProjectApplicantStatus = 'pending' | 'approved' | 'rejected';
 
 export type ProjectApplicant = {
   id: number;
+  applicantId?: number;
   name: string;
   position: string;
   specialty: string;
@@ -45,6 +46,11 @@ export type ProjectApplicant = {
   introduction: string;
   avatarUrl: string;
   status: ProjectApplicantStatus;
+  age?: number | null;
+  gender?: 'MALE' | 'FEMALE' | string | null;
+  currentCount?: number;
+  recruitmentCount?: number;
+  isRecruitmentFull?: boolean;
 };
 
 export type ProjectFormValues = {

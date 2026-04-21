@@ -1,6 +1,5 @@
 const PROTECTED_PATH_PATTERNS = [
   /^\/notifications(?:\/|$)/,
-  /^\/projects\/?$/,
   /^\/projects\/create(?:\/|$)/,
   /^\/projects\/[^/]+\/apply(?:\/|$)/,
   /^\/projects\/[^/]+\/manage(?:\/|$)/,
@@ -26,13 +25,6 @@ export function getLoginPromptCopy(path: string) {
     return {
       title: '프로젝트 등록은 로그인 후 가능해요',
       description: '로그인하고 팀원을 모집할 프로젝트를 바로 만들어보세요.',
-    };
-  }
-
-  if (normalizedPath === '/projects') {
-    return {
-      title: '프로젝트 목록은 로그인 후 둘러볼 수 있어요',
-      description: '로그인하고 참여할 프로젝트를 찾아보세요.',
     };
   }
 

@@ -1,6 +1,7 @@
 import type { ApiEnvelope, JobFieldOption } from '@/types/auth';
 import type {
   ProjectFormValues,
+  ProjectApplicant,
   ProjectMember,
   ProjectRecord,
   ProjectRecruitmentStatus,
@@ -124,6 +125,71 @@ type BackendProjectEditPrefillResponse = {
   notEditableReason: string | null;
 };
 
+type BackendApplicationStatus =
+  | 'PENDING'
+  | 'ACCEPTED'
+  | 'REJECTED'
+  | '대기중'
+  | '승인됨'
+  | '거절됨';
+
+type BackendApplicationResponse = {
+  applicationId: number;
+  projectId: number;
+  applicantId: number;
+  status: BackendApplicationStatus;
+};
+
+type BackendProjectApplicationListResponse = {
+  applicationId: number;
+  applicantId: number;
+  applicantName: string;
+  profileImageUrl: string | null;
+  applicantEmail: string;
+  jobFieldName: string;
+  jobPositionName: string;
+  motivation: string;
+  status: BackendApplicationStatus;
+  appliedAt: string;
+  currentCount: number;
+  recruitmentCount: number;
+  isRecruitmentFull: boolean;
+};
+
+type BackendApplicationDetailResponse = {
+  applicationId: number;
+  applicantId: number;
+  applicantName: string;
+  profileImageUrl: string | null;
+  age: number | null;
+  gender: 'MALE' | 'FEMALE' | string | null;
+  applicantEmail: string;
+  jobPosition: {
+    jobPositionId: number;
+    jobPositionName: string;
+    jobFieldId: number;
+    jobFieldName: string;
+  };
+  motivation: string;
+  status: BackendApplicationStatus;
+};
+
+type BackendApplicationDecisionResponse = {
+  applicationId: number;
+  projectId: number | null;
+  applicantId: number | null;
+  decision: BackendApplicationStatus;
+};
+
+type BackendAppliedProjectResponse = {
+  applicationId: number;
+  projectId: number;
+  projectName: string;
+  jobPositionId: number;
+  jobPositionName: string;
+  appliedAt: string;
+};
+
 type ProjectCreateRequestPayload = {
   projectName: string;
   githubRepositoryUrl?: string;
@@ -159,6 +225,29 @@ type ProjectEditRequestPayload = {
     techStackIds: number[];
   }>;
   confirmDeletePositionsWithPendingApplicants: boolean;
+};
+
+export type ProjectApplicationRequestPayload = {
+  jobPositionCode: string;
+  motivation: string;
+};
+
+export type ProjectApplicationDecision = 'ACCEPTED' | 'REJECTED';
+
+export type ProjectApplicationResult = {
+  applicationId: number;
+  projectId: number;
+  applicantId: number;
+  status: ProjectApplicant['status'];
+};
+
+export type AppliedProject = {
+  applicationId: number;
+  projectId: number;
+  projectName: string;
+  jobPositionId: number;
+  jobPositionName: string;
+  appliedAt: string;
 };
 
 export type ProjectEditPrefill = {
@@ -201,6 +290,69 @@ async function readEnvelope<T>(response: Response, fallbackMessage: string) {
 
 function buildSummary(description: string) {
   return description.length > 56 ? `${description.slice(0, 56).trim()}...` : description;
+}
+
+function mapApplicationStatus(status: BackendApplicationStatus): ProjectApplicant['status'] {
+  switch (status) {
+    case 'ACCEPTED':
+    case '승인됨':
+      return 'approved';
+    case 'REJECTED':
+    case '거절됨':
+      return 'rejected';
+    case 'PENDING':
+    case '대기중':
+    default:
+      return 'pending';
+  }
+}
+
+function formatAppliedAt(appliedAt: string | null | undefined) {
+  if (!appliedAt) {
+    return '지원일 미확인';
+  }
+
+  const [datePart] = appliedAt.split('T');
+  const formattedDate = datePart?.replaceAll('-', '.');
+
+  return formattedDate ? `${formattedDate} 지원` : '지원일 미확인';
+}
+
+function mapApplicationListItem(
+  application: BackendProjectApplicationListResponse,
+): ProjectApplicant {
+  return {
+    id: application.applicationId,
+    applicantId: application.applicantId,
+    name: application.applicantName,
+    position: application.jobFieldName,
+    specialty: application.jobPositionName,
+    appliedAt: formatAppliedAt(application.appliedAt),
+    email: application.applicantEmail,
+    introduction: application.motivation,
+    avatarUrl: application.profileImageUrl ?? '',
+    status: mapApplicationStatus(application.status),
+    currentCount: application.currentCount,
+    recruitmentCount: application.recruitmentCount,
+    isRecruitmentFull: application.isRecruitmentFull,
+  };
+}
+
+function mapApplicationDetail(application: BackendApplicationDetailResponse): ProjectApplicant {
+  return {
+    id: application.applicationId,
+    applicantId: application.applicantId,
+    name: application.applicantName,
+    position: application.jobPosition.jobFieldName,
+    specialty: application.jobPosition.jobPositionName,
+    appliedAt: '지원일 미확인',
+    email: application.applicantEmail,
+    introduction: application.motivation,
+    avatarUrl: application.profileImageUrl ?? '',
+    status: mapApplicationStatus(application.status),
+    age: application.age,
+    gender: application.gender,
+  };
 }
 
 function mapCategoryIdToApiValue(categoryId: ProjectFormValues['categoryId']) {
@@ -247,7 +399,9 @@ function mapCategoryApiValueToId(category: BackendProjectDetailResponse['project
   }
 }
 
-function mapPlatformToApiValue(platform: ProjectFormValues['releasePlatforms'][number] | undefined) {
+function mapPlatformToApiValue(
+  platform: ProjectFormValues['releasePlatforms'][number] | undefined,
+) {
   switch (platform) {
     case '웹':
       return 'WEB';
@@ -325,9 +479,7 @@ export function buildProjectCreatePayload(values: ProjectFormValues, jobFields: 
     platformCategory: mapPlatformToApiValue(values.releasePlatforms[0]),
     creatorJobPositionCode: creatorPosition.code,
     recruitments,
-    recruitmentDeadlineType: values.isRecruitUntilComplete
-      ? 'RECRUITMENT_COMPLETED'
-      : 'END_DATE',
+    recruitmentDeadlineType: values.isRecruitUntilComplete ? 'RECRUITMENT_COMPLETED' : 'END_DATE',
     endDate: values.isRecruitUntilComplete ? undefined : values.recruitDeadline,
   } satisfies ProjectCreateRequestPayload;
 }
@@ -403,10 +555,7 @@ export function buildProjectEditPayload(
   } satisfies ProjectEditRequestPayload;
 }
 
-export async function createProject(
-  payload: ProjectCreateRequestPayload,
-  file?: File | null,
-) {
+export async function createProject(payload: ProjectCreateRequestPayload, file?: File | null) {
   const formData = new FormData();
 
   formData.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
@@ -421,7 +570,10 @@ export async function createProject(
     body: formData,
   });
 
-  return readEnvelope<BackendProjectCreateResponse>(response, '프로젝트 등록 중 오류가 발생했습니다.');
+  return readEnvelope<BackendProjectCreateResponse>(
+    response,
+    '프로젝트 등록 중 오류가 발생했습니다.',
+  );
 }
 
 export async function updateProject(
@@ -449,6 +601,122 @@ export async function updateProject(
     recruitmentStatus: 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
     autoRejectedApplicantCount: number;
   }>(response, '프로젝트 수정 중 오류가 발생했습니다.');
+}
+
+export async function applyToProject(
+  projectId: string | number,
+  payload: ProjectApplicationRequestPayload,
+): Promise<ProjectApplicationResult> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/application`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+
+  const application = await readEnvelope<BackendApplicationResponse>(
+    response,
+    '프로젝트 지원 중 오류가 발생했습니다.',
+  );
+
+  return {
+    applicationId: application.applicationId,
+    projectId: application.projectId,
+    applicantId: application.applicantId,
+    status: mapApplicationStatus(application.status),
+  };
+}
+
+export async function fetchProjectApplications(
+  projectId: string | number,
+): Promise<ProjectApplicant[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/applications`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const applications = await readEnvelope<BackendProjectApplicationListResponse[]>(
+    response,
+    '지원자 목록을 불러오지 못했습니다.',
+  );
+
+  return applications.map(mapApplicationListItem);
+}
+
+export async function fetchProjectApplicationDetail(
+  projectId: string | number,
+  applicationId: string | number,
+): Promise<ProjectApplicant> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/projects/${projectId}/applications/${applicationId}`,
+    {
+      method: 'GET',
+      cache: 'no-store',
+      credentials: 'include',
+    },
+  );
+
+  const application = await readEnvelope<BackendApplicationDetailResponse>(
+    response,
+    '지원서 상세 정보를 불러오지 못했습니다.',
+  );
+
+  return mapApplicationDetail(application);
+}
+
+export async function decideProjectApplication(
+  projectId: string | number,
+  applicationId: string | number,
+  decision: ProjectApplicationDecision,
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/projects/${projectId}/applications/${applicationId}/decision`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ decision }),
+    },
+  );
+
+  const result = await readEnvelope<BackendApplicationDecisionResponse>(
+    response,
+    '지원자 처리 중 오류가 발생했습니다.',
+  );
+
+  return {
+    applicationId: result.applicationId,
+    projectId: result.projectId,
+    applicantId: result.applicantId,
+    decision: mapApplicationStatus(result.decision),
+  };
+}
+
+export async function fetchMyProjectApplications(): Promise<AppliedProject[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/members/me/applications`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const applications = await readEnvelope<BackendAppliedProjectResponse[]>(
+    response,
+    '내가 지원한 프로젝트를 불러오지 못했습니다.',
+  );
+
+  return applications.map((application) => ({
+    applicationId: application.applicationId,
+    projectId: application.projectId,
+    projectName: application.projectName,
+    jobPositionId: application.jobPositionId,
+    jobPositionName: application.jobPositionName,
+    appliedAt: application.appliedAt,
+  }));
 }
 
 export async function toggleProjectRecruitmentStatus(projectId: string | number) {

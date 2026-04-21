@@ -1,6 +1,5 @@
 import type { ApiEnvelope } from '@/types/auth';
 
-import { createApiError } from '@/components/features/auth/authError';
 import { extractApiData } from '@/components/features/auth/signupTransform';
 import type {
   CategoryFilter,
@@ -105,7 +104,7 @@ export async function fetchProjectSearchResults(
     .catch(() => null)) as ApiEnvelope<ProjectSearchSlice> | null;
 
   if (!response.ok) {
-    throw createApiError(response, payload, '프로젝트 목록을 불러오지 못했습니다.');
+    throw new Error(payload?.message ?? '프로젝트 목록을 불러오지 못했습니다.');
   }
 
   if (!payload) {

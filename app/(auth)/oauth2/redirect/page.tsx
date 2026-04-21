@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 import { fetchMyProfile } from '@/components/features/profile/profileApi';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { exchangeOAuthToken, type OAuthRedirectType } from '@/components/features/auth/oauthApi';
 
-export default function Page() {
+function OAuthRedirectContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setSession = useAuthStore((state) => state.setSession);
@@ -80,5 +80,20 @@ export default function Page() {
         <p className="text-sm leading-6 text-text-gray">{statusMessage}</p>
       )}
     </section>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <section className="flex w-full max-w-md flex-col gap-4 rounded-3xl bg-white p-10 shadow-sm">
+          <h1 className="text-2xl font-bold text-text-black">소셜 로그인</h1>
+          <p className="text-sm leading-6 text-text-gray">OAuth 로그인을 처리하고 있습니다...</p>
+        </section>
+      }
+    >
+      <OAuthRedirectContent />
+    </Suspense>
   );
 }

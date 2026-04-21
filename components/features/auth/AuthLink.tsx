@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { ComponentProps } from 'react';
 
+import { isProtectedPath, normalizeProtectedPath } from './protectedPaths';
 import { useProtectedNavigation } from './useProtectedNavigation';
 
 type AuthLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
@@ -10,7 +11,7 @@ type AuthLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
 };
 
 export default function AuthLink({ href, onClick, ...props }: AuthLinkProps) {
-  const { maybeOpenLoginModal } = useProtectedNavigation();
+  const { hydrated, isAuthenticated, navigateWithProtection } = useProtectedNavigation();
 
   const handleClick: ComponentProps<typeof Link>['onClick'] = (event) => {
     onClick?.(event);
@@ -19,9 +20,14 @@ export default function AuthLink({ href, onClick, ...props }: AuthLinkProps) {
       return;
     }
 
-    if (maybeOpenLoginModal(href)) {
-      event.preventDefault();
+    const normalizedHref = normalizeProtectedPath(href);
+
+    if (!isProtectedPath(normalizedHref) || !hydrated || isAuthenticated) {
+      return;
     }
+
+    event.preventDefault();
+    void navigateWithProtection(href);
   };
 
   return <Link href={href} onClick={handleClick} {...props} />;

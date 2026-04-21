@@ -38,6 +38,15 @@ function RecruitTechChip({ label }: { label: string }) {
   );
 }
 
+function buildApplyHref(projectId: string, position: RecruitPosition) {
+  const params = new URLSearchParams({
+    jobField: position.role,
+    jobPosition: position.specialty,
+  });
+
+  return `/projects/${projectId}/apply?${params.toString()}`;
+}
+
 export default function ProjectRecruitSection({ project }: { project: ProjectRecord }) {
   const recruitPositions: RecruitPosition[] =
     project.recruitmentDetails?.map((recruitment, index) => ({
@@ -90,7 +99,7 @@ export default function ProjectRecruitSection({ project }: { project: ProjectRec
               </div>
 
               {isOpen ? (
-                <AuthLink href={`/projects/${project.id}/apply`}>
+                <AuthLink href={buildApplyHref(project.id, position)}>
                   <BaseButton
                     size="S"
                     className="h-10 min-w-24 rounded-xl bg-text-black px-5 text-xs leading-4 font-bold text-white shadow-none hover:bg-label-dark"

@@ -14,6 +14,7 @@ import type { ProjectRecruitmentStatus } from '@/types/project';
 type ProjectManageShellProps = {
   projectId: string;
   activeTab: 'members' | 'applicants' | 'edit';
+  pendingApplicantsCount?: number;
   children: ReactNode;
 };
 
@@ -71,6 +72,7 @@ export function ProjectManageNotice() {
 export default function ProjectManageShell({
   projectId,
   activeTab,
+  pendingApplicantsCount,
   children,
 }: ProjectManageShellProps) {
   const handleAuthRequired = useAuthRequiredModal();
@@ -115,7 +117,7 @@ export default function ProjectManageShell({
         setProjectTitle(project.title);
         setProjectSubtitle('프로젝트 통합 관리');
         setProjectStatus(project.recruitmentStatus ?? 'RECRUITING');
-        setPendingApplicants(team.pendingApplicationCount);
+        setPendingApplicants(pendingApplicantsCount ?? team.pendingApplicationCount);
       } catch (error) {
         if (!active) {
           return;
@@ -137,7 +139,13 @@ export default function ProjectManageShell({
     return () => {
       active = false;
     };
-  }, [handleAuthRequired, projectId]);
+  }, [handleAuthRequired, pendingApplicantsCount, projectId]);
+
+  useEffect(() => {
+    if (typeof pendingApplicantsCount === 'number') {
+      setPendingApplicants(pendingApplicantsCount);
+    }
+  }, [pendingApplicantsCount]);
 
   const handleToggleStatus = async () => {
     if (!canToggleStatus || isStatusUpdating) {

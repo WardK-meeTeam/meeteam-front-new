@@ -3,7 +3,8 @@
 import type { ReactNode } from 'react';
 
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { fetchMyProfile } from '@/components/features/profile/profileApi';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useLoginModalStore } from '@/stores/useLoginModalStore';
 
@@ -19,18 +20,56 @@ export default function RequireAuth({ children }: RequireAuthProps) {
   const pathname = usePathname();
   const hydrated = useAuthHydrated();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const setSession = useAuthStore((state) => state.setSession);
   const openLoginModal = useLoginModalStore((state) => state.openLoginModal);
+  const [isCheckingSession, setIsCheckingSession] = useState(false);
 
   useEffect(() => {
-    if (hydrated && !isAuthenticated) {
-      openLoginModal({
-        redirectPath: pathname,
-        ...getLoginPromptCopy(pathname),
-      });
+    if (!hydrated || isAuthenticated) {
+      return undefined;
     }
-  }, [hydrated, isAuthenticated, openLoginModal, pathname]);
 
-  if (!hydrated) {
+    let active = true;
+
+    const syncBackendSession = async () => {
+      try {
+        setIsCheckingSession(true);
+
+        const profile = await fetchMyProfile();
+
+        if (!active) {
+          return;
+        }
+
+        setSession({
+          memberId: profile.memberId,
+          name: profile.name,
+          email: profile.email,
+        });
+      } catch {
+        if (!active) {
+          return;
+        }
+
+        openLoginModal({
+          redirectPath: pathname,
+          ...getLoginPromptCopy(pathname),
+        });
+      } finally {
+        if (active) {
+          setIsCheckingSession(false);
+        }
+      }
+    };
+
+    void syncBackendSession();
+
+    return () => {
+      active = false;
+    };
+  }, [hydrated, isAuthenticated, openLoginModal, pathname, setSession]);
+
+  if (!hydrated || isCheckingSession) {
     return null;
   }
 
