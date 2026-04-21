@@ -11,6 +11,7 @@ import {
   updateProject,
 } from '@/components/features/project/projectApi';
 import ProjectManageShell from './ProjectManageShell';
+import { ProjectManageEditSkeleton } from './ProjectManageSkeletons';
 
 type ProjectManageEditProps = {
   projectId: string;
@@ -68,10 +69,7 @@ export default function ProjectManageEdit({ projectId }: ProjectManageEditProps)
   if (isLoading) {
     return (
       <ProjectManageShell projectId={projectId} activeTab="edit">
-        <section className="rounded-3xl border border-border-gray bg-white px-8 py-12 text-center shadow-sm">
-          <h2 className="text-xl font-bold text-text-black">프로젝트 정보를 불러오는 중입니다.</h2>
-          <p className="mt-2 text-sm text-text-gray">잠시만 기다려 주세요.</p>
-        </section>
+        <ProjectManageEditSkeleton />
       </ProjectManageShell>
     );
   }

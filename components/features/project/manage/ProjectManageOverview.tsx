@@ -11,6 +11,7 @@ import {
   type ProjectTeamManagement,
 } from '@/components/features/project/projectApi';
 import ProjectManageShell, { ProjectManageNotice } from './ProjectManageShell';
+import { ProjectManageOverviewSkeleton } from './ProjectManageSkeletons';
 import ProjectMemberRemovalModal from './ProjectMemberRemovalModal';
 import type { ProjectMember } from '@/types/project';
 
@@ -118,10 +119,7 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
   if (isLoading && !teamManagement) {
     return (
       <ProjectManageShell projectId={projectId} activeTab="members">
-        <section className="rounded-3xl border border-border-gray bg-white px-8 py-12 text-center shadow-sm">
-          <h2 className="text-xl font-bold text-text-black">팀원 정보를 불러오는 중입니다.</h2>
-          <p className="mt-2 text-sm text-text-gray">잠시만 기다려 주세요.</p>
-        </section>
+        <ProjectManageOverviewSkeleton />
       </ProjectManageShell>
     );
   }

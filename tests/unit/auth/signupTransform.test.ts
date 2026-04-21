@@ -7,7 +7,7 @@ import {
   extractApiData,
   getInterestKey,
   normalizeUrl,
-} from './signupTransform';
+} from '@/components/features/auth/signupTransform';
 
 const JOB_FIELDS: JobFieldOption[] = [
   {

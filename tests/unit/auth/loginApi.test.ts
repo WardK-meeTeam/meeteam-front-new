@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { loginMember } from './loginApi';
+import { loginMember } from '@/components/features/auth/loginApi';
 
 const originalFetch = global.fetch;
 

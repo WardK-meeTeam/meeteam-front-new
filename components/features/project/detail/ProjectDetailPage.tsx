@@ -16,6 +16,7 @@ import AuthLink from '@/components/features/auth/AuthLink';
 import { getProjectCategoryLabel } from '@/components/features/project/constants';
 import ProjectActionButtons from '@/components/features/project/detail/ProjectActionButtons';
 import ProjectDetailContent from '@/components/features/project/detail/ProjectDetailContent';
+import ProjectDetailSkeleton from '@/components/features/project/detail/ProjectDetailSkeleton';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
 import { fetchProjectDetail } from '@/components/features/project/projectApi';
 import { useProjectStore } from '@/components/features/project/store';
@@ -95,12 +96,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   }, [localProject, projectId]);
 
   if (isLoading && !project) {
-    return (
-      <section className="mx-auto flex w-full max-w-7xl flex-col items-center gap-4 py-24 text-center">
-        <h1 className="text-3xl font-bold text-text-black">프로젝트를 불러오는 중입니다.</h1>
-        <p className="text-base leading-6 text-text-gray">잠시만 기다려 주세요.</p>
-      </section>
-    );
+    return <ProjectDetailSkeleton />;
   }
 
   if (!project) {

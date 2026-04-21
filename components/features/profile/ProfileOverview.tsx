@@ -11,6 +11,7 @@ import IntroductionCard from '@/components/features/profile/IntroductionCard';
 import JoinedProjectCard from '@/components/features/profile/JoinedProjectCard';
 import ParticipationStatusCard from '@/components/features/profile/ParticipationStatusCard';
 import ProfileHeader from '@/components/features/profile/ProfileHeader';
+import ProfileOverviewSkeleton from '@/components/features/profile/ProfileOverviewSkeleton';
 import SkillsCard from '@/components/features/profile/SkillsCard';
 import {
   fetchMemberProfile,
@@ -119,7 +120,11 @@ export default function ProfileOverview({
           return;
         }
 
-        if (handleAuthRequired(error, { redirectPath: memberId ? `/profile/${memberId}` : '/profile' })) {
+        if (
+          handleAuthRequired(error, {
+            redirectPath: memberId ? `/profile/${memberId}` : '/profile',
+          })
+        ) {
           setIsAuthBlocked(true);
           setErrorMessage(null);
           return;
@@ -376,23 +381,7 @@ export default function ProfileOverview({
   }
 
   if (isLoading) {
-    return (
-      <section className="bg-surface-soft px-4 py-6 sm:px-6 sm:py-8">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
-          <div className="h-64 animate-pulse rounded-3xl border border-border-gray bg-white" />
-          <div className="grid gap-6 lg:grid-cols-[309px_minmax(0,1fr)]">
-            <div className="space-y-6">
-              <div className="h-24 animate-pulse rounded-2xl border border-border-gray bg-white" />
-              <div className="h-96 animate-pulse rounded-2xl border border-border-gray bg-white" />
-            </div>
-            <div className="space-y-6">
-              <div className="h-60 animate-pulse rounded-2xl border border-border-gray bg-white" />
-              <div className="h-80 animate-pulse rounded-2xl border border-border-gray bg-white" />
-            </div>
-          </div>
-        </div>
-      </section>
-    );
+    return <ProfileOverviewSkeleton />;
   }
 
   if (!profileForm || !profile) {

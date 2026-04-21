@@ -2,7 +2,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { JobFieldOption, RegisterRequestPayload, SignupSuccessResponse } from '@/types/auth';
 
-import { checkEmailDuplicate, fetchJobOptions, registerMember } from './signupApi';
+import {
+  checkEmailDuplicate,
+  fetchJobOptions,
+  registerMember,
+} from '@/components/features/auth/signupApi';
 
 const originalFetch = global.fetch;
 
