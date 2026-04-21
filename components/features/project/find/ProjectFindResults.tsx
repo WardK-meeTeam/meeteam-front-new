@@ -3,36 +3,11 @@
 import type { RefObject } from 'react';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
 import { ProjectCardSkeleton } from '@/components/features/project/ProjectCardSkeleton';
+import SortSelect from '@/components/shared/SortSelect';
 import ToastMessage from '@/components/shared/ToastMessage';
+import { PROJECT_SORT_OPTIONS } from './projectFinder';
 import type { ProjectSearchCard } from './projectFindApi';
 import type { SortFilter } from './types';
-
-function SortSelect({
-  sort,
-  onSortChange,
-}: {
-  sort: SortFilter;
-  onSortChange: (value: SortFilter) => void;
-}) {
-  return (
-    <div className="relative sm:w-32">
-      <select
-        value={sort}
-        onChange={(event) =>
-          onSortChange(event.target.value === 'deadline' ? 'deadline' : 'latest')
-        }
-        data-cy="project-sort-select"
-        className="h-12 w-full appearance-none rounded-xl border border-border-gray bg-white py-3 pl-4 pr-10 text-sm leading-5 font-medium text-text-body shadow-sm outline-none transition-colors focus:border-brand-400"
-      >
-        <option value="latest">최신순</option>
-        <option value="deadline">마감임박순</option>
-      </select>
-      <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-xs text-text-gray">
-        정렬
-      </span>
-    </div>
-  );
-}
 
 type ProjectFindResultsProps = {
   projects: ProjectSearchCard[];
@@ -75,7 +50,12 @@ export function ProjectFindResults({
           총 <span className="text-brand-500">{countLabel}</span>개의 프로젝트
         </p>
 
-        <SortSelect sort={sort} onSortChange={onSortChange} />
+        <SortSelect
+          value={sort}
+          options={PROJECT_SORT_OPTIONS}
+          onChange={onSortChange}
+          dataCy="project-sort-select"
+        />
       </div>
 
       {isInitialLoading ? (

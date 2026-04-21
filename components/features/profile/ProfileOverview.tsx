@@ -387,10 +387,10 @@ export default function ProfileOverview({
 
   if (!profileForm || !profile) {
     return (
-      <section className="bg-surface-soft px-4 py-6 sm:px-6 sm:py-8">
+      <section className="bg-white px-4 py-6 sm:px-6 sm:py-8">
         <ToastMessage message={errorMessage} />
 
-        <div className="mx-auto w-full max-w-5xl rounded-2xl border border-border-gray bg-white px-6 py-8 text-sm leading-6 text-danger-500">
+        <div className="mx-auto w-full max-w-5xl rounded-2xl border border-border-gray bg-white px-6 py-8 text-sm leading-6 text-danger-500 shadow-sm">
           {errorMessage ?? '프로필을 불러오지 못했습니다.'}
         </div>
       </section>
@@ -398,7 +398,7 @@ export default function ProfileOverview({
   }
 
   return (
-    <section className="bg-surface-soft px-4 py-6 sm:px-6 sm:py-8">
+    <section className="bg-white px-4 py-6 sm:px-6 sm:py-8">
       <ToastMessage message={errorMessage} />
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">

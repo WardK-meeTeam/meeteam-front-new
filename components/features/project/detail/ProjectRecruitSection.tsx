@@ -1,8 +1,10 @@
+import type { MouseEvent } from 'react';
 import type { ProjectRecord } from '@/types/project';
 import AuthLink from '@/components/features/auth/AuthLink';
 import BaseButton from '@/components/shared/BaseButton';
 import SkillChip from '@/components/shared/SkillChip';
 import StatusBadge from '@/components/shared/StatusBadge';
+import { useToastStore } from '@/stores/useToastStore';
 
 type RecruitPositionStatus = 'open' | 'closed';
 
@@ -25,7 +27,16 @@ function buildApplyHref(projectId: string, position: RecruitPosition) {
   return `/projects/${projectId}/apply?${params.toString()}`;
 }
 
-export default function ProjectRecruitSection({ project }: { project: ProjectRecord }) {
+type ProjectRecruitSectionProps = {
+  project: ProjectRecord;
+  canApply?: boolean;
+};
+
+export default function ProjectRecruitSection({
+  project,
+  canApply = true,
+}: ProjectRecruitSectionProps) {
+  const showToast = useToastStore((state) => state.showToast);
   const recruitPositions: RecruitPosition[] =
     project.recruitmentDetails?.map((recruitment, index) => ({
       id: index + 1,
@@ -56,6 +67,14 @@ export default function ProjectRecruitSection({ project }: { project: ProjectRec
     <section className="flex w-full flex-col gap-8" data-node-id="97:800">
       {recruitPositions.map((position) => {
         const isOpen = position.status === 'open';
+        const handleApplyClick = (event: MouseEvent<HTMLAnchorElement>) => {
+          if (canApply) {
+            return;
+          }
+
+          event.preventDefault();
+          showToast({ message: '자신의 프로젝트에는 지원할 수 없습니다.' });
+        };
 
         return (
           <article
@@ -77,10 +96,18 @@ export default function ProjectRecruitSection({ project }: { project: ProjectRec
               </div>
 
               {isOpen ? (
-                <AuthLink href={buildApplyHref(project.id, position)}>
+                <AuthLink
+                  href={buildApplyHref(project.id, position)}
+                  onClick={handleApplyClick}
+                  aria-disabled={!canApply}
+                >
                   <BaseButton
                     size="S"
-                    className="h-10 min-w-24 rounded-xl bg-text-black px-5 text-xs leading-4 font-bold text-white shadow-none hover:bg-label-dark"
+                    className={`h-10 min-w-24 rounded-xl px-5 text-xs leading-4 font-bold text-white shadow-none ${
+                      canApply
+                        ? 'bg-text-black hover:bg-label-dark'
+                        : 'cursor-not-allowed bg-muted-gray'
+                    }`}
                   >
                     지원하기
                   </BaseButton>

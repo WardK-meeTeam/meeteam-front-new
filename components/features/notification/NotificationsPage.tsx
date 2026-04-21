@@ -1,8 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
-import { ChevronLeft, RotateCw } from 'lucide-react';
+import { RotateCw } from 'lucide-react';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
 import ToastMessage from '@/components/shared/ToastMessage';
 import { NotificationCard } from './NotificationCard';
@@ -88,20 +87,10 @@ export default function NotificationsPage() {
   };
 
   return (
-    <section className="rounded-3xl bg-surface-soft px-4 py-4 md:px-6 md:py-8">
+    <section className="px-4 py-6 sm:px-6 sm:py-8">
       <ToastMessage message={errorMessage} />
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-        <Link
-          href="/"
-          className="inline-flex w-fit items-center gap-2 text-sm leading-5 font-bold text-text-gray transition-colors hover:text-text-black"
-        >
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border-gray bg-border-soft">
-            <ChevronLeft className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-          </span>
-          뒤로가기
-        </Link>
-
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="text-3xl leading-9 font-bold text-text-black">알림 센터</h1>
@@ -123,9 +112,9 @@ export default function NotificationsPage() {
         <div className="space-y-4">
           {isLoading ? (
             <>
-              <SkeletonBlock className="h-30 w-full bg-white" />
-              <SkeletonBlock className="h-30 w-full bg-white" />
-              <SkeletonBlock className="h-30 w-full bg-white" />
+              <SkeletonBlock className="h-30 w-full rounded-2xl" />
+              <SkeletonBlock className="h-30 w-full rounded-2xl" />
+              <SkeletonBlock className="h-30 w-full rounded-2xl" />
             </>
           ) : null}
 

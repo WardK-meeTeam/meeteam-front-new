@@ -1,5 +1,5 @@
 import type { RefObject } from 'react';
-import { ChevronDown } from 'lucide-react';
+import SortSelect from '@/components/shared/SortSelect';
 import ToastMessage from '@/components/shared/ToastMessage';
 import type { TeammateSort } from '@/types/team';
 import type { Teammate } from '@/types/team';
@@ -44,25 +44,12 @@ export function TeammateListSection({
           총 <span className="text-brand-500">{totalCount}</span>명의 메이커
         </p>
 
-        <div className="relative w-full sm:w-auto">
-          <select
-            value={sort}
-            onChange={(event) => onSortChange(event.target.value as TeammateSort)}
-            data-cy="teammate-sort-select"
-            className="h-10 w-full appearance-none rounded-lg border border-transparent bg-white py-2 pl-3 pr-9 text-sm leading-5 font-bold text-project-status-closed outline-none transition-colors focus:border-border-gray"
-          >
-            {TEAMMATE_SORT_OPTIONS.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <ChevronDown
-            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-gray"
-            aria-hidden
-            strokeWidth={1.8}
-          />
-        </div>
+        <SortSelect
+          value={sort}
+          options={TEAMMATE_SORT_OPTIONS}
+          onChange={onSortChange}
+          dataCy="teammate-sort-select"
+        />
       </div>
 
       {isInitialLoading ? (

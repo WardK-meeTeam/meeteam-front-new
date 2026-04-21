@@ -22,6 +22,11 @@ export const LOAD_DELAY_MS = 800;
 
 export const RECRUIT_STATUS_OPTIONS = ['전체 상태', '모집 중만 보기'] as const;
 
+export const PROJECT_SORT_OPTIONS = [
+  { label: '최신순', value: 'latest' },
+  { label: '마감임박순', value: 'deadline' },
+] as const;
+
 export function getProjectLeader(project: ProjectRecord) {
   return project.members.find((member) => member.isLeader) ?? project.members[0];
 }

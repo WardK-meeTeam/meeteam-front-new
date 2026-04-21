@@ -1,24 +1,16 @@
 'use client';
 
-import Link from 'next/link';
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
-import {
-  CalendarDays,
-  ChevronLeft,
-  Copy,
-  ExternalLink,
-  Github,
-  Globe,
-  Link2,
-  Settings,
-} from 'lucide-react';
+import { type ReactNode, useEffect, useState } from 'react';
+import { CalendarDays, Copy, ExternalLink, Github, Globe, Link2, Settings } from 'lucide-react';
 import AuthLink from '@/components/features/auth/AuthLink';
 import { getProjectCategoryLabel } from '@/components/features/project/constants';
 import ProjectActionButtons from '@/components/features/project/detail/ProjectActionButtons';
 import ProjectDetailContent from '@/components/features/project/detail/ProjectDetailContent';
 import ProjectDetailSkeleton from '@/components/features/project/detail/ProjectDetailSkeleton';
-import { ProjectCard } from '@/components/features/project/ProjectCard';
-import { fetchProjectDetail } from '@/components/features/project/projectApi';
+import {
+  fetchProjectDetail,
+  fetchProjectTeamManagement,
+} from '@/components/features/project/projectApi';
 import CategoryBadge from '@/components/shared/CategoryBadge';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import SkillChip from '@/components/shared/SkillChip';
@@ -26,7 +18,7 @@ import ToastMessage from '@/components/shared/ToastMessage';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useToastStore } from '@/stores/useToastStore';
 import { useProjectStore } from '@/components/features/project/store';
-import type { ProjectRecord } from '@/types/project';
+import type { ProjectMember, ProjectRecord } from '@/types/project';
 
 type ExternalProjectLinkProps = {
   label: string;
@@ -93,31 +85,9 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   const projectsById = useProjectStore((state) => state.projectsById);
   const localProject = projectsById[projectId] ?? null;
   const [project, setProject] = useState<ProjectRecord | null>(null);
+  const [teamMembers, setTeamMembers] = useState<ProjectMember[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const recommendedProjects = useMemo(
-    () =>
-      Object.values(projectsById)
-        .filter((item) => item.id !== projectId)
-        .slice(0, 4)
-        .map((item) => ({
-          id: item.id,
-          title: item.title,
-          imageUrl: item.coverImageUrl,
-          category: getProjectCategoryLabel(item.categoryId),
-          deadline: item.recruitDeadline,
-          currentMembers: item.members.length,
-          maxMembers: item.targetMemberCount,
-          leader: {
-            name: item.members.find((member) => member.isLeader)?.name ?? '팀장',
-            avatar:
-              item.members.find((member) => member.isLeader)?.avatarUrl ??
-              item.members[0]?.avatarUrl ??
-              '',
-          },
-        })),
-    [projectId, projectsById],
-  );
 
   useEffect(() => {
     let active = true;
@@ -126,6 +96,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
       try {
         setIsLoading(true);
         setProject(null);
+        setTeamMembers(null);
 
         const nextProject = await fetchProjectDetail(projectId);
 
@@ -134,13 +105,27 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
         }
 
         setProject(nextProject);
+        setTeamMembers(nextProject.members);
         setErrorMessage(null);
+
+        try {
+          const nextTeamManagement = await fetchProjectTeamManagement(projectId);
+
+          if (active) {
+            setTeamMembers(nextTeamManagement.members);
+          }
+        } catch {
+          if (active) {
+            setTeamMembers(nextProject.members);
+          }
+        }
       } catch (error) {
         if (!active) {
           return;
         }
 
         setProject(localProject);
+        setTeamMembers(localProject?.members ?? null);
 
         if (!localProject) {
           setErrorMessage(
@@ -174,18 +159,15 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
         <p className="text-base leading-6 text-text-gray">
           {errorMessage ?? '목록으로 돌아가서 다른 프로젝트를 확인해보세요.'}
         </p>
-        <AuthLink
-          href="/projects"
-          className="inline-flex items-center gap-2 rounded-full border border-border-gray bg-white px-5 py-3 text-sm font-bold text-text-gray transition-colors hover:text-text-black"
-        >
-          <ChevronLeft className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-          프로젝트 목록으로
-        </AuthLink>
       </section>
     );
   }
 
   const leader = project.members.find((member) => member.isLeader) ?? project.members[0];
+  const rawMembers = teamMembers && teamMembers.length > 0 ? teamMembers : project.members;
+  const members = rawMembers.filter(
+    (member, index, items) => items.findIndex((item) => item.id === member.id) === index,
+  );
   const leaderSkillKey = `${project.myInterest.major} - ${project.myInterest.minor}`;
   const leaderSkills = project.leaderTechStacks ?? project.recruitTechStacks[leaderSkillKey] ?? [];
   const canManageProject =
@@ -206,16 +188,6 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-8 pb-20">
-      <AuthLink
-        href="/projects"
-        className="inline-flex items-center gap-2 text-sm font-bold text-text-gray transition-colors hover:text-text-black"
-      >
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-brand-50">
-          <ChevronLeft className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-        </span>
-        목록으로 돌아가기
-      </AuthLink>
-
       <div className="relative h-96 overflow-hidden rounded-4xl bg-text-black px-12 py-8 text-white">
         {project.coverImageUrl ? (
           <img
@@ -255,7 +227,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
       </div>
 
       <div className="grid grid-cols-1 gap-8 pb-14 xl:grid-cols-[minmax(0,1fr)_24rem]">
-        <ProjectDetailContent project={project} />
+        <ProjectDetailContent project={project} canApply={!canManageProject} />
 
         <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
           <article className="rounded-3xl border border-border-gray bg-white p-6 shadow-sm">
@@ -288,6 +260,35 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
                 ) : (
                   <SkillChip label={project.myInterest.major} variant="outline" />
                 )}
+              </div>
+            </div>
+
+            <div className="mt-5 border-t border-border-gray pt-4">
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs leading-4 font-bold text-text-gray">참여 팀원</p>
+                <span className="text-xs leading-4 font-bold text-muted-gray">
+                  {members.length}명
+                </span>
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {members.map((member) => (
+                  <AuthLink
+                    key={member.id}
+                    href={`/profile/${member.id}`}
+                    className="group inline-flex rounded-full"
+                    aria-label={`${member.name} 프로필로 이동`}
+                    title={member.role ? `${member.name} · ${member.role}` : member.name}
+                  >
+                    <ProfileAvatar
+                      name={member.name}
+                      imageUrl={member.avatarUrl}
+                      sizeClassName="h-10 w-10"
+                      textClassName="text-sm"
+                      className="ring-2 ring-white transition group-hover:ring-brand-100"
+                    />
+                  </AuthLink>
+                ))}
               </div>
             </div>
           </article>
@@ -337,28 +338,6 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
             initialLiked={project.isLiked ?? false}
           />
         </aside>
-      </div>
-
-      <div className="space-y-8 border-t border-border-gray pt-16">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="text-2xl leading-8 font-bold text-text-black">
-            다른 프로젝트도 확인해보세요
-          </h2>
-          <AuthLink
-            href="/projects"
-            className="text-sm leading-5 font-bold text-brand-500 transition-colors hover:text-brand-400"
-          >
-            전체보기
-          </AuthLink>
-        </div>
-
-        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {recommendedProjects.map((item) => (
-            <li key={item.id}>
-              <ProjectCard project={item} />
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );

@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import AuthLink from '@/components/features/auth/AuthLink';
 import HomeProjectSection from '@/components/features/home/HomeProjectSection';
 import { fetchHomeMembers } from '@/components/features/home/homeApi';
 import StartJourneyModalTrigger from '@/components/features/home/StartJourneyModalTrigger';
@@ -38,11 +37,6 @@ export default async function Page() {
                 <br />
                 <span className="text-brand-500">meeTeam</span>
               </h1>
-              <p className="text-base leading-7 text-text-gray md:text-lg">
-                사이드 프로젝트부터 창업 팀 빌딩까지.
-                <br />
-                당신의 열정과 함께할 최고의 동료를 지금 바로 만나보세요.
-              </p>
             </div>
             <div className="flex flex-wrap gap-3 hero-fade-up hero-delay-3">
               <StartJourneyModalTrigger />
@@ -110,27 +104,6 @@ export default async function Page() {
             </li>
           ))}
         </ul>
-      </section>
-
-      <section className="relative overflow-hidden rounded-3xl bg-text-black px-8 py-10 md:px-12">
-        <div className="absolute -right-20 -top-20 h-60 w-60 rounded-full bg-brand-400 opacity-20 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 h-60 w-60 rounded-full bg-brand-500 opacity-20 blur-3xl" />
-        <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
-              나만의 팀을 만들 준비가 되셨나요?
-            </h2>
-            <p className="mt-3 text-base text-muted-gray md:text-lg">
-              망설이지 마세요. 1분이면 프로젝트를 등록하고 멋진 동료들을 모집할 수 있습니다.
-            </p>
-          </div>
-          <AuthLink
-            href="/projects/create"
-            className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-bold text-text-black shadow-xl"
-          >
-            무료로 프로젝트 등록하기
-          </AuthLink>
-        </div>
       </section>
     </div>
   );

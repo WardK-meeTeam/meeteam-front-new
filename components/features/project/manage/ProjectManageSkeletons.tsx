@@ -41,11 +41,6 @@ export function ProjectManageOverviewSkeleton() {
           ))}
         </ul>
       </div>
-
-      <div className="rounded-xl bg-chip-bg px-4 py-4">
-        <SkeletonBlock className="h-5 w-56 bg-brand-100" />
-        <SkeletonBlock className="mt-2 h-4 w-full max-w-md bg-brand-100" />
-      </div>
     </div>
   );
 }

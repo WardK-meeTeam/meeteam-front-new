@@ -333,10 +333,6 @@ export default function ProjectForm({
         '프로젝트 등록 옵션을 아직 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.';
     }
 
-    if (isEdit && !recruitDeadline) {
-      nextErrors.recruitDeadline = '프로젝트 마감일을 선택해 주세요.';
-    }
-
     if (!nextErrors.form) {
       nextErrors.form = Object.values(nextErrors).find(Boolean);
     }
@@ -400,11 +396,8 @@ export default function ProjectForm({
       }`}
     >
       {!isEdit ? (
-        <header className="flex flex-col gap-0.5">
+        <header>
           <h1 className="text-2xl leading-8 font-extrabold text-text-black">프로젝트 등록</h1>
-          <p className="text-sm leading-5 font-normal text-text-gray">
-            멋진 아이디어를 함께 실현할 팀원들을 모아보세요.
-          </p>
         </header>
       ) : null}
 
@@ -689,9 +682,6 @@ export default function ProjectForm({
           }}
           untilComplete={isRecruitUntilComplete}
           onUntilCompleteChange={(nextValue) => {
-            if (isEdit) {
-              return;
-            }
             setIsRecruitUntilComplete(nextValue);
             if (nextValue) {
               setRecruitDeadline('');
@@ -699,7 +689,6 @@ export default function ProjectForm({
             clearError('recruitDeadline');
           }}
           minDate={minRecruitDeadline}
-          showUntilComplete={!isEdit}
           errorText={fieldErrors.recruitDeadline}
         />
 

@@ -54,6 +54,16 @@ type BackendProjectDetailResponse = {
     }>;
     techStacks: string[];
   };
+  members?: Array<{
+    memberId?: number;
+    id?: number;
+    name: string;
+    profileImageUrl: string | null;
+    jobFieldName?: string | null;
+    jobPositionName?: string | null;
+    isLeader?: boolean;
+    leader?: boolean;
+  }>;
   recruitments: Array<{
     jobFieldCode: string;
     jobFieldName: string;
@@ -100,6 +110,7 @@ type BackendProjectEditPrefillResponse = {
   projectCategory: BackendProjectDetailResponse['projectCategory'];
   projectCategoryName: string;
   platformCategory: BackendProjectDetailResponse['platformCategory'];
+  recruitmentDeadlineType?: BackendProjectDetailResponse['recruitmentDeadlineType'];
   githubRepositoryUrl: string | null;
   communicationChannelUrl: string | null;
   endDate: string | null;
@@ -246,7 +257,8 @@ type ProjectEditRequestPayload = {
   platformCategory: string;
   githubRepositoryUrl?: string;
   communicationChannelUrl?: string;
-  endDate: string;
+  recruitmentDeadlineType: 'END_DATE' | 'RECRUITMENT_COMPLETED';
+  endDate?: string;
   leaderJobPositionCode: string;
   recruitments: Array<{
     recruitmentStateId?: number | null;
@@ -608,7 +620,7 @@ export function buildProjectEditPayload(
     throw new Error('리더 상세 분야 정보를 다시 선택해 주세요.');
   }
 
-  if (!values.recruitDeadline) {
+  if (!values.isRecruitUntilComplete && !values.recruitDeadline) {
     throw new Error('프로젝트 마감일을 선택해 주세요.');
   }
 
@@ -619,7 +631,8 @@ export function buildProjectEditPayload(
     platformCategory: mapPlatformToApiValue(values.releasePlatforms[0]),
     githubRepositoryUrl: normalizeUrl(values.githubUrl),
     communicationChannelUrl: normalizeUrl(values.communicationUrl),
-    endDate: values.recruitDeadline,
+    recruitmentDeadlineType: values.isRecruitUntilComplete ? 'RECRUITMENT_COMPLETED' : 'END_DATE',
+    endDate: values.isRecruitUntilComplete ? undefined : values.recruitDeadline,
     leaderJobPositionCode: leaderPosition.code,
     recruitments: buildRecruitmentRequests(values, jobFields),
     confirmDeletePositionsWithPendingApplicants:
@@ -971,6 +984,9 @@ export async function fetchProjectEditPrefill(
     ]),
   );
 
+  const isRecruitUntilComplete =
+    project.recruitmentDeadlineType === 'RECRUITMENT_COMPLETED' || project.endDate === null;
+
   return {
     values: {
       projectName: project.name,
@@ -986,7 +1002,7 @@ export async function fetchProjectEditPrefill(
       recruitInterests,
       recruitTechStacks,
       recruitDeadline: project.endDate ?? '',
-      isRecruitUntilComplete: false,
+      isRecruitUntilComplete,
       coverImage: null,
     },
     coverImageUrl: project.imageUrl ?? '',
@@ -1019,6 +1035,26 @@ export async function fetchProjectDetail(projectId: string | number): Promise<Pr
       recruitment.techStacks,
     ]),
   );
+  const detailMembers =
+    project.members?.map((member) => ({
+      id: member.memberId ?? member.id ?? project.leader.id,
+      name: member.name,
+      role: [member.jobFieldName, member.jobPositionName].filter(Boolean).join(' / '),
+      avatarUrl: member.profileImageUrl ?? '',
+      isLeader: member.isLeader ?? member.leader ?? member.memberId === project.leader.id,
+    })) ?? [];
+  const members =
+    detailMembers.length > 0
+      ? detailMembers
+      : [
+          {
+            id: project.leader.id,
+            name: project.leader.name,
+            role: leaderPosition?.jobPositionName ?? leaderPosition?.jobFieldName ?? 'Project Lead',
+            avatarUrl: project.leader.profileImageUrl ?? '',
+            isLeader: true,
+          },
+        ];
 
   return {
     id: String(project.id),
@@ -1041,15 +1077,7 @@ export async function fetchProjectDetail(projectId: string | number): Promise<Pr
     isRecruitUntilComplete: project.recruitmentDeadlineType === 'RECRUITMENT_COMPLETED',
     targetMemberCount:
       project.recruitments.reduce((sum, recruitment) => sum + recruitment.recruitmentCount, 0) + 1,
-    members: [
-      {
-        id: project.leader.id,
-        name: project.leader.name,
-        role: leaderPosition?.jobPositionName ?? leaderPosition?.jobFieldName ?? 'Project Lead',
-        avatarUrl: project.leader.profileImageUrl ?? '',
-        isLeader: true,
-      },
-    ],
+    members,
     applicants: [],
     summary: buildSummary(project.description),
     coverImageUrl: project.imageUrl ?? '',

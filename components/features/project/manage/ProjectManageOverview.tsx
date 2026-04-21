@@ -12,7 +12,7 @@ import {
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import StatusBadge from '@/components/shared/StatusBadge';
 import ToastMessage from '@/components/shared/ToastMessage';
-import ProjectManageShell, { ProjectManageNotice } from './ProjectManageShell';
+import ProjectManageShell from './ProjectManageShell';
 import { ProjectManageOverviewSkeleton } from './ProjectManageSkeletons';
 import ProjectMemberRemovalModal from './ProjectMemberRemovalModal';
 import type { ProjectMember } from '@/types/project';
@@ -252,8 +252,6 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
             </div>
           ) : null}
         </div>
-
-        <ProjectManageNotice />
       </div>
 
       <ProjectMemberRemovalModal

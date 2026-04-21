@@ -21,7 +21,7 @@ type StatusBadgeProps = {
 const STATUS_CLASS: Record<StatusBadgeStatus, string> = {
   open: 'border-transparent bg-project-recruiting-bg text-project-status-progress',
   closed: 'border-transparent bg-surface-soft text-muted-gray',
-  deadline: 'border-transparent bg-brand-500/90 text-white backdrop-blur-sm',
+  deadline: 'border-white/20 bg-white/20 text-white shadow-sm backdrop-blur-md',
   suspended: 'border-transparent bg-surface-soft text-project-status-closed',
   completed: 'border-transparent bg-project-status-closed text-white',
   pending: 'border-transparent bg-brand-100 text-brand-500',

@@ -2,13 +2,14 @@
 
 import { type ReactNode, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, ChevronLeft, Info, Settings, UserPlus, Users } from 'lucide-react';
+import { ChevronDown, Settings, UserPlus, Users } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import {
   fetchProjectDetail,
   fetchProjectTeamManagement,
   toggleProjectRecruitmentStatus,
 } from '@/components/features/project/projectApi';
+import SkeletonBlock from '@/components/shared/SkeletonBlock';
 import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectRecruitmentStatus } from '@/types/project';
 
@@ -55,20 +56,13 @@ const STATUS_COPY: Record<ProjectRecruitmentStatus, { label: string; actionLabel
   CLOSED: { label: '모집 완료' },
 };
 
-export function ProjectManageNotice() {
-  return (
-    <div className="flex items-start gap-3 rounded-xl bg-chip-bg px-4 py-4">
-      <Info className="mt-0.5 h-5 w-5 shrink-0 text-brand-800" aria-hidden strokeWidth={2} />
-      <p className="text-sm leading-5 font-bold text-brand-800">
-        모집 인원을 변경하고 싶으신가요?
-        <br />
-        <span className="font-normal">
-          [정보 수정] 탭에서 포지션별 모집 인원을 수정하면 자동으로 반영됩니다.
-        </span>
-      </p>
-    </div>
-  );
-}
+type ProjectManageHeader = {
+  title: string;
+  status: ProjectRecruitmentStatus;
+  pendingApplicants: number;
+};
+
+const projectManageHeaderCache = new Map<string, ProjectManageHeader>();
 
 export default function ProjectManageShell({
   projectId,
@@ -77,12 +71,15 @@ export default function ProjectManageShell({
   children,
 }: ProjectManageShellProps) {
   const handleAuthRequired = useAuthRequiredModal();
+  const cachedHeader = projectManageHeaderCache.get(projectId);
   const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);
-  const [projectTitle, setProjectTitle] = useState(`프로젝트 ${projectId}`);
-  const [projectSubtitle, setProjectSubtitle] = useState('프로젝트 통합 관리');
-  const [projectStatus, setProjectStatus] = useState<ProjectRecruitmentStatus>('RECRUITING');
-  const [pendingApplicants, setPendingApplicants] = useState(0);
+  const [isHeaderLoading, setIsHeaderLoading] = useState(!cachedHeader);
+  const [projectTitle, setProjectTitle] = useState(cachedHeader?.title ?? '');
+  const [projectStatus, setProjectStatus] = useState<ProjectRecruitmentStatus>(
+    cachedHeader?.status ?? 'RECRUITING',
+  );
+  const [pendingApplicants, setPendingApplicants] = useState(cachedHeader?.pendingApplicants ?? 0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const statusMenuRef = useRef<HTMLDivElement>(null);
   const statusCopy = STATUS_COPY[projectStatus];
@@ -103,6 +100,17 @@ export default function ProjectManageShell({
     let active = true;
 
     const loadManageHeader = async () => {
+      const nextCachedHeader = projectManageHeaderCache.get(projectId);
+
+      if (nextCachedHeader) {
+        setProjectTitle(nextCachedHeader.title);
+        setProjectStatus(nextCachedHeader.status);
+        setPendingApplicants(pendingApplicantsCount ?? nextCachedHeader.pendingApplicants);
+        setIsHeaderLoading(false);
+      } else {
+        setIsHeaderLoading(true);
+      }
+
       try {
         setErrorMessage(null);
 
@@ -115,10 +123,16 @@ export default function ProjectManageShell({
           return;
         }
 
-        setProjectTitle(project.title);
-        setProjectSubtitle('프로젝트 통합 관리');
-        setProjectStatus(project.recruitmentStatus ?? 'RECRUITING');
-        setPendingApplicants(pendingApplicantsCount ?? team.pendingApplicationCount);
+        const nextHeader = {
+          title: project.title,
+          status: project.recruitmentStatus ?? 'RECRUITING',
+          pendingApplicants: team.pendingApplicationCount,
+        } satisfies ProjectManageHeader;
+
+        projectManageHeaderCache.set(projectId, nextHeader);
+        setProjectTitle(nextHeader.title);
+        setProjectStatus(nextHeader.status);
+        setPendingApplicants(pendingApplicantsCount ?? nextHeader.pendingApplicants);
       } catch (error) {
         if (!active) {
           return;
@@ -132,6 +146,10 @@ export default function ProjectManageShell({
         setErrorMessage(
           error instanceof Error ? error.message : '프로젝트 관리 정보를 불러오지 못했습니다.',
         );
+      } finally {
+        if (active) {
+          setIsHeaderLoading(false);
+        }
       }
     };
 
@@ -145,8 +163,16 @@ export default function ProjectManageShell({
   useEffect(() => {
     if (typeof pendingApplicantsCount === 'number') {
       setPendingApplicants(pendingApplicantsCount);
+      const cached = projectManageHeaderCache.get(projectId);
+
+      if (cached) {
+        projectManageHeaderCache.set(projectId, {
+          ...cached,
+          pendingApplicants: pendingApplicantsCount,
+        });
+      }
     }
-  }, [pendingApplicantsCount]);
+  }, [pendingApplicantsCount, projectId]);
 
   const handleToggleStatus = async () => {
     if (!canToggleStatus || isStatusUpdating) {
@@ -161,6 +187,15 @@ export default function ProjectManageShell({
       const nextStatus = await toggleProjectRecruitmentStatus(projectId);
 
       setProjectStatus(nextStatus.recruitmentStatus);
+      const cached = projectManageHeaderCache.get(projectId);
+
+      if (cached) {
+        projectManageHeaderCache.set(projectId, {
+          ...cached,
+          status: nextStatus.recruitmentStatus,
+        });
+      }
+
       setIsStatusMenuOpen(false);
     } catch (error) {
       if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
@@ -182,43 +217,40 @@ export default function ProjectManageShell({
 
         <header className="flex flex-col gap-5 border-b border-border-gray pb-6 md:gap-6">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-            <div className="flex items-start gap-4">
-              <Link
-                href={`/projects/${projectId}`}
-                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border-gray bg-white text-text-gray shadow-sm transition-colors hover:text-text-black"
-                aria-label="프로젝트 상세 페이지로 이동"
-              >
-                <ChevronLeft className="h-6 w-6" aria-hidden strokeWidth={1.8} />
-              </Link>
-
-              <div className="space-y-0.5">
+            <div className="space-y-0.5">
+              {isHeaderLoading ? (
+                <SkeletonBlock className="h-8 w-64 max-w-full" />
+              ) : (
                 <h1 className="text-2xl leading-8 font-bold text-text-black">{projectTitle}</h1>
-                <p className="text-sm leading-5 text-text-gray">{projectSubtitle}</p>
-              </div>
+              )}
             </div>
 
             <div className="flex items-center gap-3 self-end md:self-auto">
               <span className="text-sm leading-5 font-bold text-project-status-closed">상태:</span>
               <div className="relative" ref={statusMenuRef}>
-                <button
-                  type="button"
-                  onClick={() => setIsStatusMenuOpen((prev) => !prev)}
-                  disabled={isStatusUpdating}
-                  className={`inline-flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm leading-5 font-bold text-white shadow-md transition-colors ${
-                    projectStatus === 'CLOSED'
-                      ? 'bg-project-status-closed hover:opacity-95'
-                      : 'bg-brand-500 hover:bg-brand-400'
-                  } disabled:cursor-not-allowed disabled:opacity-70`}
-                >
-                  {isStatusUpdating ? '변경 중' : statusCopy.label}
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${isStatusMenuOpen ? 'rotate-180' : ''}`}
-                    aria-hidden
-                    strokeWidth={2}
-                  />
-                </button>
+                {isHeaderLoading ? (
+                  <SkeletonBlock className="h-10 w-28 rounded-xl" />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsStatusMenuOpen((prev) => !prev)}
+                    disabled={isStatusUpdating}
+                    className={`inline-flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm leading-5 font-bold text-white shadow-md transition-colors ${
+                      projectStatus === 'CLOSED'
+                        ? 'bg-project-status-closed hover:opacity-95'
+                        : 'bg-brand-500 hover:bg-brand-400'
+                    } disabled:cursor-not-allowed disabled:opacity-70`}
+                  >
+                    {isStatusUpdating ? '변경 중' : statusCopy.label}
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform ${isStatusMenuOpen ? 'rotate-180' : ''}`}
+                      aria-hidden
+                      strokeWidth={2}
+                    />
+                  </button>
+                )}
 
-                {isStatusMenuOpen ? (
+                {isStatusMenuOpen && !isHeaderLoading ? (
                   <div className="absolute right-0 top-[calc(100%+8px)] z-30 min-w-32 rounded-2xl border border-border-gray bg-white p-2 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.12),0_8px_10px_-6px_rgba(15,23,42,0.12)]">
                     <button
                       type="button"
@@ -253,9 +285,13 @@ export default function ProjectManageShell({
                       <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                       <span>{tab.label}</span>
                       {typeof tab.count === 'number' ? (
-                        <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-brand-100 px-2 py-0.5 text-[10px] leading-5 font-bold text-brand-500">
-                          {pendingApplicants}
-                        </span>
+                        isHeaderLoading ? (
+                          <SkeletonBlock className="h-5 w-6 rounded-full" />
+                        ) : (
+                          <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-brand-100 px-2 py-0.5 text-[10px] leading-5 font-bold text-brand-500">
+                            {pendingApplicants}
+                          </span>
+                        )
                       ) : null}
                     </Link>
                   </li>

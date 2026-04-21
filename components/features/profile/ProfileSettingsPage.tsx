@@ -7,10 +7,6 @@ export default function ProfileSettingsPage() {
       <div className="space-y-2">
         <p className="text-sm leading-5 font-semibold text-brand-500">설정</p>
         <h1 className="text-3xl leading-tight font-bold text-text-black">계정 설정</h1>
-        <p className="text-sm leading-6 text-text-gray">
-          계정 관련 설정 화면은 현재 준비 중입니다. 필요한 정보 확인은 프로필과 알림 페이지에서
-          이어서 할 수 있어요.
-        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">

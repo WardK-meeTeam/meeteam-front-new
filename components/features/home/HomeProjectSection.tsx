@@ -75,7 +75,7 @@ export default function HomeProjectSection() {
 
   return (
     <>
-      <section className="sticky top-0 z-10 -mx-4 border-y border-border-gray bg-white px-4 py-4 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+      <section className="-mx-4 border-y border-border-gray bg-white px-4 py-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
         <div className="flex gap-2 overflow-x-auto pb-1">
           {CATEGORY_CHIPS.map((chip) => {
             const selected = selectedCategory === chip.label;

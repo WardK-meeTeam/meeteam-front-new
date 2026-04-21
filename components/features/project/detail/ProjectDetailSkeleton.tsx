@@ -1,4 +1,3 @@
-import { ProjectCardSkeleton } from '@/components/features/project/ProjectCardSkeleton';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
 
 export default function ProjectDetailSkeleton() {
@@ -60,6 +59,20 @@ export default function ProjectDetailSkeleton() {
               <SkeletonBlock className="h-7 w-16 rounded-md" />
               <SkeletonBlock className="h-7 w-20 rounded-md" />
             </div>
+            <div className="mt-5 border-t border-border-gray pt-4">
+              <div className="flex items-center justify-between">
+                <SkeletonBlock className="h-4 w-16" />
+                <SkeletonBlock className="h-4 w-8" />
+              </div>
+              <div className="mt-3 flex gap-2">
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <SkeletonBlock
+                    key={`project-detail-member-skeleton-${index}`}
+                    className="h-10 w-10 rounded-full"
+                  />
+                ))}
+              </div>
+            </div>
           </article>
 
           <article className="rounded-3xl border border-border-gray bg-white p-6 shadow-sm">
@@ -70,17 +83,6 @@ export default function ProjectDetailSkeleton() {
             </div>
           </article>
         </aside>
-      </div>
-
-      <div className="space-y-8 border-t border-border-gray pt-16">
-        <SkeletonBlock className="h-8 w-64" />
-        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, index) => (
-            <li key={`project-detail-recommended-skeleton-${index}`}>
-              <ProjectCardSkeleton />
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );

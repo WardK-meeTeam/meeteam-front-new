@@ -14,7 +14,7 @@ import SkeletonBlock from '@/components/shared/SkeletonBlock';
 import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectApplicant } from '@/types/project';
 import ProjectApplicantDetailModal from './ProjectApplicantDetailModal';
-import ProjectManageShell, { ProjectManageNotice } from './ProjectManageShell';
+import ProjectManageShell from './ProjectManageShell';
 
 type ProjectManageApplicantsProps = {
   projectId: string;
@@ -193,12 +193,14 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
   };
 
   const pendingApplicants = applicants.filter((item) => item.status === 'pending');
+  const pendingApplicantsCount =
+    isLoading && pendingApplicants.length === 0 ? undefined : pendingApplicants.length;
 
   return (
     <ProjectManageShell
       projectId={projectId}
       activeTab="applicants"
-      pendingApplicantsCount={pendingApplicants.length}
+      pendingApplicantsCount={pendingApplicantsCount}
     >
       <div className="space-y-6">
         <ToastMessage message={errorMessage} />
@@ -305,8 +307,6 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
             )}
           </section>
         )}
-
-        <ProjectManageNotice />
       </div>
 
       <ProjectApplicantDetailModal

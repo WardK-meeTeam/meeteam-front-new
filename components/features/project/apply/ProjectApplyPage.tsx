@@ -1,9 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
 import {
@@ -252,16 +251,6 @@ export default function ProjectApplyPage({
         <ToastMessage message={errorMessage} />
 
         <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-12">
-          <Link
-            href={`/projects/${projectId}`}
-            className="inline-flex items-center gap-2 text-sm leading-5 font-bold text-text-gray transition-colors hover:text-text-black"
-          >
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border-gray bg-surface-soft">
-              <ChevronLeft className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-            </span>
-            프로젝트로 돌아가기
-          </Link>
-
           <div className="rounded-3xl border border-border-soft bg-white px-8 py-12 text-center shadow-sm">
             <h1 className="text-2xl leading-8 font-extrabold text-text-black">
               지원 정보를 불러오지 못했습니다.
@@ -279,21 +268,8 @@ export default function ProjectApplyPage({
     <section className="min-h-screen">
       <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-12">
         <div className="space-y-4">
-          <Link
-            href={`/projects/${projectId}`}
-            className="inline-flex items-center gap-2 text-sm leading-5 font-bold text-text-gray transition-colors hover:text-text-black"
-          >
-            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border-gray bg-surface-soft">
-              <ChevronLeft className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-            </span>
-            뒤로가기
-          </Link>
-
           <div>
             <h1 className="text-2xl leading-8 font-extrabold text-text-black">프로젝트 지원하기</h1>
-            <p className="mt-1 text-sm leading-5 text-text-gray">
-              지원 가능한 포지션만 선택할 수 있습니다.
-            </p>
           </div>
         </div>
 

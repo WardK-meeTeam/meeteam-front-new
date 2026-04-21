@@ -35,7 +35,6 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
   const percentage =
     project.maxMembers > 0 ? Math.round((project.currentMembers / project.maxMembers) * 100) : 0;
 
-  const tags = project.tags ?? [];
   const recruitInfo = project.recruitInfo ?? [];
   const deadlineLabel = project.deadline?.trim() ? `${project.deadline} 마감` : '상시 모집';
 
@@ -123,20 +122,10 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
           >
             <div className="min-h-0 overflow-hidden">
               <div className="border-t border-white/20 pt-4">
-                <div className="mb-3 flex items-center justify-between">
+                <div className="mb-3 flex items-center">
                   <h4 className="flex items-center gap-2 text-sm font-bold text-white">
                     모집 현황
                   </h4>
-                  <div className="flex gap-1">
-                    {tags.slice(0, 2).map((tag) => (
-                      <span
-                        className="inline-block rounded bg-white/10 px-1.5 py-0.5 text-[10px] text-white/80"
-                        key={tag}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
                 </div>
 
                 <div className="project-card-scrollbar max-h-32 space-y-2 overflow-y-auto pr-2">
