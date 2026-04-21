@@ -1,12 +1,18 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ChevronRight, Crown, Trash2 } from 'lucide-react';
+import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
+import {
+  expelProjectMember,
+  fetchProjectTeamManagement,
+  type ProjectTeamManagement,
+} from '@/components/features/project/projectApi';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import ProjectManageShell, { ProjectManageNotice } from './ProjectManageShell';
+import { ProjectManageOverviewSkeleton } from './ProjectManageSkeletons';
 import ProjectMemberRemovalModal from './ProjectMemberRemovalModal';
-import { useProjectManageStore } from './store';
 import type { ProjectMember } from '@/types/project';
 
 type ProjectManageOverviewProps = {
@@ -14,27 +20,129 @@ type ProjectManageOverviewProps = {
 };
 
 export default function ProjectManageOverview({ projectId }: ProjectManageOverviewProps) {
+  const handleAuthRequired = useAuthRequiredModal();
+  const [teamManagement, setTeamManagement] = useState<ProjectTeamManagement | null>(null);
   const [selectedMember, setSelectedMember] = useState<ProjectMember | null>(null);
-  const project = useProjectManageStore((state) => state.getProject(projectId));
-  const removeMember = useProjectManageStore((state) => state.removeMember);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  if (!project) {
+  const loadTeamManagement = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      const nextTeamManagement = await fetchProjectTeamManagement(projectId);
+
+      setTeamManagement(nextTeamManagement);
+    } catch (error) {
+      if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
+        setErrorMessage(null);
+        return;
+      }
+
+      setErrorMessage(
+        error instanceof Error ? error.message : '팀원 관리 정보를 불러오지 못했습니다.',
+      );
+      setTeamManagement(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [handleAuthRequired, projectId]);
+
+  useEffect(() => {
+    let active = true;
+
+    const load = async () => {
+      try {
+        setIsLoading(true);
+        setErrorMessage(null);
+
+        const nextTeamManagement = await fetchProjectTeamManagement(projectId);
+
+        if (!active) {
+          return;
+        }
+
+        setTeamManagement(nextTeamManagement);
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+
+        if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
+          setErrorMessage(null);
+          return;
+        }
+
+        setErrorMessage(
+          error instanceof Error ? error.message : '팀원 관리 정보를 불러오지 못했습니다.',
+        );
+        setTeamManagement(null);
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void load();
+
+    return () => {
+      active = false;
+    };
+  }, [handleAuthRequired, projectId]);
+
+  const handleConfirmRemoval = async () => {
+    if (!selectedMember || isRemoving) {
+      return;
+    }
+
+    try {
+      setIsRemoving(true);
+      setErrorMessage(null);
+
+      await expelProjectMember(projectId, selectedMember.id);
+      await loadTeamManagement();
+      setSelectedMember(null);
+    } catch (error) {
+      if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
+        return;
+      }
+
+      setErrorMessage(error instanceof Error ? error.message : '팀원 방출 중 오류가 발생했습니다.');
+    } finally {
+      setIsRemoving(false);
+    }
+  };
+
+  if (isLoading && !teamManagement) {
+    return (
+      <ProjectManageShell projectId={projectId} activeTab="members">
+        <ProjectManageOverviewSkeleton />
+      </ProjectManageShell>
+    );
+  }
+
+  if (!teamManagement) {
     return (
       <ProjectManageShell projectId={projectId} activeTab="members">
         <section className="rounded-3xl border border-border-gray bg-white px-8 py-12 text-center shadow-sm">
-          <h2 className="text-xl font-bold text-text-black">프로젝트를 찾을 수 없습니다.</h2>
-          <p className="mt-2 text-sm text-text-gray">올바른 프로젝트인지 다시 확인해주세요.</p>
+          <h2 className="text-xl font-bold text-text-black">팀원 정보를 불러오지 못했습니다.</h2>
+          <p className="mt-2 text-sm text-text-gray">
+            {errorMessage ?? '올바른 프로젝트인지 다시 확인해주세요.'}
+          </p>
         </section>
       </ProjectManageShell>
     );
   }
 
   const summaryCards = [
-    { label: '현재 멤버', value: `${project.members.length}명` },
-    { label: '모집 정원', value: `${project.targetMemberCount}명` },
+    { label: '현재 멤버', value: `${teamManagement.currentMemberCount}명` },
+    { label: '모집 정원', value: `${teamManagement.totalRecruitmentCount}명` },
     {
       label: '대기 중인 지원서',
-      value: `${project.applicants.filter((item) => item.status === 'pending').length}건`,
+      value: `${teamManagement.pendingApplicationCount}건`,
       accent: true,
       href: '/applicants',
     },
@@ -85,23 +193,27 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
             <p className="text-xs leading-4 text-text-gray">리더는 방출할 수 없습니다.</p>
           </div>
 
+          {errorMessage ? (
+            <p className="border-b border-border-gray/40 bg-danger-soft px-6 py-3 text-sm leading-5 font-medium text-danger-500">
+              {errorMessage}
+            </p>
+          ) : null}
+
           <ul>
-            {project.members.map((member, index) => (
+            {teamManagement.members.map((member, index) => (
               <li
                 key={member.id}
                 className={`${index === 0 ? '' : 'border-t border-border-gray/40'} px-6 py-6`}
               >
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="relative h-12 w-12 overflow-hidden rounded-full bg-border-gray">
-                      <Image
-                        alt={member.name}
-                        className="object-cover"
-                        fill
-                        sizes="48px"
-                        src={member.avatarUrl}
-                      />
-                    </div>
+                    <ProfileAvatar
+                      name={member.name}
+                      imageUrl={member.avatarUrl}
+                      sizeClassName="h-12 w-12"
+                      textClassName="text-sm"
+                      className="bg-border-gray text-text-gray"
+                    />
 
                     <div className="space-y-0.5">
                       <div className="flex flex-wrap items-center gap-2">
@@ -115,7 +227,9 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
                           </span>
                         ) : null}
                       </div>
-                      <p className="text-sm leading-5 text-text-gray">{member.role}</p>
+                      <p className="text-sm leading-5 text-text-gray">
+                        {member.role || '포지션 미지정'}
+                      </p>
                     </div>
                   </div>
 
@@ -133,6 +247,12 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
               </li>
             ))}
           </ul>
+
+          {teamManagement.members.length === 0 ? (
+            <div className="px-6 py-12 text-center text-sm leading-6 text-text-gray">
+              아직 참여 중인 팀원이 없습니다.
+            </div>
+          ) : null}
         </div>
 
         <ProjectManageNotice />
@@ -140,14 +260,10 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
 
       <ProjectMemberRemovalModal
         isOpen={selectedMember !== null}
+        isSubmitting={isRemoving}
         memberName={selectedMember?.name ?? ''}
         onClose={() => setSelectedMember(null)}
-        onConfirm={() => {
-          if (selectedMember) {
-            removeMember(projectId, selectedMember.id);
-          }
-          setSelectedMember(null);
-        }}
+        onConfirm={handleConfirmRemoval}
       />
     </ProjectManageShell>
   );

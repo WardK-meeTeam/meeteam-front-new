@@ -1,34 +1,32 @@
 import BaseField from '@/components/shared/BaseField';
-import BaseInput from '@/components/shared/BaseInput';
-import type { Interest } from '@/types/auth';
-import { Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import type { Interest, JobFieldOption } from '@/types/auth';
+import { useEffect, useMemo, useState } from 'react';
 import BaseDropdown from '@/components/shared/BaseDropdown';
-import SelectMenu from '@/components/shared/SelectMenu';
-import { TECHS_BY_MAJOR } from '@/constants/techStacks';
 import TechStackList from '@/components/features/auth/TechStackList';
+import TechStackPicker from '@/components/shared/TechStackPicker';
+import { findJobFieldByName } from './jobOptionUtils';
 
 type TechStackSectionProps = {
   label?: string;
+  jobFields: JobFieldOption[];
   interests: Interest[];
   value: Record<string, string[]>;
   onChange: (next: Record<string, string[]>) => void;
+  errorText?: string;
+  disabled?: boolean;
 };
-
-type TechMajor = keyof typeof TECHS_BY_MAJOR;
-
-const isTechMajor = (value: string): value is TechMajor => value in TECHS_BY_MAJOR;
 
 export default function TechStackSection({
   label = '기술 스택',
+  jobFields,
   interests,
   value,
   onChange,
+  errorText,
+  disabled = false,
 }: TechStackSectionProps) {
   const [open, setOpen] = useState(false);
   const [selectedLabel, setSelectedLabel] = useState('');
-  const [techKeyword, setTechKeyword] = useState('');
-  const [openTechMenu, setOpenTechMenu] = useState(false);
 
   const interestItems = useMemo(
     () => interests.filter((it) => it.major && it.minor).map((it) => `${it.major} - ${it.minor}`),
@@ -37,37 +35,25 @@ export default function TechStackSection({
 
   const currentLabel = selectedLabel || interestItems[0] || '관심 분야를 선택해 주세요';
 
-  const selectedMajor = useMemo<TechMajor | null>(() => {
+  useEffect(() => {
+    if (!selectedLabel && interestItems[0]) {
+      setSelectedLabel(interestItems[0]);
+      return;
+    }
+
+    if (selectedLabel && !interestItems.includes(selectedLabel)) {
+      setSelectedLabel(interestItems[0] ?? '');
+    }
+  }, [interestItems, selectedLabel]);
+
+  const selectedField = useMemo(() => {
     const major = currentLabel.split(' - ')[0]?.trim() ?? '';
-    return isTechMajor(major) ? major : null;
-  }, [currentLabel]);
-
-  const techItems = useMemo(() => {
-    if (!selectedMajor) return [];
-
-    const q = techKeyword.trim().toLowerCase();
-    if (!q) return [];
-
-    return TECHS_BY_MAJOR[selectedMajor]
-      .filter((tech) => tech.kor.toLowerCase().includes(q) || tech.eng.toLowerCase().includes(q))
-      .map((tech) => tech.eng);
-  }, [selectedMajor, techKeyword]);
+    return findJobFieldByName(jobFields, major) ?? null;
+  }, [currentLabel, jobFields]);
 
   const handleSelectInterest = (item: string) => {
     setSelectedLabel(item);
     setOpen(false);
-    setTechKeyword('');
-    setOpenTechMenu(false);
-  };
-
-  const handleSelectTech = (tech: string) => {
-    if (!interestItems.includes(currentLabel)) return;
-
-    const existing = value[currentLabel] ?? [];
-    if (existing.includes(tech)) return;
-    onChange({ ...value, [currentLabel]: [...existing, tech] });
-    setTechKeyword('');
-    setOpenTechMenu(false);
   };
 
   const handleRemoveTech = (label: string, tech: string) => {
@@ -94,38 +80,42 @@ export default function TechStackSection({
   );
 
   return (
-    <BaseField label={label} htmlFor="tech" required={false}>
+    <BaseField label={label} htmlFor="tech" required={false} errorText={errorText}>
       <div className="flex gap-2">
         <BaseDropdown
           value={currentLabel}
           placeholder="관심 분야를 선택해 주세요"
           open={open}
           items={interestItems}
-          onToggle={() => setOpen((prev) => !prev)}
+          onToggle={() => !disabled && setOpen((prev) => !prev)}
           onSelect={handleSelectInterest}
-          disabled={interestItems.length === 0}
+          disabled={interestItems.length === 0 || disabled}
           containerClassName="w-full"
           buttonClassName="flex-1 justify-between p-3.5"
           textClassName="font-medium text-sm whitespace-nowrap"
         />
 
-        <div className="relative w-full">
-          <BaseInput
-            id="tech"
-            type="search"
-            value={techKeyword}
-            disabled={!selectedMajor}
-            placeholder="기술 검색"
-            onChange={(e) => {
-              setTechKeyword(e.target.value);
-              if (selectedMajor) setOpenTechMenu(true);
-            }}
-            rightIcon={<Search className="h-5 w-5 text-muted-gray" />}
-          />
-          {openTechMenu && techItems.length > 0 && (
-            <SelectMenu items={techItems} onSelect={handleSelectTech} />
-          )}
-        </div>
+        <TechStackPicker
+          inputId="tech"
+          options={selectedField?.techStacks.map((tech) => tech.name) ?? []}
+          value={interestItems.includes(currentLabel) ? (value[currentLabel] ?? []) : []}
+          onChange={(nextSelectedTechStacks) => {
+            if (!interestItems.includes(currentLabel)) {
+              return;
+            }
+
+            if (nextSelectedTechStacks.length === 0) {
+              const { [currentLabel]: _, ...rest } = value;
+              onChange(rest);
+              return;
+            }
+
+            onChange({ ...value, [currentLabel]: nextSelectedTechStacks });
+          }}
+          disabled={!selectedField || disabled}
+          showSelectedChips={false}
+          className="w-full"
+        />
       </div>
 
       <TechStackList sections={sections} onRemove={handleRemoveTech} />

@@ -18,7 +18,7 @@ export default function ProjectDetailContent({ project }: { project: ProjectReco
 
       {activeTab === 'intro' && <ProjectIntroSection project={project} />}
       {activeTab === 'recruit' && <ProjectRecruitSection project={project} />}
-      {activeTab === 'qna' && <ProjectQnaSection />}
+      {activeTab === 'qna' && <ProjectQnaSection project={project} />}
     </div>
   );
 }

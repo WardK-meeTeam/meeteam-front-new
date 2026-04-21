@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
         hostname: '127.0.0.1',
         port: '3845',
       },
+      {
+        protocol: 'https',
+        hostname: '**.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.meeteam.alom-sejong.com',
+      },
     ],
   },
   turbopack: {

@@ -1,11 +1,9 @@
 import BaseField from '@/components/shared/BaseField';
-import BaseInput from '@/components/shared/BaseInput';
 import type { Interest, JobFieldOption } from '@/types/auth';
-import { Search } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import BaseDropdown from '@/components/shared/BaseDropdown';
-import SelectMenu from '@/components/shared/SelectMenu';
 import TechStackList from '@/components/features/auth/TechStackList';
+import TechStackPicker from '@/components/shared/TechStackPicker';
 import { getInterestKey } from './signupTransform';
 
 type SignupTechStackSectionProps = {
@@ -29,8 +27,6 @@ export default function SignupTechStackSection({
 }: SignupTechStackSectionProps) {
   const [open, setOpen] = useState(false);
   const [selectedKey, setSelectedKey] = useState('');
-  const [techKeyword, setTechKeyword] = useState('');
-  const [openTechMenu, setOpenTechMenu] = useState(false);
 
   const interestItems = useMemo(
     () =>
@@ -68,34 +64,12 @@ export default function SignupTechStackSection({
     [currentItem?.fieldCode, jobFields],
   );
 
-  const techItems = useMemo(() => {
-    const q = techKeyword.trim().toLowerCase();
-    if (!q) return [];
-    if (!selectedJobField) return [];
-
-    return selectedJobField.techStacks
-      .filter((tech) => tech.name.toLowerCase().includes(q))
-      .map((tech) => tech.name);
-  }, [selectedJobField, techKeyword]);
-
   const handleSelectInterest = (item: string) => {
     const selectedItem = interestItems.find((interestItem) => interestItem.label === item);
     if (!selectedItem) return;
 
     setSelectedKey(selectedItem.key);
     setOpen(false);
-    setTechKeyword('');
-    setOpenTechMenu(false);
-  };
-
-  const handleSelectTech = (tech: string) => {
-    if (!currentItem) return;
-
-    const existing = value[currentItem.key] ?? [];
-    if (existing.includes(tech)) return;
-    onChange({ ...value, [currentItem.key]: [...existing, tech] });
-    setTechKeyword('');
-    setOpenTechMenu(false);
   };
 
   const handleRemoveTech = (key: string, tech: string) => {
@@ -135,25 +109,31 @@ export default function SignupTechStackSection({
           containerClassName="w-full"
           buttonClassName="flex-1 justify-between p-3.5"
           textClassName="font-medium text-sm whitespace-nowrap"
+          dataCy="signup-tech-interest"
         />
 
-        <div className="relative w-full">
-          <BaseInput
-            id="tech"
-            type="search"
-            value={techKeyword}
-            disabled={!selectedJobField || disabled}
-            placeholder="기술 검색"
-            onChange={(e) => {
-              setTechKeyword(e.target.value);
-              if (selectedJobField) setOpenTechMenu(true);
-            }}
-            rightIcon={<Search className="h-5 w-5 text-muted-gray" />}
-          />
-          {openTechMenu && techItems.length > 0 && (
-            <SelectMenu items={techItems} onSelect={handleSelectTech} />
-          )}
-        </div>
+        <TechStackPicker
+          inputId="tech"
+          inputDataCy="signup-tech-input"
+          options={selectedJobField?.techStacks.map((tech) => tech.name) ?? []}
+          value={currentItem ? (value[currentItem.key] ?? []) : []}
+          onChange={(nextSelectedTechStacks) => {
+            if (!currentItem) {
+              return;
+            }
+
+            if (nextSelectedTechStacks.length === 0) {
+              const { [currentItem.key]: _, ...rest } = value;
+              onChange(rest);
+              return;
+            }
+
+            onChange({ ...value, [currentItem.key]: nextSelectedTechStacks });
+          }}
+          disabled={!selectedJobField || disabled}
+          showSelectedChips={false}
+          className="w-full"
+        />
       </div>
 
       <TechStackList sections={selectedSections} onRemove={handleRemoveTech} />

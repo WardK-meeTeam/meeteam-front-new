@@ -1,0 +1,993 @@
+import type { ApiEnvelope, JobFieldOption } from '@/types/auth';
+import type {
+  ProjectFormValues,
+  ProjectApplicant,
+  ProjectMember,
+  ProjectRecord,
+  ProjectRecruitmentStatus,
+} from '@/types/project';
+
+import { createApiError } from '@/components/features/auth/authError';
+import { extractApiData, normalizeUrl } from '@/components/features/auth/signupTransform';
+import {
+  findProjectJobField,
+  findProjectJobPosition,
+} from '@/components/features/project/projectJobOptions';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
+
+type BackendProjectCreateResponse = {
+  id: number;
+  title: string;
+  createdAt: string;
+};
+
+type BackendProjectDetailResponse = {
+  id: number;
+  name: string;
+  description: string;
+  projectCategory:
+    | 'ENVIRONMENT'
+    | 'PET'
+    | 'HEALTHCARE'
+    | 'EDUCATION'
+    | 'AI_TECH'
+    | 'FASHION_BEAUTY'
+    | 'FINANCE_PRODUCTIVITY'
+    | 'ETC';
+  platformCategory: 'IOS' | 'ANDROID' | 'WEB';
+  imageUrl: string | null;
+  recruitmentStatus: 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
+  recruitmentDeadlineType: 'END_DATE' | 'RECRUITMENT_COMPLETED';
+  startDate: string | null;
+  endDate: string | null;
+  githubRepositoryUrl: string | null;
+  communicationChannelUrl: string | null;
+  leader: {
+    id: number;
+    name: string;
+    profileImageUrl: string | null;
+    jobPositions: Array<{
+      jobFieldCode: string;
+      jobFieldName: string;
+      jobPositionName: string;
+    }>;
+    techStacks: string[];
+  };
+  recruitments: Array<{
+    jobFieldCode: string;
+    jobFieldName: string;
+    jobPositionName: string;
+    recruitmentCount: number;
+    currentCount: number;
+    isClosed: boolean;
+    techStacks: string[];
+  }>;
+  likeCount: number;
+  isLiked: boolean;
+  isLeader: boolean;
+};
+
+type BackendTeamManagementResponse = {
+  currentMemberCount: number;
+  totalRecruitmentCount: number;
+  pendingApplicationCount: number;
+  members: Array<{
+    memberId: number;
+    name: string;
+    profileImageUrl: string | null;
+    jobFieldName: string | null;
+    jobPositionName: string | null;
+    isLeader?: boolean;
+    leader?: boolean;
+  }>;
+};
+
+type BackendProjectRepositoryResponse = {
+  id: number;
+  repoFullName: string;
+  description: string | null;
+  starCount: number;
+  watcherCount: number;
+  pushedAt: string | null;
+  language: string | null;
+};
+
+type BackendProjectEditPrefillResponse = {
+  projectId: number;
+  name: string;
+  description: string;
+  projectCategory: BackendProjectDetailResponse['projectCategory'];
+  projectCategoryName: string;
+  platformCategory: BackendProjectDetailResponse['platformCategory'];
+  githubRepositoryUrl: string | null;
+  communicationChannelUrl: string | null;
+  endDate: string | null;
+  imageUrl: string | null;
+  leaderJobFieldName: string;
+  leaderJobPositionName: string;
+  recruitments: Array<{
+    recruitmentStateId: number;
+    jobFieldCode: string;
+    jobFieldName: string;
+    jobPositionCode: string;
+    jobPositionName: string;
+    recruitmentCount: number;
+    currentCount: number;
+    pendingApplicationCount: number;
+    techStackIds: number[];
+    techStackNames: string[];
+    deletable: boolean;
+    notDeletableReason: string | null;
+    minRecruitmentCount: number;
+  }>;
+  editable: boolean;
+  notEditableReason: string | null;
+};
+
+type BackendApplicationStatus =
+  | 'PENDING'
+  | 'ACCEPTED'
+  | 'REJECTED'
+  | '대기중'
+  | '승인됨'
+  | '거절됨';
+
+type BackendApplicationResponse = {
+  applicationId: number;
+  projectId: number;
+  applicantId: number;
+  status: BackendApplicationStatus;
+};
+
+type BackendProjectApplicationListResponse = {
+  applicationId: number;
+  applicantId: number;
+  applicantName: string;
+  profileImageUrl: string | null;
+  applicantEmail: string;
+  jobFieldName: string;
+  jobPositionName: string;
+  motivation: string;
+  status: BackendApplicationStatus;
+  appliedAt: string;
+  currentCount: number;
+  recruitmentCount: number;
+  isRecruitmentFull: boolean;
+};
+
+type BackendApplicationDetailResponse = {
+  applicationId: number;
+  applicantId: number;
+  applicantName: string;
+  profileImageUrl: string | null;
+  age: number | null;
+  gender: 'MALE' | 'FEMALE' | string | null;
+  applicantEmail: string;
+  jobPosition: {
+    jobPositionId: number;
+    jobPositionName: string;
+    jobFieldId: number;
+    jobFieldName: string;
+  };
+  motivation: string;
+  status: BackendApplicationStatus;
+};
+
+type BackendApplicationDecisionResponse = {
+  applicationId: number;
+  projectId: number | null;
+  applicantId: number | null;
+  decision: BackendApplicationStatus;
+};
+
+type BackendProjectLikeStatusResponse = {
+  isLiked?: boolean;
+  liked?: boolean;
+};
+
+type BackendProjectLikeToggleResponse = {
+  projectId: number;
+  liked: boolean;
+  likeCount: number;
+};
+
+type BackendAppliedProjectResponse = {
+  applicationId: number;
+  projectId: number;
+  projectName: string;
+  jobPositionId: number;
+  jobPositionName: string;
+  appliedAt: string;
+};
+
+type ProjectCreateRequestPayload = {
+  projectName: string;
+  githubRepositoryUrl?: string;
+  communicationChannelUrl?: string;
+  projectCategory: string;
+  description: string;
+  platformCategory: string;
+  creatorJobPositionCode: string;
+  recruitments: Array<{
+    jobFieldCode: string;
+    jobPositionCode: string;
+    recruitmentCount: number;
+    techStackIds: number[];
+  }>;
+  recruitmentDeadlineType: 'END_DATE' | 'RECRUITMENT_COMPLETED';
+  endDate?: string;
+};
+
+type ProjectEditRequestPayload = {
+  name: string;
+  description: string;
+  projectCategory: string;
+  platformCategory: string;
+  githubRepositoryUrl?: string;
+  communicationChannelUrl?: string;
+  endDate: string;
+  leaderJobPositionCode: string;
+  recruitments: Array<{
+    recruitmentStateId?: number | null;
+    jobFieldCode: string;
+    jobPositionCode: string;
+    recruitmentCount: number;
+    techStackIds: number[];
+  }>;
+  confirmDeletePositionsWithPendingApplicants: boolean;
+};
+
+export type ProjectApplicationRequestPayload = {
+  jobPositionCode: string;
+  motivation: string;
+};
+
+export type ProjectApplicationDecision = 'ACCEPTED' | 'REJECTED';
+
+export type ProjectApplicationResult = {
+  applicationId: number;
+  projectId: number;
+  applicantId: number;
+  status: ProjectApplicant['status'];
+};
+
+export type AppliedProject = {
+  applicationId: number;
+  projectId: number;
+  projectName: string;
+  jobPositionId: number;
+  jobPositionName: string;
+  appliedAt: string;
+};
+
+export type ProjectEditPrefill = {
+  values: ProjectFormValues;
+  coverImageUrl: string;
+  editable: boolean;
+  notEditableReason: string | null;
+};
+
+export type ProjectTeamManagement = {
+  currentMemberCount: number;
+  totalRecruitmentCount: number;
+  pendingApplicationCount: number;
+  members: ProjectMember[];
+};
+
+export type ProjectRepository = {
+  id: number;
+  repoFullName: string;
+  description: string;
+  starCount: number;
+  watcherCount: number;
+  pushedAt: string;
+  language: string;
+};
+
+async function readEnvelope<T>(response: Response, fallbackMessage: string) {
+  const payload = (await response.json().catch(() => null)) as ApiEnvelope<T> | null;
+
+  if (!response.ok) {
+    throw createApiError(response, payload, fallbackMessage);
+  }
+
+  if (!payload) {
+    throw new Error('응답 형식을 해석할 수 없습니다.');
+  }
+
+  return extractApiData(payload);
+}
+
+function buildSummary(description: string) {
+  return description.length > 56 ? `${description.slice(0, 56).trim()}...` : description;
+}
+
+function mapApplicationStatus(status: BackendApplicationStatus): ProjectApplicant['status'] {
+  switch (status) {
+    case 'ACCEPTED':
+    case '승인됨':
+      return 'approved';
+    case 'REJECTED':
+    case '거절됨':
+      return 'rejected';
+    case 'PENDING':
+    case '대기중':
+    default:
+      return 'pending';
+  }
+}
+
+function formatAppliedAt(appliedAt: string | null | undefined) {
+  if (!appliedAt) {
+    return '지원일 미확인';
+  }
+
+  const [datePart] = appliedAt.split('T');
+  const formattedDate = datePart?.replaceAll('-', '.');
+
+  return formattedDate ? `${formattedDate} 지원` : '지원일 미확인';
+}
+
+function mapApplicationListItem(
+  application: BackendProjectApplicationListResponse,
+): ProjectApplicant {
+  return {
+    id: application.applicationId,
+    applicantId: application.applicantId,
+    name: application.applicantName,
+    position: application.jobFieldName,
+    specialty: application.jobPositionName,
+    appliedAt: formatAppliedAt(application.appliedAt),
+    email: application.applicantEmail,
+    introduction: application.motivation,
+    avatarUrl: application.profileImageUrl ?? '',
+    status: mapApplicationStatus(application.status),
+    currentCount: application.currentCount,
+    recruitmentCount: application.recruitmentCount,
+    isRecruitmentFull: application.isRecruitmentFull,
+  };
+}
+
+function mapApplicationDetail(application: BackendApplicationDetailResponse): ProjectApplicant {
+  return {
+    id: application.applicationId,
+    applicantId: application.applicantId,
+    name: application.applicantName,
+    position: application.jobPosition.jobFieldName,
+    specialty: application.jobPosition.jobPositionName,
+    appliedAt: '지원일 미확인',
+    email: application.applicantEmail,
+    introduction: application.motivation,
+    avatarUrl: application.profileImageUrl ?? '',
+    status: mapApplicationStatus(application.status),
+    age: application.age,
+    gender: application.gender,
+  };
+}
+
+function mapCategoryIdToApiValue(categoryId: ProjectFormValues['categoryId']) {
+  switch (categoryId) {
+    case 'eco':
+      return 'ENVIRONMENT';
+    case 'pets':
+      return 'PET';
+    case 'healthcare':
+      return 'HEALTHCARE';
+    case 'education':
+      return 'EDUCATION';
+    case 'ai-tech':
+      return 'AI_TECH';
+    case 'fashion':
+      return 'FASHION_BEAUTY';
+    case 'fintech':
+      return 'FINANCE_PRODUCTIVITY';
+    case 'etc':
+      return 'ETC';
+    default:
+      throw new Error('프로젝트 카테고리를 다시 선택해 주세요.');
+  }
+}
+
+function mapCategoryApiValueToId(category: BackendProjectDetailResponse['projectCategory']) {
+  switch (category) {
+    case 'ENVIRONMENT':
+      return 'eco';
+    case 'PET':
+      return 'pets';
+    case 'HEALTHCARE':
+      return 'healthcare';
+    case 'EDUCATION':
+      return 'education';
+    case 'AI_TECH':
+      return 'ai-tech';
+    case 'FASHION_BEAUTY':
+      return 'fashion';
+    case 'FINANCE_PRODUCTIVITY':
+      return 'fintech';
+    case 'ETC':
+      return 'etc';
+  }
+}
+
+function mapPlatformToApiValue(
+  platform: ProjectFormValues['releasePlatforms'][number] | undefined,
+) {
+  switch (platform) {
+    case '웹':
+      return 'WEB';
+    case 'iOS':
+      return 'IOS';
+    case '안드로이드':
+      return 'ANDROID';
+    default:
+      throw new Error('출시 플랫폼을 다시 선택해 주세요.');
+  }
+}
+
+function mapPlatformApiValueToLabel(platform: BackendProjectDetailResponse['platformCategory']) {
+  switch (platform) {
+    case 'WEB':
+      return '웹';
+    case 'IOS':
+      return 'iOS';
+    case 'ANDROID':
+      return '안드로이드';
+  }
+}
+
+export function buildProjectCreatePayload(values: ProjectFormValues, jobFields: JobFieldOption[]) {
+  const creatorField = findProjectJobField(jobFields, values.myInterest.major);
+
+  if (!creatorField) {
+    throw new Error('나의 분야 정보를 다시 선택해 주세요.');
+  }
+
+  const creatorPosition = findProjectJobPosition(creatorField, values.myInterest.minor);
+
+  if (!creatorPosition) {
+    throw new Error('나의 상세 분야 정보를 다시 선택해 주세요.');
+  }
+
+  const recruitments = values.recruitInterests.map((interest) => {
+    const field = findProjectJobField(jobFields, interest.major);
+
+    if (!field) {
+      throw new Error('모집 분야 정보를 다시 선택해 주세요.');
+    }
+
+    const position = findProjectJobPosition(field, interest.minor);
+
+    if (!position) {
+      throw new Error('모집 상세 분야 정보를 다시 선택해 주세요.');
+    }
+
+    const techStackNames = values.recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [];
+    const techStackIds = techStackNames.map((techStackName) => {
+      const techStack = field.techStacks.find((item) => item.name === techStackName);
+
+      if (!techStack) {
+        throw new Error('선택한 기술 스택을 다시 확인해 주세요.');
+      }
+
+      return techStack.id;
+    });
+
+    return {
+      jobFieldCode: field.code,
+      jobPositionCode: position.code,
+      recruitmentCount: interest.count,
+      techStackIds,
+    };
+  });
+
+  return {
+    projectName: values.projectName.trim(),
+    githubRepositoryUrl: normalizeUrl(values.githubUrl),
+    communicationChannelUrl: normalizeUrl(values.communicationUrl),
+    projectCategory: mapCategoryIdToApiValue(values.categoryId),
+    description: values.description.trim(),
+    platformCategory: mapPlatformToApiValue(values.releasePlatforms[0]),
+    creatorJobPositionCode: creatorPosition.code,
+    recruitments,
+    recruitmentDeadlineType: values.isRecruitUntilComplete ? 'RECRUITMENT_COMPLETED' : 'END_DATE',
+    endDate: values.isRecruitUntilComplete ? undefined : values.recruitDeadline,
+  } satisfies ProjectCreateRequestPayload;
+}
+
+function buildRecruitmentRequests(values: ProjectFormValues, jobFields: JobFieldOption[]) {
+  return values.recruitInterests.map((interest) => {
+    const field = findProjectJobField(jobFields, interest.major);
+
+    if (!field) {
+      throw new Error('모집 분야 정보를 다시 선택해 주세요.');
+    }
+
+    const position = findProjectJobPosition(field, interest.minor);
+
+    if (!position) {
+      throw new Error('모집 상세 분야 정보를 다시 선택해 주세요.');
+    }
+
+    const techStackNames = values.recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [];
+    const techStackIds = techStackNames.map((techStackName) => {
+      const techStack = field.techStacks.find((item) => item.name === techStackName);
+
+      if (!techStack) {
+        throw new Error('선택한 기술 스택을 다시 확인해 주세요.');
+      }
+
+      return techStack.id;
+    });
+
+    return {
+      recruitmentStateId: interest.recruitmentStateId,
+      jobFieldCode: field.code,
+      jobPositionCode: position.code,
+      recruitmentCount: interest.count,
+      techStackIds,
+    };
+  });
+}
+
+export function buildProjectEditPayload(
+  values: ProjectFormValues,
+  jobFields: JobFieldOption[],
+  options: { confirmDeletePositionsWithPendingApplicants?: boolean } = {},
+) {
+  const leaderField = findProjectJobField(jobFields, values.myInterest.major);
+
+  if (!leaderField) {
+    throw new Error('리더 분야 정보를 다시 선택해 주세요.');
+  }
+
+  const leaderPosition = findProjectJobPosition(leaderField, values.myInterest.minor);
+
+  if (!leaderPosition) {
+    throw new Error('리더 상세 분야 정보를 다시 선택해 주세요.');
+  }
+
+  if (!values.recruitDeadline) {
+    throw new Error('프로젝트 마감일을 선택해 주세요.');
+  }
+
+  return {
+    name: values.projectName.trim(),
+    description: values.description.trim(),
+    projectCategory: mapCategoryIdToApiValue(values.categoryId),
+    platformCategory: mapPlatformToApiValue(values.releasePlatforms[0]),
+    githubRepositoryUrl: normalizeUrl(values.githubUrl),
+    communicationChannelUrl: normalizeUrl(values.communicationUrl),
+    endDate: values.recruitDeadline,
+    leaderJobPositionCode: leaderPosition.code,
+    recruitments: buildRecruitmentRequests(values, jobFields),
+    confirmDeletePositionsWithPendingApplicants:
+      options.confirmDeletePositionsWithPendingApplicants ?? false,
+  } satisfies ProjectEditRequestPayload;
+}
+
+export async function createProject(payload: ProjectCreateRequestPayload, file?: File | null) {
+  const formData = new FormData();
+
+  formData.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+
+  if (file) {
+    formData.append('file', file);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+
+  return readEnvelope<BackendProjectCreateResponse>(
+    response,
+    '프로젝트 등록 중 오류가 발생했습니다.',
+  );
+}
+
+export async function updateProject(
+  projectId: string | number,
+  payload: ProjectEditRequestPayload,
+  file?: File | null,
+) {
+  const formData = new FormData();
+
+  formData.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+
+  if (file) {
+    formData.append('file', file);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
+    method: 'PUT',
+    credentials: 'include',
+    body: formData,
+  });
+
+  return readEnvelope<{
+    projectId: number;
+    name: string;
+    recruitmentStatus: 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
+    autoRejectedApplicantCount: number;
+  }>(response, '프로젝트 수정 중 오류가 발생했습니다.');
+}
+
+export async function applyToProject(
+  projectId: string | number,
+  payload: ProjectApplicationRequestPayload,
+): Promise<ProjectApplicationResult> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/application`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+
+  const application = await readEnvelope<BackendApplicationResponse>(
+    response,
+    '프로젝트 지원 중 오류가 발생했습니다.',
+  );
+
+  return {
+    applicationId: application.applicationId,
+    projectId: application.projectId,
+    applicantId: application.applicantId,
+    status: mapApplicationStatus(application.status),
+  };
+}
+
+export async function fetchProjectApplications(
+  projectId: string | number,
+): Promise<ProjectApplicant[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/applications`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const applications = await readEnvelope<BackendProjectApplicationListResponse[]>(
+    response,
+    '지원자 목록을 불러오지 못했습니다.',
+  );
+
+  return applications.map(mapApplicationListItem);
+}
+
+export async function fetchProjectApplicationDetail(
+  projectId: string | number,
+  applicationId: string | number,
+): Promise<ProjectApplicant> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/projects/${projectId}/applications/${applicationId}`,
+    {
+      method: 'GET',
+      cache: 'no-store',
+      credentials: 'include',
+    },
+  );
+
+  const application = await readEnvelope<BackendApplicationDetailResponse>(
+    response,
+    '지원서 상세 정보를 불러오지 못했습니다.',
+  );
+
+  return mapApplicationDetail(application);
+}
+
+export async function decideProjectApplication(
+  projectId: string | number,
+  applicationId: string | number,
+  decision: ProjectApplicationDecision,
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/projects/${projectId}/applications/${applicationId}/decision`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ decision }),
+    },
+  );
+
+  const result = await readEnvelope<BackendApplicationDecisionResponse>(
+    response,
+    '지원자 처리 중 오류가 발생했습니다.',
+  );
+
+  return {
+    applicationId: result.applicationId,
+    projectId: result.projectId,
+    applicantId: result.applicantId,
+    decision: mapApplicationStatus(result.decision),
+  };
+}
+
+export async function fetchMyProjectApplications(): Promise<AppliedProject[]> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/members/me/applications`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const applications = await readEnvelope<BackendAppliedProjectResponse[]>(
+    response,
+    '내가 지원한 프로젝트를 불러오지 못했습니다.',
+  );
+
+  return applications.map((application) => ({
+    applicationId: application.applicationId,
+    projectId: application.projectId,
+    projectName: application.projectName,
+    jobPositionId: application.jobPositionId,
+    jobPositionName: application.jobPositionName,
+    appliedAt: application.appliedAt,
+  }));
+}
+
+export async function toggleProjectRecruitmentStatus(projectId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/recruitment/toggle`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+
+  return readEnvelope<{
+    projectId: number;
+    recruitmentStatus: ProjectRecruitmentStatus;
+    isRecruiting: boolean;
+  }>(response, '모집 상태 변경 중 오류가 발생했습니다.');
+}
+
+export async function fetchProjectLikeStatus(projectId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/project/like/${projectId}`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const status = await readEnvelope<BackendProjectLikeStatusResponse>(
+    response,
+    '좋아요 상태를 불러오지 못했습니다.',
+  );
+
+  return {
+    isLiked: status.isLiked ?? status.liked ?? false,
+  };
+}
+
+export async function toggleProjectLike(projectId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/project/like/${projectId}`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+
+  return readEnvelope<BackendProjectLikeToggleResponse>(
+    response,
+    '좋아요 처리 중 오류가 발생했습니다.',
+  );
+}
+
+export async function fetchProjectTeamManagement(
+  projectId: string | number,
+): Promise<ProjectTeamManagement> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/team`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const team = await readEnvelope<BackendTeamManagementResponse>(
+    response,
+    '팀원 관리 정보를 불러오지 못했습니다.',
+  );
+
+  return {
+    currentMemberCount: team.currentMemberCount,
+    totalRecruitmentCount: team.totalRecruitmentCount,
+    pendingApplicationCount: team.pendingApplicationCount,
+    members: team.members.map((member) => ({
+      id: member.memberId,
+      name: member.name,
+      role: [member.jobFieldName, member.jobPositionName].filter(Boolean).join(' / '),
+      avatarUrl: member.profileImageUrl ?? '',
+      isLeader: member.isLeader ?? member.leader ?? false,
+    })),
+  };
+}
+
+export async function expelProjectMember(projectId: string | number, memberId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/members/${memberId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  return readEnvelope<{
+    projectId: number;
+    expelledMemberId: number;
+    expelledMemberName: string;
+  }>(response, '팀원 방출 중 오류가 발생했습니다.');
+}
+
+function mapProjectRepository(repo: BackendProjectRepositoryResponse): ProjectRepository {
+  return {
+    id: repo.id,
+    repoFullName: repo.repoFullName,
+    description: repo.description ?? '',
+    starCount: repo.starCount,
+    watcherCount: repo.watcherCount,
+    pushedAt: repo.pushedAt ?? '',
+    language: repo.language ?? '',
+  };
+}
+
+export async function connectProjectRepositories(projectId: string | number, repoUrls: string[]) {
+  const response = await fetch(`${API_BASE_URL}/api/projects/${projectId}/repos`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ repoUrls }),
+  });
+
+  const repos = await readEnvelope<BackendProjectRepositoryResponse[]>(
+    response,
+    'GitHub 레포지토리 연결 중 오류가 발생했습니다.',
+  );
+
+  return repos.map(mapProjectRepository);
+}
+
+export async function fetchProjectRepositories(projectId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/projects/${projectId}/repos`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const repos = await readEnvelope<BackendProjectRepositoryResponse[]>(
+    response,
+    '프로젝트 레포지토리 정보를 불러오지 못했습니다.',
+  );
+
+  return repos.map(mapProjectRepository);
+}
+
+export async function fetchProjectEditPrefill(
+  projectId: string | number,
+): Promise<ProjectEditPrefill> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/edit`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const project = await readEnvelope<BackendProjectEditPrefillResponse>(
+    response,
+    '프로젝트 수정 정보를 불러오지 못했습니다.',
+  );
+
+  const recruitInterests = project.recruitments.map((recruitment) => ({
+    major: recruitment.jobFieldName,
+    minor: recruitment.jobPositionName,
+    count: recruitment.recruitmentCount,
+    recruitmentStateId: recruitment.recruitmentStateId,
+    currentCount: recruitment.currentCount,
+    pendingApplicationCount: recruitment.pendingApplicationCount,
+    minRecruitmentCount: recruitment.minRecruitmentCount,
+    deletable: recruitment.deletable,
+    notDeletableReason: recruitment.notDeletableReason,
+  }));
+  const recruitTechStacks = Object.fromEntries(
+    project.recruitments.map((recruitment) => [
+      `${recruitment.jobFieldName} - ${recruitment.jobPositionName}`,
+      recruitment.techStackNames,
+    ]),
+  );
+
+  return {
+    values: {
+      projectName: project.name,
+      githubUrl: project.githubRepositoryUrl ?? '',
+      communicationUrl: project.communicationChannelUrl ?? '',
+      categoryId: mapCategoryApiValueToId(project.projectCategory),
+      description: project.description,
+      releasePlatforms: [mapPlatformApiValueToLabel(project.platformCategory)],
+      myInterest: {
+        major: project.leaderJobFieldName,
+        minor: project.leaderJobPositionName,
+      },
+      recruitInterests,
+      recruitTechStacks,
+      recruitDeadline: project.endDate ?? '',
+      isRecruitUntilComplete: false,
+      coverImage: null,
+    },
+    coverImageUrl: project.imageUrl ?? '',
+    editable: project.editable,
+    notEditableReason: project.notEditableReason,
+  };
+}
+
+export async function fetchProjectDetail(projectId: string | number): Promise<ProjectRecord> {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
+    method: 'GET',
+    cache: 'no-store',
+    credentials: 'include',
+  });
+
+  const project = await readEnvelope<BackendProjectDetailResponse>(
+    response,
+    '프로젝트 상세 정보를 불러오지 못했습니다.',
+  );
+
+  const leaderPosition = project.leader.jobPositions[0];
+  const recruitInterests = project.recruitments.map((recruitment) => ({
+    major: recruitment.jobFieldName,
+    minor: recruitment.jobPositionName,
+    count: recruitment.recruitmentCount,
+  }));
+  const recruitTechStacks = Object.fromEntries(
+    project.recruitments.map((recruitment) => [
+      `${recruitment.jobFieldName} - ${recruitment.jobPositionName}`,
+      recruitment.techStacks,
+    ]),
+  );
+
+  return {
+    id: String(project.id),
+    title: project.name,
+    subtitle: '프로젝트 상세',
+    status: project.recruitmentStatus === 'RECRUITING' ? 'recruiting' : 'closed',
+    projectName: project.name,
+    githubUrl: project.githubRepositoryUrl ?? '',
+    communicationUrl: project.communicationChannelUrl ?? '',
+    categoryId: mapCategoryApiValueToId(project.projectCategory),
+    description: project.description,
+    releasePlatforms: [mapPlatformApiValueToLabel(project.platformCategory)],
+    myInterest: {
+      major: leaderPosition?.jobFieldName ?? '',
+      minor: leaderPosition?.jobPositionName ?? '',
+    },
+    recruitInterests,
+    recruitTechStacks,
+    recruitDeadline: project.endDate ?? '',
+    isRecruitUntilComplete: project.recruitmentDeadlineType === 'RECRUITMENT_COMPLETED',
+    targetMemberCount:
+      project.recruitments.reduce((sum, recruitment) => sum + recruitment.recruitmentCount, 0) + 1,
+    members: [
+      {
+        id: project.leader.id,
+        name: project.leader.name,
+        role: leaderPosition?.jobPositionName ?? leaderPosition?.jobFieldName ?? 'Project Lead',
+        avatarUrl: project.leader.profileImageUrl ?? '',
+        isLeader: true,
+      },
+    ],
+    applicants: [],
+    summary: buildSummary(project.description),
+    coverImageUrl: project.imageUrl ?? '',
+    createdAt: project.startDate ?? project.endDate ?? '',
+    leaderRole: leaderPosition?.jobPositionName ?? leaderPosition?.jobFieldName ?? 'Project Lead',
+    recruitmentStatus: project.recruitmentStatus,
+    leaderProfileId: project.leader.id,
+    leaderTechStacks: project.leader.techStacks,
+    likeCount: project.likeCount,
+    isLiked: project.isLiked,
+    recruitmentDetails: project.recruitments.map((recruitment, index) => ({
+      id: `${project.id}-${index + 1}`,
+      jobFieldCode: recruitment.jobFieldCode,
+      jobFieldName: recruitment.jobFieldName,
+      jobPositionName: recruitment.jobPositionName,
+      recruitmentCount: recruitment.recruitmentCount,
+      currentCount: recruitment.currentCount,
+      isClosed: recruitment.isClosed,
+      techStacks: recruitment.techStacks,
+    })),
+  };
+}

@@ -7,12 +7,28 @@ import type { ProjectApplicant } from '@/types/project';
 type ProjectApplicantDetailModalProps = {
   applicant: ProjectApplicant | null;
   isOpen: boolean;
+  isLoading?: boolean;
+  errorMessage?: string | null;
   onClose: () => void;
 };
+
+function getGenderLabel(gender: ProjectApplicant['gender']) {
+  if (gender === 'FEMALE') {
+    return '여성';
+  }
+
+  if (gender === 'MALE') {
+    return '남성';
+  }
+
+  return gender ?? '-';
+}
 
 export default function ProjectApplicantDetailModal({
   applicant,
   isOpen,
+  isLoading = false,
+  errorMessage,
   onClose,
 }: ProjectApplicantDetailModalProps) {
   if (!applicant) {
@@ -31,6 +47,12 @@ export default function ProjectApplicantDetailModal({
         </div>
 
         <div className="space-y-5 px-6 py-6">
+          {errorMessage ? (
+            <p className="rounded-xl border border-border-gray bg-danger-soft px-4 py-3 text-sm leading-5 font-medium text-danger-500">
+              {errorMessage}
+            </p>
+          ) : null}
+
           <div className="flex flex-wrap gap-3 text-sm text-text-gray">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 font-medium text-brand-500">
               <UserRound className="h-4 w-4" aria-hidden strokeWidth={1.8} />
@@ -43,8 +65,26 @@ export default function ProjectApplicantDetailModal({
           </div>
 
           <div className="rounded-2xl border border-border-gray bg-white p-4">
+            <p className="text-xs font-bold text-text-gray">지원자 정보</p>
+            <dl className="mt-3 grid gap-3 text-sm leading-5 sm:grid-cols-2">
+              <div>
+                <dt className="font-bold text-text-black">나이</dt>
+                <dd className="mt-1 text-text-gray">
+                  {typeof applicant.age === 'number' ? `${applicant.age}세` : '-'}
+                </dd>
+              </div>
+              <div>
+                <dt className="font-bold text-text-black">성별</dt>
+                <dd className="mt-1 text-text-gray">{getGenderLabel(applicant.gender)}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <div className="rounded-2xl border border-border-gray bg-white p-4">
             <p className="text-xs font-bold text-text-gray">자기소개</p>
-            <p className="mt-2 text-sm leading-6 text-text-body">{applicant.introduction}</p>
+            <p className="mt-2 text-sm leading-6 text-text-body">
+              {isLoading ? '지원서 상세 정보를 불러오는 중입니다.' : applicant.introduction}
+            </p>
           </div>
         </div>
 

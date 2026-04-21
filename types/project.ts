@@ -1,8 +1,17 @@
 import type { Interest } from './auth';
 
-export type RecruitInterest = Interest & { count: number };
+export type RecruitInterest = Interest & {
+  count: number;
+  recruitmentStateId?: number | null;
+  currentCount?: number;
+  pendingApplicationCount?: number;
+  minRecruitmentCount?: number;
+  deletable?: boolean;
+  notDeletableReason?: string | null;
+};
 
 export type ProjectStatus = 'recruiting' | 'closed';
+export type ProjectRecruitmentStatus = 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
 
 export type ProjectCategoryId =
   | 'ai-tech'
@@ -28,6 +37,7 @@ export type ProjectApplicantStatus = 'pending' | 'approved' | 'rejected';
 
 export type ProjectApplicant = {
   id: number;
+  applicantId?: number;
   name: string;
   position: string;
   specialty: string;
@@ -36,6 +46,11 @@ export type ProjectApplicant = {
   introduction: string;
   avatarUrl: string;
   status: ProjectApplicantStatus;
+  age?: number | null;
+  gender?: 'MALE' | 'FEMALE' | string | null;
+  currentCount?: number;
+  recruitmentCount?: number;
+  isRecruitmentFull?: boolean;
 };
 
 export type ProjectFormValues = {
@@ -50,6 +65,18 @@ export type ProjectFormValues = {
   recruitTechStacks: Record<string, string[]>;
   recruitDeadline: string;
   isRecruitUntilComplete: boolean;
+  coverImage?: File | null;
+};
+
+export type ProjectRecruitmentDetail = {
+  id: string;
+  jobFieldCode: string;
+  jobFieldName: string;
+  jobPositionName: string;
+  recruitmentCount: number;
+  currentCount: number;
+  isClosed: boolean;
+  techStacks: string[];
 };
 
 export type ManagedProject = ProjectFormValues & {
@@ -67,4 +94,10 @@ export type ProjectRecord = ManagedProject & {
   coverImageUrl: string;
   createdAt: string;
   leaderRole: string;
+  recruitmentStatus?: ProjectRecruitmentStatus;
+  leaderProfileId?: number;
+  leaderTechStacks?: string[];
+  likeCount?: number;
+  isLiked?: boolean;
+  recruitmentDetails?: ProjectRecruitmentDetail[];
 };

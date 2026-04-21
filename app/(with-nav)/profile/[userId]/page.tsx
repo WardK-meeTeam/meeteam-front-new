@@ -1,3 +1,4 @@
+import RequireAuth from '@/components/features/auth/RequireAuth';
 import ProfileOverview from '@/components/features/profile/ProfileOverview';
 
 export default async function Page({
@@ -5,7 +6,11 @@ export default async function Page({
 }: {
   params: Promise<{ userId: string }>;
 }) {
-  await params;
+  const { userId } = await params;
 
-  return <ProfileOverview editable={false} actionLabel="제안 보내기" emptyProject />;
+  return (
+    <RequireAuth>
+      <ProfileOverview memberId={Number(userId)} editable={false} actionLabel="제안 보내기" />
+    </RequireAuth>
+  );
 }

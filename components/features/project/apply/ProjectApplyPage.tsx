@@ -1,25 +1,40 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Info, ChevronLeft } from 'lucide-react';
+import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { ChevronLeft, Info } from 'lucide-react';
+import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
+import { fetchJobOptions } from '@/components/features/auth/signupApi';
+import {
+  fetchMyProfile,
+  type MemberProfileResponse,
+} from '@/components/features/profile/profileApi';
+import { applyToProject, fetchProjectDetail } from '@/components/features/project/projectApi';
+import {
+  findProjectJobField,
+  findProjectJobPosition,
+} from '@/components/features/project/projectJobOptions';
+import { projectApplicationSchema } from '@/components/features/project/apply/schema';
 import BaseButton from '@/components/shared/BaseButton';
 import BaseTextarea from '@/components/shared/BaseTextarea';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import type { JobFieldOption } from '@/types/auth';
+import type { ProjectRecord, ProjectRecruitmentDetail } from '@/types/project';
 
 type ProjectApplyPageProps = {
   projectId: string;
+  initialJobField?: string;
+  initialJobPosition?: string;
+  initialJobPositionCode?: string;
 };
 
-const APPLICANT_PROFILE = {
-  name: '정연준',
-  role: '지원자',
-  age: '28세',
-  gender: '남성',
-  email: 'yeonjun@example.com',
-  field: '프론트엔드',
-  stack: 'React',
-  imageUrl: 'http://localhost:3845/assets/f1172eb8cefcbe26d0f11c0aadeea5d533cb00a6.png',
+type ApplicationPositionOption = {
+  code: string;
+  fieldName: string;
+  positionName: string;
+  label: string;
+  techStacks: string[];
 };
 
 function InfoChip({ label, tone = 'indigo' }: { label: string; tone?: 'indigo' | 'sky' }) {
@@ -39,8 +54,8 @@ function InfoChip({ label, tone = 'indigo' }: { label: string; tone?: 'indigo' |
 
 function ApplicantInfoRow({ label, value }: { label: string; value: string | React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[68px_minmax(0,1fr)] items-start gap-3">
-      <span className="text-sm leading-5 font-bold text-text-black">{label}</span>
+    <div className="flex items-start gap-3">
+      <span className="w-20 shrink-0 text-sm leading-5 font-bold text-text-black">{label}</span>
       <div className="min-w-0 text-sm leading-5 font-medium text-project-status-closed">
         {value}
       </div>
@@ -48,12 +63,213 @@ function ApplicantInfoRow({ label, value }: { label: string; value: string | Rea
   );
 }
 
-export default function ProjectApplyPage({ projectId }: ProjectApplyPageProps) {
+function calculateAge(birthDate: string | null) {
+  if (!birthDate) {
+    return '-';
+  }
+
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age -= 1;
+  }
+
+  return `${age}세`;
+}
+
+function getGenderLabel(gender: MemberProfileResponse['gender']) {
+  return gender === 'FEMALE' ? '여성' : '남성';
+}
+
+function buildApplicationPositions(
+  project: ProjectRecord | null,
+  jobFields: JobFieldOption[],
+): ApplicationPositionOption[] {
+  if (!project?.recruitmentDetails || jobFields.length === 0) {
+    return [];
+  }
+
+  return project.recruitmentDetails
+    .filter((recruitment) => !recruitment.isClosed && project.status !== 'closed')
+    .map((recruitment) => mapRecruitmentToPositionOption(recruitment, jobFields))
+    .filter((option): option is ApplicationPositionOption => option !== null);
+}
+
+function mapRecruitmentToPositionOption(
+  recruitment: ProjectRecruitmentDetail,
+  jobFields: JobFieldOption[],
+) {
+  const field =
+    jobFields.find((item) => item.code === recruitment.jobFieldCode) ??
+    findProjectJobField(jobFields, recruitment.jobFieldName);
+
+  if (!field) {
+    return null;
+  }
+
+  const position = findProjectJobPosition(field, recruitment.jobPositionName);
+
+  if (!position) {
+    return null;
+  }
+
+  return {
+    code: position.code,
+    fieldName: recruitment.jobFieldName,
+    positionName: recruitment.jobPositionName,
+    label: `${recruitment.jobFieldName} / ${recruitment.jobPositionName}`,
+    techStacks: recruitment.techStacks,
+  };
+}
+
+export default function ProjectApplyPage({
+  projectId,
+  initialJobField,
+  initialJobPosition,
+  initialJobPositionCode,
+}: ProjectApplyPageProps) {
   const router = useRouter();
+  const handleAuthRequired = useAuthRequiredModal();
+  const [profile, setProfile] = useState<MemberProfileResponse | null>(null);
+  const [project, setProject] = useState<ProjectRecord | null>(null);
+  const [jobFields, setJobFields] = useState<JobFieldOption[]>([]);
+  const [selectedJobPositionCode, setSelectedJobPositionCode] = useState('');
+  const [motivation, setMotivation] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const positionOptions = useMemo(
+    () => buildApplicationPositions(project, jobFields),
+    [jobFields, project],
+  );
+  const selectedPosition = positionOptions.find(
+    (option) => option.code === selectedJobPositionCode,
+  );
+  const primarySkillGroup = profile?.groupedSkills[0];
+  const profileRole = [
+    primarySkillGroup?.jobFieldName,
+    primarySkillGroup?.jobPositionName ?? profile?.representativePosition,
+  ]
+    .filter(Boolean)
+    .join(' / ');
+
+  useEffect(() => {
+    let active = true;
+
+    const loadApplicationData = async () => {
+      try {
+        setIsLoading(true);
+        setErrorMessage(null);
+
+        const [nextProfile, nextProject, nextJobFields] = await Promise.all([
+          fetchMyProfile(),
+          fetchProjectDetail(projectId),
+          fetchJobOptions(),
+        ]);
+
+        if (!active) {
+          return;
+        }
+
+        setProfile(nextProfile);
+        setProject(nextProject);
+        setJobFields(nextJobFields);
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+
+        if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/apply` })) {
+          setErrorMessage(null);
+          return;
+        }
+
+        setErrorMessage(
+          error instanceof Error ? error.message : '지원 정보를 불러오지 못했습니다.',
+        );
+      } finally {
+        if (active) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void loadApplicationData();
+
+    return () => {
+      active = false;
+    };
+  }, [handleAuthRequired, projectId]);
+
+  useEffect(() => {
+    if (selectedJobPositionCode || positionOptions.length === 0) {
+      return;
+    }
+
+    const queryMatchedOption = positionOptions.find(
+      (option) =>
+        option.code === initialJobPositionCode ||
+        (option.fieldName === initialJobField && option.positionName === initialJobPosition),
+    );
+
+    setSelectedJobPositionCode(queryMatchedOption?.code ?? positionOptions[0].code);
+  }, [
+    initialJobField,
+    initialJobPosition,
+    initialJobPositionCode,
+    positionOptions,
+    selectedJobPositionCode,
+  ]);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const result = projectApplicationSchema.safeParse({
+      jobPositionCode: selectedJobPositionCode,
+      motivation,
+    });
+
+    if (!result.success) {
+      setErrorMessage(result.error.issues[0]?.message ?? '지원 정보를 다시 확인해 주세요.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setErrorMessage(null);
+
+      await applyToProject(projectId, result.data);
+      router.push(`/projects/${projectId}`);
+    } catch (error) {
+      if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/apply` })) {
+        return;
+      }
+
+      setErrorMessage(error instanceof Error ? error.message : '프로젝트 지원에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <section className="min-h-screen">
+        <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4 py-12">
+          <div className="h-8 w-32 rounded-xl bg-surface-soft" />
+          <div className="h-8 w-48 rounded-xl bg-surface-soft" />
+          <div className="h-96 rounded-3xl border border-border-soft bg-white" />
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="min-h-[calc(100vh-65px)]">
-      <div className="mx-auto flex w-full max-w-[576px] flex-col gap-6 px-4 py-12">
+    <section className="min-h-screen">
+      <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-12">
         <div className="space-y-4">
           <Link
             href={`/projects/${projectId}`}
@@ -65,10 +281,18 @@ export default function ProjectApplyPage({ projectId }: ProjectApplyPageProps) {
             뒤로가기
           </Link>
 
-          <h1 className="text-2xl leading-8 font-extrabold text-text-black">프로젝트 지원하기</h1>
+          <div>
+            <p className="text-sm leading-5 font-bold text-brand-500">
+              {project?.title ?? '프로젝트'}
+            </p>
+            <h1 className="text-2xl leading-8 font-extrabold text-text-black">프로젝트 지원하기</h1>
+          </div>
         </div>
 
-        <div className="overflow-hidden rounded-[32px] border border-border-soft bg-white p-8 shadow-[0_20px_25px_-5px_rgba(226,232,240,0.5),0_8px_10px_-6px_rgba(226,232,240,0.5)]">
+        <form
+          onSubmit={handleSubmit}
+          className="overflow-hidden rounded-3xl border border-border-soft bg-white p-8 shadow-sm"
+        >
           <div className="rounded-xl bg-surface-soft px-3 py-3">
             <div className="flex items-start gap-2 text-xs leading-4 font-normal text-text-gray">
               <Info
@@ -83,25 +307,22 @@ export default function ProjectApplyPage({ projectId }: ProjectApplyPageProps) {
             </div>
           </div>
 
-          <div className="mt-6 flex gap-8">
-            <div className="flex w-24 shrink-0 flex-col items-center gap-3">
-              <div className="relative h-24 w-24 overflow-hidden rounded-3xl border-4 border-white bg-border-gray shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1),0_4px_6px_-4px_rgba(0,0,0,0.1)]">
-                <Image
-                  alt={APPLICANT_PROFILE.name}
-                  className="object-cover"
-                  fill
-                  sizes="96px"
-                  src={APPLICANT_PROFILE.imageUrl}
-                />
-              </div>
+          <div className="mt-6 flex flex-col gap-6 sm:flex-row sm:gap-8">
+            <div className="flex w-full shrink-0 flex-col items-center gap-3 sm:w-24">
+              <ProfileAvatar
+                name={profile?.name ?? 'M'}
+                imageUrl={profile?.profileImageUrl}
+                sizeClassName="h-24 w-24"
+                shape="rounded"
+                textClassName="text-2xl"
+                className="border-4 border-white bg-border-gray text-text-gray shadow-lg"
+              />
 
               <div className="space-y-1 text-center">
                 <p className="text-2xl leading-7 font-bold text-text-black">
-                  {APPLICANT_PROFILE.name}
+                  {profile?.name ?? '-'}
                 </p>
-                <p className="text-xs leading-4 font-medium text-muted-gray">
-                  {APPLICANT_PROFILE.role}
-                </p>
+                <p className="text-xs leading-4 font-medium text-muted-gray">지원자</p>
               </div>
             </div>
 
@@ -109,21 +330,62 @@ export default function ProjectApplyPage({ projectId }: ProjectApplyPageProps) {
               <ApplicantInfoRow
                 label="지원 분야"
                 value={
-                  <div className="flex flex-wrap gap-2">
-                    <InfoChip label={APPLICANT_PROFILE.field} />
-                    <InfoChip label={APPLICANT_PROFILE.stack} tone="sky" />
-                  </div>
+                  selectedPosition ? (
+                    <div className="flex flex-wrap gap-2">
+                      <InfoChip label={selectedPosition.fieldName} />
+                      <InfoChip label={selectedPosition.positionName} tone="sky" />
+                    </div>
+                  ) : (
+                    '선택 가능한 포지션이 없습니다.'
+                  )
                 }
               />
-              <ApplicantInfoRow label="나이" value={APPLICANT_PROFILE.age} />
-              <ApplicantInfoRow label="성별" value={APPLICANT_PROFILE.gender} />
-              <ApplicantInfoRow label="이메일" value={APPLICANT_PROFILE.email} />
+              <ApplicantInfoRow label="나이" value={calculateAge(profile?.birthDate ?? null)} />
+              <ApplicantInfoRow
+                label="성별"
+                value={profile ? getGenderLabel(profile.gender) : '-'}
+              />
+              <ApplicantInfoRow label="이메일" value={profile?.email ?? '-'} />
+              <ApplicantInfoRow label="프로필" value={profileRole || '-'} />
             </div>
           </div>
 
           <div className="my-6 h-px w-full bg-surface-soft" />
 
-          <div className="space-y-3 pb-1">
+          <div className="space-y-3">
+            <label
+              htmlFor="project-application-position"
+              className="block text-sm leading-5 font-bold text-text-black"
+            >
+              지원 포지션
+            </label>
+            <select
+              id="project-application-position"
+              value={selectedJobPositionCode}
+              onChange={(event) => setSelectedJobPositionCode(event.target.value)}
+              disabled={positionOptions.length === 0 || isSubmitting}
+              className="h-12 w-full rounded-xl border border-border-gray bg-white px-4 text-sm leading-5 font-medium text-text-black outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-400/20 disabled:cursor-not-allowed disabled:bg-surface-soft disabled:text-muted-gray"
+            >
+              {positionOptions.length === 0 ? (
+                <option value="">모집 중인 포지션이 없습니다.</option>
+              ) : (
+                positionOptions.map((option) => (
+                  <option key={option.code} value={option.code}>
+                    {option.label}
+                  </option>
+                ))
+              )}
+            </select>
+            {selectedPosition?.techStacks.length ? (
+              <div className="flex flex-wrap gap-2">
+                {selectedPosition.techStacks.map((techStack) => (
+                  <InfoChip key={techStack} label={techStack} tone="sky" />
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          <div className="mt-6 space-y-3 pb-1">
             <div className="flex items-center gap-2">
               <span className="h-6 w-1 rounded-full bg-brand-400" />
               <h2 className="text-base leading-6 font-bold text-text-black">
@@ -133,20 +395,30 @@ export default function ProjectApplyPage({ projectId }: ProjectApplyPageProps) {
 
             <BaseTextarea
               rows={6}
+              value={motivation}
+              onChange={(event) => setMotivation(event.target.value)}
+              disabled={isSubmitting || positionOptions.length === 0}
               placeholder="이 프로젝트에 지원하게 된 계기와 본인의 강점을 자유롭게 작성해주세요."
-              className="min-h-40 rounded-2xl border-border-gray bg-surface-soft px-5 py-5 text-sm leading-[22.75px] placeholder:text-muted-gray"
+              className="min-h-40 rounded-2xl border-border-gray bg-surface-soft px-5 py-5 text-sm leading-6 placeholder:text-muted-gray"
             />
           </div>
+
+          {errorMessage ? (
+            <p className="mt-4 rounded-xl border border-border-gray bg-danger-soft px-4 py-3 text-sm leading-5 font-medium text-danger-500">
+              {errorMessage}
+            </p>
+          ) : null}
 
           <div className="mt-6 space-y-4">
             <BaseButton
               size="XL"
               variant="primary"
               full
-              type="button"
+              type="submit"
+              disabled={isSubmitting || positionOptions.length === 0}
               className="h-14 rounded-xl shadow-xl shadow-brand-400/40"
             >
-              지원하기
+              {isSubmitting ? '지원 중' : '지원하기'}
             </BaseButton>
 
             <BaseButton
@@ -154,13 +426,14 @@ export default function ProjectApplyPage({ projectId }: ProjectApplyPageProps) {
               variant="gray"
               full
               type="button"
+              disabled={isSubmitting}
               className="h-14 w-full rounded-xl"
               onClick={() => router.push(`/projects/${projectId}`)}
             >
               취소하기
             </BaseButton>
           </div>
-        </div>
+        </form>
       </div>
     </section>
   );

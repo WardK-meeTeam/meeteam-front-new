@@ -115,7 +115,9 @@ export default function SignupForm() {
       nextErrors.projectExperienceCount = flattened.projectExperienceCount?.[0];
     }
 
-    const filledInterests = formValues.interests.filter((interest) => interest.major && interest.minor);
+    const filledInterests = formValues.interests.filter(
+      (interest) => interest.major && interest.minor,
+    );
     if (filledInterests.length === 0) {
       nextErrors.interests = '최소 1개의 관심 분야를 선택해 주세요.';
     }
@@ -171,9 +173,7 @@ export default function SignupForm() {
       next.minor &&
       formValues.interests.some(
         (interest, interestIndex) =>
-          interestIndex !== index &&
-          interest.major === next.major &&
-          interest.minor === next.minor,
+          interestIndex !== index && interest.major === next.major && interest.minor === next.minor,
       )
     ) {
       setFieldErrors((prev) => ({
@@ -317,7 +317,7 @@ export default function SignupForm() {
     emailCheckState === 'success' ? 'success' : emailCheckState === 'error' ? 'error' : 'default';
 
   return (
-    <form className="flex w-full flex-col gap-5" onSubmit={handleSubmit}>
+    <form className="flex w-full flex-col gap-5" onSubmit={handleSubmit} data-cy="signup-form">
       <AuthSection
         email={formValues.email}
         password={formValues.password}
@@ -378,7 +378,13 @@ export default function SignupForm() {
 
       {fieldErrors.form ? <p className="text-sm text-error-red">{fieldErrors.form}</p> : null}
 
-      <BaseButton size="L" full={true} type="submit" disabled={isSubmitting || isLoadingJobOptions}>
+      <BaseButton
+        size="L"
+        full={true}
+        type="submit"
+        disabled={isSubmitting || isLoadingJobOptions}
+        data-cy="signup-submit"
+      >
         <span className="font-bold">{isSubmitting ? '가입 중...' : '가입하기'}</span>
       </BaseButton>
     </form>

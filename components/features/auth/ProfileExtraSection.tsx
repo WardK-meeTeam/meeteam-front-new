@@ -2,6 +2,7 @@ import { Link, Camera, Trash2, CircleCheck } from 'lucide-react';
 import Github from '@/assets/GithubLogin.svg';
 import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 
 type ProfileExtraSectionProps = {
   project: string;
@@ -44,6 +45,7 @@ export default function ProfileExtraSection({
           placeholder="0"
           rightIcon={'회'}
           onChange={onChangeProject}
+          data-cy="signup-project-count"
         />
       </BaseField>
 
@@ -56,6 +58,7 @@ export default function ProfileExtraSection({
             placeholder="github.com/..."
             leftIcon={githubIcon}
             onChange={onChangeGithubLink}
+            data-cy="signup-github-url"
           />
         </BaseField>
         <BaseField label="블로그" htmlFor="blog" required={false}>
@@ -66,6 +69,7 @@ export default function ProfileExtraSection({
             placeholder="URL 입력"
             leftIcon={<Link className="h-5 w-5 text-muted-gray" />}
             onChange={onChangeBlogLink}
+            data-cy="signup-blog-url"
           />
         </BaseField>
       </div>
@@ -77,6 +81,7 @@ export default function ProfileExtraSection({
           accept="image/png, image/jpeg"
           className="hidden"
           onChange={onChangeProfileImage}
+          data-cy="signup-profile-upload"
         />
         {!hasProfileImage ? (
           <div className="flex p-5 items-center border border-border-gray justify-between rounded-2xl bg-surface-soft">
@@ -103,10 +108,11 @@ export default function ProfileExtraSection({
         ) : (
           <div className="flex p-5 items-center border border-border-gray justify-between rounded-2xl bg-white">
             <div className="flex items-center gap-4 min-w-0">
-              <img
-                src={profileImagePreviewUrl}
-                alt="프로필 미리보기"
-                className="h-13 w-13 shrink-0 rounded-full bg-white object-cover"
+              <ProfileAvatar
+                name="프로필 미리보기"
+                imageUrl={profileImagePreviewUrl}
+                sizeClassName="h-13 w-13"
+                className="bg-white"
               />
               <div className="flex flex-col min-w-0">
                 <span className="text-text-black text-[15px] font-bold">프로필 사진 등록 완료</span>

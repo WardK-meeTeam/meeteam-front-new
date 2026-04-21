@@ -1,6 +1,16 @@
 import { z } from 'zod';
 
 export const signupEmailSchema = z.string().email('올바른 이메일 형식을 입력해 주세요.');
+export const loginEmailSchema = z
+  .string()
+  .trim()
+  .min(1, '이메일을 입력해 주세요.')
+  .email('올바른 이메일 형식을 입력해 주세요.');
+
+export const loginFormSchema = z.object({
+  email: loginEmailSchema,
+  password: z.string().min(1, '비밀번호를 입력해 주세요.'),
+});
 
 export const signupFormSchema = z
   .object({
@@ -26,6 +36,15 @@ export const signupFormSchema = z
     }
   });
 
+export const oauthSignupFormSchema = z.object({
+  name: z.string().trim().min(1, '이름을 입력해 주세요.'),
+  birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '생년월일은 YYYY-MM-DD 형식으로 입력해 주세요.'),
+  gender: z.enum(['male', 'female']),
+  projectExperienceCount: z
+    .string()
+    .regex(/^\d+$/, '프로젝트 경험 횟수는 0 이상의 숫자로 입력해 주세요.'),
+});
+
 export type SignupFieldErrors = Partial<
   Record<
     | 'email'
@@ -41,4 +60,10 @@ export type SignupFieldErrors = Partial<
     | 'form',
     string
   >
+>;
+
+export type LoginFieldErrors = Partial<Record<'email' | 'password' | 'form', string>>;
+
+export type OAuthSignupFieldErrors = Partial<
+  Record<'name' | 'birth' | 'projectExperienceCount' | 'interests' | 'form', string>
 >;

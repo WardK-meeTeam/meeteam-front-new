@@ -2,7 +2,8 @@
 
 import { useCallback, useState } from 'react';
 import { Rocket, Search, UserPlus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+
+import { useProtectedNavigation } from '@/components/features/auth/useProtectedNavigation';
 import BaseModal from '@/components/shared/BaseModal';
 
 interface OptionCardProps {
@@ -45,14 +46,14 @@ function OptionCard({ title, description, icon, onClick }: OptionCardProps) {
 
 export default function StartJourneyModalTrigger() {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+  const { navigateWithProtection } = useProtectedNavigation();
 
   const handleMove = useCallback(
     (path: string) => {
       setOpen(false);
-      router.push(path);
+      navigateWithProtection(path);
     },
-    [router],
+    [navigateWithProtection],
   );
 
   return (

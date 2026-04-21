@@ -1,5 +1,5 @@
-import Link from 'next/link';
 import type { ProjectRecord } from '@/types/project';
+import AuthLink from '@/components/features/auth/AuthLink';
 import BaseButton from '@/components/shared/BaseButton';
 
 type RecruitPositionStatus = 'open' | 'closed';
@@ -38,22 +38,41 @@ function RecruitTechChip({ label }: { label: string }) {
   );
 }
 
-export default function ProjectRecruitSection({ project }: { project: ProjectRecord }) {
-  const recruitPositions: RecruitPosition[] = project.recruitInterests.map((interest, index) => {
-    const joined = project.members.filter(
-      (member) => !member.isLeader && member.role.includes(interest.major),
-    ).length;
-
-    return {
-      id: index + 1,
-      role: interest.major,
-      specialty: interest.minor,
-      joined,
-      total: interest.count,
-      status: joined >= interest.count || project.status === 'closed' ? 'closed' : 'open',
-      techStack: project.recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [],
-    };
+function buildApplyHref(projectId: string, position: RecruitPosition) {
+  const params = new URLSearchParams({
+    jobField: position.role,
+    jobPosition: position.specialty,
   });
+
+  return `/projects/${projectId}/apply?${params.toString()}`;
+}
+
+export default function ProjectRecruitSection({ project }: { project: ProjectRecord }) {
+  const recruitPositions: RecruitPosition[] =
+    project.recruitmentDetails?.map((recruitment, index) => ({
+      id: index + 1,
+      role: recruitment.jobFieldName,
+      specialty: recruitment.jobPositionName,
+      joined: recruitment.currentCount,
+      total: recruitment.recruitmentCount,
+      status: recruitment.isClosed || project.status === 'closed' ? 'closed' : 'open',
+      techStack: recruitment.techStacks,
+    })) ??
+    project.recruitInterests.map((interest, index) => {
+      const joined = project.members.filter(
+        (member) => !member.isLeader && member.role.includes(interest.major),
+      ).length;
+
+      return {
+        id: index + 1,
+        role: interest.major,
+        specialty: interest.minor,
+        joined,
+        total: interest.count,
+        status: joined >= interest.count || project.status === 'closed' ? 'closed' : 'open',
+        techStack: project.recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [],
+      };
+    });
 
   return (
     <section className="flex w-full flex-col gap-8" data-node-id="97:800">
@@ -80,14 +99,14 @@ export default function ProjectRecruitSection({ project }: { project: ProjectRec
               </div>
 
               {isOpen ? (
-                <Link href={`/projects/${project.id}/apply`}>
+                <AuthLink href={buildApplyHref(project.id, position)}>
                   <BaseButton
                     size="S"
                     className="h-10 min-w-24 rounded-xl bg-text-black px-5 text-xs leading-4 font-bold text-white shadow-none hover:bg-label-dark"
                   >
                     지원하기
                   </BaseButton>
-                </Link>
+                </AuthLink>
               ) : null}
             </div>
 

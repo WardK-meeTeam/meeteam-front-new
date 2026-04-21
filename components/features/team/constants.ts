@@ -8,6 +8,21 @@ export const TEAMMATE_PAGE_COPY = {
   emptyDescription: '다른 검색어나 기술 스택으로 다시 찾아보세요.',
 } as const;
 
+export const TEAMMATE_ROLE_OPTIONS = [
+  '전체',
+  '프론트엔드',
+  '백엔드',
+  '디자이너',
+  'PM/기획',
+  '마케팅',
+  '기타',
+] as const;
+
+export const TEAMMATE_SORT_OPTIONS = [
+  { label: '프로젝트 경험 많은 순', value: 'experience-desc' },
+  { label: '이름순', value: 'name-asc' },
+] as const;
+
 export const TEAMMATE_LIST_CONFIG = {
   initialVisibleCount: 15,
   loadMoreCount: 5,

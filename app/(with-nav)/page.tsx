@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import AuthLink from '@/components/features/auth/AuthLink';
+import { fetchHomeMembers, fetchHomeProjects } from '@/components/features/home/homeApi';
 import StartJourneyModalTrigger from '@/components/features/home/StartJourneyModalTrigger';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
 import BaseTag from '@/components/shared/BaseTag';
@@ -14,7 +16,7 @@ const categoryChips = [
   { emoji: '💄', label: '패션/뷰티' },
 ];
 
-const projectCards = [
+const fallbackProjectCards = [
   {
     id: 1,
     title: 'AI 기반 뉴스 요약 서비스 개발',
@@ -69,8 +71,7 @@ const projectCards = [
   },
 ];
 
-const teammateCards = Array.from({ length: 5 }).map((_, index) => ({
-  id: index + 1,
+const fallbackTeammateCards = Array.from({ length: 5 }).map((_, index) => ({
   userId: index + 1,
   name: '정연준',
   role: '프론트엔드',
@@ -79,7 +80,20 @@ const teammateCards = Array.from({ length: 5 }).map((_, index) => ({
   imageUrl: '/next.svg',
 }));
 
-export default function Page() {
+export default async function Page() {
+  const [projectCardsResult, teammateCardsResult] = await Promise.allSettled([
+    fetchHomeProjects(4),
+    fetchHomeMembers(5),
+  ]);
+  const projectCards =
+    projectCardsResult.status === 'fulfilled' && projectCardsResult.value.length > 0
+      ? projectCardsResult.value
+      : fallbackProjectCards;
+  const teammateCards =
+    teammateCardsResult.status === 'fulfilled' && teammateCardsResult.value.length > 0
+      ? teammateCardsResult.value
+      : fallbackTeammateCards;
+
   return (
     <div className="space-y-12 pb-8 md:space-y-16">
       <section className="overflow-hidden rounded-3xl border border-border-gray bg-brand-50 px-6 py-8 md:px-10 md:py-12">
@@ -163,9 +177,9 @@ export default function Page() {
       <section className="space-y-6">
         <div className="flex items-end justify-between">
           <h2 className="text-2xl font-bold text-text-black">프로젝트</h2>
-          <Link href="/projects" className="text-sm font-semibold text-brand-500">
+          <AuthLink href="/projects" className="text-sm font-semibold text-brand-500">
             전체보기 &gt;
-          </Link>
+          </AuthLink>
         </div>
         <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
           {projectCards.map((project) => (
@@ -185,7 +199,7 @@ export default function Page() {
         </div>
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {teammateCards.map((teammate) => (
-            <li key={teammate.id}>
+            <li key={teammate.userId}>
               <UserCard
                 userId={teammate.userId}
                 name={teammate.name}
@@ -211,12 +225,12 @@ export default function Page() {
               망설이지 마세요. 1분이면 프로젝트를 등록하고 멋진 동료들을 모집할 수 있습니다.
             </p>
           </div>
-          <Link
+          <AuthLink
             href="/projects/create"
             className="inline-flex items-center justify-center rounded-full bg-white px-8 py-4 text-base font-bold text-text-black shadow-xl"
           >
             무료로 프로젝트 등록하기
-          </Link>
+          </AuthLink>
         </div>
       </section>
     </div>

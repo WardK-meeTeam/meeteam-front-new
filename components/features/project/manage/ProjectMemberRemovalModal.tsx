@@ -5,13 +5,15 @@ import BaseModal from '@/components/shared/BaseModal';
 
 type ProjectMemberRemovalModalProps = {
   isOpen: boolean;
+  isSubmitting?: boolean;
   memberName: string;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
 };
 
 export default function ProjectMemberRemovalModal({
   isOpen,
+  isSubmitting = false,
   memberName,
   onClose,
   onConfirm,
@@ -23,6 +25,7 @@ export default function ProjectMemberRemovalModal({
           type="button"
           onClick={onClose}
           aria-label="모달 닫기"
+          disabled={isSubmitting}
           className="absolute right-6 top-6 text-divider-soft transition-colors hover:text-text-gray"
         >
           <X className="h-5 w-5" aria-hidden strokeWidth={1.8} />
@@ -43,16 +46,18 @@ export default function ProjectMemberRemovalModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 rounded-2xl border border-border-gray bg-white px-4 py-4 text-[15px] leading-[22.5px] font-bold text-text-soft transition-colors hover:bg-surface-soft"
+            disabled={isSubmitting}
+            className="flex-1 rounded-2xl border border-border-gray bg-white px-4 py-4 text-[15px] leading-[22.5px] font-bold text-text-soft transition-colors hover:bg-surface-soft disabled:cursor-not-allowed disabled:opacity-70"
           >
             취소
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="flex-1 rounded-2xl bg-danger-500 px-4 py-4 text-[15px] leading-[22.5px] font-bold text-white shadow-[0_4px_6px_-1px_rgba(240,206,206,1),0_2px_4px_-2px_rgba(240,206,206,1)] transition-colors hover:opacity-95"
+            disabled={isSubmitting}
+            className="flex-1 rounded-2xl bg-danger-500 px-4 py-4 text-[15px] leading-[22.5px] font-bold text-white shadow-[0_4px_6px_-1px_rgba(240,206,206,1),0_2px_4px_-2px_rgba(240,206,206,1)] transition-colors hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            방출하기
+            {isSubmitting ? '방출 중' : '방출하기'}
           </button>
         </div>
       </div>

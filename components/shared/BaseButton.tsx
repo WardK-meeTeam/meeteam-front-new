@@ -34,6 +34,7 @@ export default function BaseButton({
   onClick,
   disabled,
   children,
+  ...props
 }: BaseButtonProps) {
   const sizeClass = SIZE_MAP[size];
   const variantClass = VARIANT_MAP[variant];
@@ -43,6 +44,7 @@ export default function BaseButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
+      {...props}
       className={`inline-flex items-center justify-center rounded-xl font-bold cursor-pointer shadow-sm
         disabled:cursor-not-allowed disabled:opacity-50
         ${variantClass}

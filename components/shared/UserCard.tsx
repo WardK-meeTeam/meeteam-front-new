@@ -1,6 +1,6 @@
-import Image from 'next/image';
-import Link from 'next/link';
 import { BriefcaseBusiness } from 'lucide-react';
+import AuthLink from '@/components/features/auth/AuthLink';
+import ProfileAvatar from '@/components/shared/ProfileAvatar';
 
 export interface UserCardProps {
   userId: string | number;
@@ -22,20 +22,20 @@ export default function UserCard({
   const [primarySkill, secondarySkill] = skills;
 
   return (
-    <Link
+    <AuthLink
       href={`/profile/${userId}`}
       className="group block h-full rounded-2xl border border-border-gray bg-white px-6 pt-6 pb-14 shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="relative h-16 w-full">
-        <div className="relative h-16 w-16 overflow-hidden rounded-2xl shadow-sm">
-          <Image
-            alt={name}
-            className="object-cover transition-transform duration-400 group-hover:scale-115"
-            fill
-            sizes="64px"
-            src={imageUrl}
-          />
-        </div>
+        <ProfileAvatar
+          name={name}
+          imageUrl={imageUrl}
+          sizeClassName="h-16 w-16"
+          shape="rounded"
+          textClassName="text-xl"
+          className="shadow-sm"
+          imageClassName="transition-transform duration-400 group-hover:scale-135"
+        />
 
         <span className="absolute top-0 right-0 rounded-lg bg-brand-50 px-2 py-1 text-xs font-medium text-text-gray">
           {role}
@@ -73,6 +73,6 @@ export default function UserCard({
           ) : null}
         </div>
       </div>
-    </Link>
+    </AuthLink>
   );
 }
