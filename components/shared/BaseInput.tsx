@@ -7,6 +7,7 @@ export interface BaseInputProps extends InputHTMLAttributes<HTMLInputElement> {
   full?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  error?: boolean;
 }
 
 const SIZE_MAP: Record<BaseInputSize, string> = {
@@ -22,6 +23,7 @@ export default function BaseInput({
   disabled,
   leftIcon,
   rightIcon,
+  error = false,
   className = '',
   ...props
 }: BaseInputProps) {
@@ -43,6 +45,7 @@ export default function BaseInput({
         className={`rounded-xl border border-border-gray bg-white text-text-black outline-none transition-all duration-200 ease-out
           placeholder:text-muted-gray
           focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-400/20
+          ${error ? 'border-error-red bg-danger-soft/20 focus:border-error-red focus:ring-danger-400/20' : ''}
           disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-gray
           ${sizeClass}
           ${leftPaddingClass}

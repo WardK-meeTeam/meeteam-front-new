@@ -59,6 +59,52 @@ const DEFAULT_FORM_VALUES: ProjectFormValues = {
   coverImage: null,
 };
 
+function buildOptionalUrl(value: string) {
+  const trimmed = value.trim();
+
+  if (!trimmed) {
+    return '';
+  }
+
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
+function isValidUrl(value: string) {
+  const url = buildOptionalUrl(value);
+
+  if (!url) {
+    return true;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+function isValidGithubRepositoryUrl(value: string) {
+  const url = buildOptionalUrl(value);
+
+  if (!url) {
+    return true;
+  }
+
+  try {
+    const parsedUrl = new URL(url);
+    const pathSegments = parsedUrl.pathname.split('/').filter(Boolean);
+
+    return (
+      parsedUrl.hostname.toLowerCase() === 'github.com' &&
+      pathSegments.length >= 2 &&
+      pathSegments.every((segment) => /^[A-Za-z0-9._-]+$/.test(segment))
+    );
+  } catch {
+    return false;
+  }
+}
+
 export default function ProjectForm({
   variant = 'create',
   initialValues,
@@ -263,6 +309,14 @@ export default function ProjectForm({
       nextErrors.recruitDeadline = flattened.recruitDeadline?.[0];
     }
 
+    if (!isValidGithubRepositoryUrl(githubUrl)) {
+      nextErrors.githubUrl = 'GitHub 레포지토리 주소 형식이 올바르지 않아요.';
+    }
+
+    if (!isValidUrl(communicationUrl)) {
+      nextErrors.communicationUrl = '소통 채널 주소 형식이 올바르지 않아요.';
+    }
+
     const hasMissingRecruitTechStacks = recruitInterests
       .filter((interest) => interest.major && interest.minor)
       .some((interest) => {
@@ -281,6 +335,10 @@ export default function ProjectForm({
 
     if (isEdit && !recruitDeadline) {
       nextErrors.recruitDeadline = '프로젝트 마감일을 선택해 주세요.';
+    }
+
+    if (!nextErrors.form) {
+      nextErrors.form = Object.values(nextErrors).find(Boolean);
     }
 
     setFieldErrors(nextErrors);
@@ -371,21 +429,41 @@ export default function ProjectForm({
           />
         </BaseField>
 
-        <BaseField errorText="" hintText="" label="GitHub 레포지토리 주소" required={false}>
+        <BaseField
+          errorText={fieldErrors.githubUrl}
+          hintText=""
+          label="GitHub 레포지토리 주소"
+          required={false}
+        >
           <BaseInput
             value={githubUrl}
-            onChange={(event) => setGithubUrl(event.target.value)}
+            onChange={(event) => {
+              setGithubUrl(event.target.value);
+              clearError('githubUrl');
+            }}
             placeholder="https://github.com/username/repository"
             leftIcon={githubIcon}
+            error={Boolean(fieldErrors.githubUrl)}
+            aria-invalid={Boolean(fieldErrors.githubUrl)}
           />
         </BaseField>
 
-        <BaseField errorText="" hintText="" label="소통 채널 주소" required={false}>
+        <BaseField
+          errorText={fieldErrors.communicationUrl}
+          hintText=""
+          label="소통 채널 주소"
+          required={false}
+        >
           <BaseInput
             value={communicationUrl}
-            onChange={(event) => setCommunicationUrl(event.target.value)}
+            onChange={(event) => {
+              setCommunicationUrl(event.target.value);
+              clearError('communicationUrl');
+            }}
             placeholder="슬랙, 디스코드, 오픈카톡방 등 초대 링크"
             leftIcon={messageIcon}
+            error={Boolean(fieldErrors.communicationUrl)}
+            aria-invalid={Boolean(fieldErrors.communicationUrl)}
           />
         </BaseField>
 

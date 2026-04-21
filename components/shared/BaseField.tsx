@@ -24,9 +24,7 @@ export default function BaseField({
       {label && (
         <label className="text-lg font-bold leading-7 text-text-black" htmlFor={htmlFor}>
           {label}
-          {!required && (
-            <span className="ml-2 text-sm font-extralight text-muted-gray">(선택)</span>
-          )}
+          {!required && <span className="ml-2 text-sm font-semibold text-text-gray">(선택)</span>}
         </label>
       )}
 

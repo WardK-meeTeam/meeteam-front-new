@@ -38,6 +38,8 @@ export const projectFormSchema = z
 export type ProjectFormFieldErrors = Partial<
   Record<
     | 'projectName'
+    | 'githubUrl'
+    | 'communicationUrl'
     | 'categoryId'
     | 'description'
     | 'releasePlatforms'
