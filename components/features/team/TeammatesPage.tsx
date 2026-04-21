@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import AuthRequiredFallback from '@/components/features/auth/AuthRequiredFallback';
 import { TEAMMATE_PAGE_COPY } from './constants';
 import { TeammateFinderPanel } from './TeammateFinderPanel';
 import { TeammateListSection } from './TeammateListSection';
@@ -19,7 +18,6 @@ export default function TeammatesPage() {
     filteredTeammatesCount,
     isInitialLoading,
     isLoadingMore,
-    isAuthBlocked,
     errorMessage,
     hasMore,
     loadMoreRef,
@@ -28,15 +26,6 @@ export default function TeammatesPage() {
     setSelectedSkills,
     setSort,
   } = useTeammateFinder();
-
-  if (isAuthBlocked) {
-    return (
-      <AuthRequiredFallback
-        title="팀원 찾기는 로그인 후 이용할 수 있어요"
-        description="로그인하고 함께할 팀원의 프로필과 기술 스택을 확인해 보세요."
-      />
-    );
-  }
 
   return (
     <section className="space-y-6 pb-10 pt-2">
@@ -52,7 +41,9 @@ export default function TeammatesPage() {
 
       <div className="space-y-2">
         <h1 className="text-3xl leading-9 font-bold text-text-black">{TEAMMATE_PAGE_COPY.title}</h1>
-        <p className="max-w-4xl text-base leading-6 text-text-gray">{TEAMMATE_PAGE_COPY.description}</p>
+        <p className="max-w-4xl text-base leading-6 text-text-gray">
+          {TEAMMATE_PAGE_COPY.description}
+        </p>
       </div>
 
       <TeammateFinderPanel

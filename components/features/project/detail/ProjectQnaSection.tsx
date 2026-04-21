@@ -144,11 +144,6 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
           return;
         }
 
-        if (handleAuthRequired(error, { redirectPath: `/projects/${project.id}` })) {
-          setErrorMessage(null);
-          return;
-        }
-
         setErrorMessage(error instanceof Error ? error.message : 'Q&A 목록을 불러오지 못했습니다.');
       } finally {
         if (active) {
@@ -162,7 +157,7 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
     return () => {
       active = false;
     };
-  }, [handleAuthRequired, project.id]);
+  }, [project.id]);
 
   const replaceQna = (nextQna: ProjectQna) => {
     setQnas((current) => current.map((qna) => (qna.id === nextQna.id ? nextQna : qna)));
@@ -239,10 +234,6 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
       setPage(result.page);
       setHasMore(result.hasMore);
     } catch (error) {
-      if (handleAuthRequired(error, { redirectPath: `/projects/${project.id}` })) {
-        return;
-      }
-
       setErrorMessage(
         error instanceof Error ? error.message : 'Q&A 목록을 더 불러오지 못했습니다.',
       );

@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import AuthLink from '@/components/features/auth/AuthLink';
+import { fetchHomeMembers, fetchHomeProjects } from '@/components/features/home/homeApi';
 import StartJourneyModalTrigger from '@/components/features/home/StartJourneyModalTrigger';
 import { ProjectCard } from '@/components/features/project/ProjectCard';
 import BaseTag from '@/components/shared/BaseTag';
@@ -15,7 +16,7 @@ const categoryChips = [
   { emoji: '💄', label: '패션/뷰티' },
 ];
 
-const projectCards = [
+const fallbackProjectCards = [
   {
     id: 1,
     title: 'AI 기반 뉴스 요약 서비스 개발',
@@ -70,8 +71,7 @@ const projectCards = [
   },
 ];
 
-const teammateCards = Array.from({ length: 5 }).map((_, index) => ({
-  id: index + 1,
+const fallbackTeammateCards = Array.from({ length: 5 }).map((_, index) => ({
   userId: index + 1,
   name: '정연준',
   role: '프론트엔드',
@@ -80,7 +80,20 @@ const teammateCards = Array.from({ length: 5 }).map((_, index) => ({
   imageUrl: '/next.svg',
 }));
 
-export default function Page() {
+export default async function Page() {
+  const [projectCardsResult, teammateCardsResult] = await Promise.allSettled([
+    fetchHomeProjects(4),
+    fetchHomeMembers(5),
+  ]);
+  const projectCards =
+    projectCardsResult.status === 'fulfilled' && projectCardsResult.value.length > 0
+      ? projectCardsResult.value
+      : fallbackProjectCards;
+  const teammateCards =
+    teammateCardsResult.status === 'fulfilled' && teammateCardsResult.value.length > 0
+      ? teammateCardsResult.value
+      : fallbackTeammateCards;
+
   return (
     <div className="space-y-12 pb-8 md:space-y-16">
       <section className="overflow-hidden rounded-3xl border border-border-gray bg-brand-50 px-6 py-8 md:px-10 md:py-12">
@@ -186,7 +199,7 @@ export default function Page() {
         </div>
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {teammateCards.map((teammate) => (
-            <li key={teammate.id}>
+            <li key={teammate.userId}>
               <UserCard
                 userId={teammate.userId}
                 name={teammate.name}

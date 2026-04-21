@@ -11,28 +11,61 @@ interface MemberCardResponse {
   name: string;
   profileImageUrl: string | null;
   jobFieldName: string | null;
-  jobPositionNameEn: string | null;
-  projectCount: number;
-  mainSkills: string[];
+  projectExperienceCount: number;
+  techStacks: MemberTechStackResponse[];
+}
+
+interface MemberTechStackResponse {
+  id: number;
+  name: string;
+  displayOrder: number;
+}
+
+interface MemberPageResponse {
+  content: MemberCardResponse[];
+  last: boolean;
+  number: number;
+  size: number;
+  empty: boolean;
 }
 
 export async function fetchAllTeammates() {
-  const response = await fetch(`${API_BASE_URL}/api/members/all`, {
-    method: 'GET',
-    cache: 'no-store',
-  });
+  const teammates: Teammate[] = [];
+  const pageSize = 100;
+  let page = 0;
+  let hasMore = true;
 
-  const payload = (await response.json().catch(() => null)) as ApiEnvelope<MemberCardResponse[]> | null;
+  while (hasMore) {
+    const params = new URLSearchParams({
+      page: String(page),
+      size: String(pageSize),
+      sort: 'createdAt,desc',
+    });
 
-  if (!response.ok) {
-    throw createApiError(response, payload, '팀원 목록을 불러오지 못했습니다.');
+    const response = await fetch(`${API_BASE_URL}/api/v1/main/members?${params.toString()}`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+
+    const payload = (await response
+      .json()
+      .catch(() => null)) as ApiEnvelope<MemberPageResponse> | null;
+
+    if (!response.ok) {
+      throw createApiError(response, payload, '팀원 목록을 불러오지 못했습니다.');
+    }
+
+    if (!payload) {
+      throw new Error('응답 형식을 해석할 수 없습니다.');
+    }
+
+    const result = extractApiData(payload);
+    teammates.push(...result.content.map(mapTeammateCard));
+    hasMore = !result.last && !result.empty && result.content.length > 0;
+    page += 1;
   }
 
-  if (!payload) {
-    throw new Error('응답 형식을 해석할 수 없습니다.');
-  }
-
-  return extractApiData(payload).map(mapTeammateCard);
+  return teammates;
 }
 
 function mapTeammateCard(member: MemberCardResponse): Teammate {
@@ -40,8 +73,8 @@ function mapTeammateCard(member: MemberCardResponse): Teammate {
     id: member.memberId,
     name: member.name,
     role: mapJobFieldToRole(member.jobFieldName),
-    experienceCount: member.projectCount,
-    skills: member.mainSkills,
+    experienceCount: member.projectExperienceCount,
+    skills: member.techStacks.map((techStack) => techStack.name),
     imageUrl: member.profileImageUrl ?? '',
   };
 }
