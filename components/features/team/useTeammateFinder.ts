@@ -1,13 +1,31 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useInfiniteScroll } from '@/components/shared/useInfiniteScroll';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
 import { collectTechStackNames } from '@/components/features/auth/jobOptionUtils';
-import type { TeammateRole, TeammateSort } from '@/types/team';
+import type { TeammateSort } from '@/types/team';
 import type { Teammate } from '@/types/team';
-import { fetchAllTeammates } from './teamApi';
+import { fetchTeammates } from './teamApi';
 import { TEAMMATE_LIST_CONFIG, TEAMMATE_ROLE_OPTIONS } from './constants';
+
+const JOB_FIELD_ID_BY_CODE: Record<string, number> = {
+  PLANNING: 1,
+  DESIGN: 2,
+  FRONTEND: 3,
+  BACKEND: 4,
+  AI: 5,
+  INFRA_OPERATION: 6,
+};
+
+const JOB_FIELD_CODE_BY_ROLE: Partial<Record<(typeof TEAMMATE_ROLE_OPTIONS)[number], string>> = {
+  프론트엔드: 'FRONTEND',
+  백엔드: 'BACKEND',
+  디자이너: 'DESIGN',
+  'PM/기획': 'PLANNING',
+  AI: 'AI',
+  '인프라/운영': 'INFRA_OPERATION',
+};
 
 export function useTeammateFinder() {
   const [teammates, setTeammates] = useState<Teammate[]>([]);
@@ -16,51 +34,12 @@ export function useTeammateFinder() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [availableSkills, setAvailableSkills] = useState<string[]>([]);
   const [sort, setSort] = useState<TeammateSort>('experience-desc');
-  const [visibleCount, setVisibleCount] = useState<number>(
-    TEAMMATE_LIST_CONFIG.initialVisibleCount,
-  );
+  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const loadMoreTimeoutRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    let active = true;
-
-    const loadTeammates = async () => {
-      try {
-        setIsInitialLoading(true);
-        setErrorMessage(null);
-
-        const nextTeammates = await fetchAllTeammates();
-
-        if (!active) {
-          return;
-        }
-
-        setTeammates(nextTeammates);
-      } catch (error) {
-        if (!active) {
-          return;
-        }
-
-        setTeammates([]);
-        setErrorMessage(
-          error instanceof Error ? error.message : '팀원 목록을 불러오지 못했습니다.',
-        );
-      } finally {
-        if (active) {
-          setIsInitialLoading(false);
-        }
-      }
-    };
-
-    void loadTeammates();
-
-    return () => {
-      active = false;
-    };
-  }, []);
 
   useEffect(() => {
     let active = true;
@@ -88,69 +67,106 @@ export function useTeammateFinder() {
     };
   }, []);
 
-  const filteredTeammates = useMemo(() => {
-    const normalizedSearch = searchValue.trim().toLowerCase();
-
-    return teammates
-      .filter((teammate) => {
-        const matchesName =
-          normalizedSearch.length === 0 || teammate.name.toLowerCase().includes(normalizedSearch);
-        const matchesRole =
-          selectedRole === '전체' || teammate.role === (selectedRole as TeammateRole);
-        const matchesSkill =
-          selectedSkills.length === 0 ||
-          selectedSkills.every((skill) => teammate.skills.includes(skill));
-
-        return matchesName && matchesRole && matchesSkill;
-      })
-      .sort((left, right) => {
-        if (sort === 'name-asc') {
-          return left.name.localeCompare(right.name, 'ko');
-        }
-
-        return right.experienceCount - left.experienceCount;
-      });
-  }, [searchValue, selectedRole, selectedSkills, sort, teammates]);
-
-  const visibleTeammates = filteredTeammates.slice(0, visibleCount);
-  const hasMore = visibleTeammates.length < filteredTeammates.length;
+  const selectedJobFieldId = useMemo(() => resolveJobFieldId(selectedRole), [selectedRole]);
 
   useEffect(() => {
-    setVisibleCount(TEAMMATE_LIST_CONFIG.initialVisibleCount);
-    setIsLoadingMore(false);
+    let active = true;
 
-    if (loadMoreTimeoutRef.current) {
-      window.clearTimeout(loadMoreTimeoutRef.current);
-      loadMoreTimeoutRef.current = null;
-    }
-  }, [searchValue, selectedRole, selectedSkills, sort]);
+    const loadTeammates = async () => {
+      try {
+        setIsInitialLoading(true);
+        setErrorMessage(null);
 
-  useEffect(
-    () => () => {
-      if (loadMoreTimeoutRef.current) {
-        window.clearTimeout(loadMoreTimeoutRef.current);
+        const result = await fetchTeammates({
+          name: searchValue,
+          jobFieldId: selectedJobFieldId,
+          techStackNames: selectedSkills,
+          sort,
+          page: 0,
+          size: TEAMMATE_LIST_CONFIG.initialVisibleCount,
+        });
+
+        if (!active) {
+          return;
+        }
+
+        setTeammates(result.teammates);
+        setTotalCount(result.totalCount);
+        setCurrentPage(result.page);
+        setHasMore(!result.last);
+      } catch (error) {
+        if (!active) {
+          return;
+        }
+
+        setTeammates([]);
+        setTotalCount(0);
+        setHasMore(false);
+        setErrorMessage(
+          error instanceof Error ? error.message : '팀원 목록을 불러오지 못했습니다.',
+        );
+      } finally {
+        if (active) {
+          setIsInitialLoading(false);
+        }
       }
-    },
-    [],
-  );
+    };
+
+    void loadTeammates();
+
+    return () => {
+      active = false;
+    };
+  }, [searchValue, selectedJobFieldId, selectedSkills, sort]);
+
+  const handleLoadMore = useCallback(() => {
+    if (!hasMore || isLoadingMore || isInitialLoading) {
+      return;
+    }
+
+    const loadNextPage = async () => {
+      try {
+        setIsLoadingMore(true);
+        setErrorMessage(null);
+
+        const result = await fetchTeammates({
+          name: searchValue,
+          jobFieldId: selectedJobFieldId,
+          techStackNames: selectedSkills,
+          sort,
+          page: currentPage + 1,
+          size: TEAMMATE_LIST_CONFIG.initialVisibleCount,
+        });
+
+        setTeammates((current) => [...current, ...result.teammates]);
+        setTotalCount(result.totalCount);
+        setCurrentPage(result.page);
+        setHasMore(!result.last);
+      } catch (error) {
+        setErrorMessage(
+          error instanceof Error ? error.message : '팀원 목록을 더 불러오지 못했습니다.',
+        );
+      } finally {
+        setIsLoadingMore(false);
+      }
+    };
+
+    void loadNextPage();
+  }, [
+    currentPage,
+    hasMore,
+    isInitialLoading,
+    isLoadingMore,
+    searchValue,
+    selectedJobFieldId,
+    selectedSkills,
+    sort,
+  ]);
 
   const loadMoreRef = useInfiniteScroll({
     hasMore,
     isLoading: isLoadingMore,
-    onLoadMore: () => {
-      if (!hasMore || isLoadingMore) {
-        return;
-      }
-
-      setIsLoadingMore(true);
-      loadMoreTimeoutRef.current = window.setTimeout(() => {
-        setVisibleCount((count) =>
-          Math.min(count + TEAMMATE_LIST_CONFIG.loadMoreCount, filteredTeammates.length),
-        );
-        setIsLoadingMore(false);
-        loadMoreTimeoutRef.current = null;
-      }, TEAMMATE_LIST_CONFIG.loadDelayMs);
-    },
+    onLoadMore: handleLoadMore,
   });
 
   return {
@@ -159,8 +175,8 @@ export function useTeammateFinder() {
     selectedSkills,
     availableSkills,
     sort,
-    visibleTeammates,
-    filteredTeammatesCount: filteredTeammates.length,
+    visibleTeammates: teammates,
+    filteredTeammatesCount: totalCount,
     isInitialLoading,
     isLoadingMore,
     errorMessage,
@@ -171,4 +187,18 @@ export function useTeammateFinder() {
     setSelectedSkills,
     setSort,
   };
+}
+
+function resolveJobFieldId(role: (typeof TEAMMATE_ROLE_OPTIONS)[number]) {
+  if (role === '전체') {
+    return undefined;
+  }
+
+  const jobFieldCode = JOB_FIELD_CODE_BY_ROLE[role];
+
+  if (!jobFieldCode) {
+    return undefined;
+  }
+
+  return JOB_FIELD_ID_BY_CODE[jobFieldCode];
 }

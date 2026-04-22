@@ -27,22 +27,42 @@ export interface ProfileProjectCard {
 export interface MemberProfileResponse {
   name: string;
   memberId: number;
-  birthDate: string | null;
+  birthDate?: string | null;
+  age?: number | null;
   gender: ProfileGender;
   email: string;
   githubUrl: string | null;
   blogUrl: string | null;
   projectExperienceCount: number;
   representativePosition: string | null;
-  representativePositionEn: string | null;
+  representativePositionEn?: string | null;
   groupedSkills: GroupedSkill[];
-  skills: string[];
+  skills?: string[];
   isParticipating: boolean;
-  projectCount: number;
+  projectCount?: number;
   introduce: string | null;
   profileImageUrl: string | null;
-  profileImageName: string | null;
+  profileImageName?: string | null;
   projectCards: ProfileProjectCard[];
+}
+
+interface MemberDetailResponse {
+  memberId: number;
+  profileImageUrl: string | null;
+  name: string;
+  age: number | null;
+  gender: ProfileGender;
+  representativePosition: string | null;
+  jobPositions: string[];
+  projectExperienceCount: number;
+  email: string;
+  githubUrl: string | null;
+  blogUrl: string | null;
+  isParticipating: boolean;
+  introduce: string | null;
+  participatedProjectCount: number;
+  participatedProjects: ProfileProjectCard[];
+  groupedSkills: GroupedSkill[];
 }
 
 export interface UpdateMemberProfilePayload {
@@ -83,13 +103,13 @@ export async function fetchMyProfile() {
 }
 
 export async function fetchMemberProfile(memberId: number) {
-  const response = await fetch(`${API_BASE_URL}/api/members/${memberId}`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/members/${memberId}`, {
     method: 'GET',
     cache: 'no-store',
     credentials: 'include',
   });
 
-  return readEnvelope<MemberProfileResponse>(response);
+  return mapMemberDetailToProfile(await readEnvelope<MemberDetailResponse>(response));
 }
 
 export async function updateMyProfile(payload: UpdateMemberProfilePayload) {
@@ -145,4 +165,28 @@ export function findPositionByName(
   return findFieldByName(jobFields, fieldName)?.positions.find(
     (position) => position.name === positionName,
   );
+}
+
+function mapMemberDetailToProfile(detail: MemberDetailResponse): MemberProfileResponse {
+  return {
+    name: detail.name,
+    memberId: detail.memberId,
+    birthDate: null,
+    age: detail.age,
+    gender: detail.gender,
+    email: detail.email,
+    githubUrl: detail.githubUrl,
+    blogUrl: detail.blogUrl,
+    projectExperienceCount: detail.projectExperienceCount,
+    representativePosition: detail.representativePosition,
+    representativePositionEn: detail.representativePosition,
+    groupedSkills: detail.groupedSkills,
+    skills: detail.groupedSkills.flatMap((group) => group.techStacks),
+    isParticipating: detail.isParticipating,
+    projectCount: detail.participatedProjectCount,
+    introduce: detail.introduce,
+    profileImageUrl: detail.profileImageUrl,
+    profileImageName: null,
+    projectCards: detail.participatedProjects,
+  };
 }

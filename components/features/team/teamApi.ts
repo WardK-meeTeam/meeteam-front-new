@@ -1,5 +1,5 @@
 import type { ApiEnvelope } from '@/types/auth';
-import type { Teammate } from '@/types/team';
+import type { Teammate, TeammateSort } from '@/types/team';
 
 import { createApiError } from '@/components/features/auth/authError';
 import { extractApiData } from '@/components/features/auth/signupTransform';
@@ -27,6 +27,77 @@ interface MemberPageResponse {
   number: number;
   size: number;
   empty: boolean;
+  totalElements?: number;
+}
+
+export interface FetchTeammatesParams {
+  name?: string;
+  jobFieldId?: number;
+  techStackNames?: string[];
+  sort?: TeammateSort;
+  page?: number;
+  size?: number;
+}
+
+export interface FetchTeammatesResult {
+  teammates: Teammate[];
+  totalCount: number;
+  page: number;
+  last: boolean;
+}
+
+export async function fetchTeammates({
+  name = '',
+  jobFieldId,
+  techStackNames = [],
+  sort = 'experience-desc',
+  page = 0,
+  size = 15,
+}: FetchTeammatesParams = {}): Promise<FetchTeammatesResult> {
+  const params = new URLSearchParams({
+    page: String(page),
+    size: String(size),
+    sort: mapSortToApi(sort),
+  });
+
+  const trimmedName = name.trim();
+  if (trimmedName) {
+    params.set('name', trimmedName);
+  }
+
+  if (typeof jobFieldId === 'number') {
+    params.set('jobFieldId', String(jobFieldId));
+  }
+
+  techStackNames.forEach((techStackName) => {
+    params.append('techStackNames', techStackName);
+  });
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/members/search?${params.toString()}`, {
+    method: 'GET',
+    cache: 'no-store',
+  });
+
+  const payload = (await response
+    .json()
+    .catch(() => null)) as ApiEnvelope<MemberPageResponse> | null;
+
+  if (!response.ok) {
+    throw createApiError(response, payload, '팀원 목록을 불러오지 못했습니다.');
+  }
+
+  if (!payload) {
+    throw new Error('응답 형식을 해석할 수 없습니다.');
+  }
+
+  const result = extractApiData(payload);
+
+  return {
+    teammates: result.content.map(mapTeammateCard),
+    totalCount: result.totalElements ?? result.content.length,
+    page: result.number,
+    last: result.last || result.empty,
+  };
 }
 
 export async function fetchAllTeammates() {
@@ -36,32 +107,10 @@ export async function fetchAllTeammates() {
   let hasMore = true;
 
   while (hasMore) {
-    const params = new URLSearchParams({
-      page: String(page),
-      size: String(pageSize),
-      sort: 'createdAt,desc',
-    });
+    const result = await fetchTeammates({ page, size: pageSize });
 
-    const response = await fetch(`${API_BASE_URL}/api/v1/main/members?${params.toString()}`, {
-      method: 'GET',
-      cache: 'no-store',
-    });
-
-    const payload = (await response
-      .json()
-      .catch(() => null)) as ApiEnvelope<MemberPageResponse> | null;
-
-    if (!response.ok) {
-      throw createApiError(response, payload, '팀원 목록을 불러오지 못했습니다.');
-    }
-
-    if (!payload) {
-      throw new Error('응답 형식을 해석할 수 없습니다.');
-    }
-
-    const result = extractApiData(payload);
-    teammates.push(...result.content.map(mapTeammateCard));
-    hasMore = !result.last && !result.empty && result.content.length > 0;
+    teammates.push(...result.teammates);
+    hasMore = !result.last && result.teammates.length > 0;
     page += 1;
   }
 
@@ -89,7 +138,15 @@ function mapJobFieldToRole(jobFieldName: string | null): Teammate['role'] {
       return '디자이너';
     case '기획':
       return 'PM/기획';
+    case 'AI':
+      return 'AI';
+    case '인프라/운영':
+      return '인프라/운영';
     default:
       return '기타';
   }
+}
+
+function mapSortToApi(sort: TeammateSort) {
+  return sort === 'name-asc' ? 'realName,asc' : 'projectExperienceCount,desc';
 }

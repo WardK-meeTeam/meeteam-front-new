@@ -12,8 +12,8 @@ export const TEAMMATE_ROLE_OPTIONS = [
   '백엔드',
   '디자이너',
   'PM/기획',
-  '마케팅',
-  '기타',
+  'AI',
+  '인프라/운영',
 ] as const;
 
 export const TEAMMATE_SORT_OPTIONS = [
@@ -23,6 +23,6 @@ export const TEAMMATE_SORT_OPTIONS = [
 
 export const TEAMMATE_LIST_CONFIG = {
   initialVisibleCount: 15,
-  loadMoreCount: 5,
+  loadMoreCount: 15,
   loadDelayMs: 800,
 } as const;

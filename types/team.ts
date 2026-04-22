@@ -4,6 +4,8 @@ export type TeammateRole =
   | '디자이너'
   | 'PM/기획'
   | '마케팅'
+  | 'AI'
+  | '인프라/운영'
   | '기타';
 
 export type TeammateSort = 'experience-desc' | 'name-asc';

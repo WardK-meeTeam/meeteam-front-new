@@ -186,10 +186,17 @@ export default function ProfileOverview({
     );
 
     const primaryGroup = nextProfile.groupedSkills[0];
+    const ageLabel =
+      typeof nextProfile.age === 'number'
+        ? `${nextProfile.age}세`
+        : nextProfile.birthDate
+          ? `${calculateAge(nextProfile.birthDate)}세`
+          : '-';
+
     setEditableSkills(primaryGroup?.techStacks ?? []);
     setProfileForm({
       name: nextProfile.name,
-      age: nextProfile.birthDate ? `${calculateAge(nextProfile.birthDate)}세` : '-',
+      age: ageLabel,
       gender: nextProfile.gender === 'FEMALE' ? '여성' : '남성',
       fieldCategory: primaryGroup?.jobFieldName ?? '',
       fieldRole: primaryGroup?.jobPositionName ?? nextProfile.representativePosition ?? '',
