@@ -226,3 +226,5 @@ describe('인증 세션 흐름', () => {
     cy.get('[data-cy="login-form"]').should('be.visible');
   });
 });
+
+export {};
