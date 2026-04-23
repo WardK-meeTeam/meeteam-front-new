@@ -60,6 +60,7 @@ export default function SkillsCard({
             {editable ? (
               <TechStackPicker
                 inputId={`profile-skills-${groupIndex}`}
+                inputDataCy={`profile-skills-input-${groupIndex}`}
                 options={availableSkills}
                 value={group.skills}
                 onChange={(nextSkills) => onSkillsChange?.(groupIndex, nextSkills)}
