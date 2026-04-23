@@ -18,6 +18,7 @@ export default function ParticipationStatusCard({
         <button
           type="button"
           onClick={editable ? onToggle : undefined}
+          data-cy="profile-participation-toggle"
           className={`flex h-7 w-12 items-center rounded-full px-1 transition-colors ${
             isParticipating ? 'bg-brand-500' : 'bg-divider-soft'
           } ${editable ? 'cursor-pointer' : 'cursor-default'}`}

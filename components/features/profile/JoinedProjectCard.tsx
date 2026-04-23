@@ -80,6 +80,7 @@ function JoinedProjectItem({
   return (
     <Link
       href={`/projects/${project.id}`}
+      data-cy="profile-joined-project"
       className={`group relative block w-full overflow-hidden rounded-3xl bg-text-black shadow-2xl ${
         disabled ? 'pointer-events-none opacity-70 blur-[1px]' : ''
       }`}

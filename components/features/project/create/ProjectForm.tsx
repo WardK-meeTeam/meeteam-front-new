@@ -396,6 +396,7 @@ export default function ProjectForm({
         <BaseField errorText={fieldErrors.projectName} hintText="" label="프로젝트 명" required>
           <BaseInput
             value={projectName}
+            data-cy="project-form-name"
             onChange={(event) => {
               setProjectName(event.target.value);
               clearError('projectName');
@@ -412,6 +413,7 @@ export default function ProjectForm({
         >
           <BaseInput
             value={githubUrl}
+            data-cy="project-form-github"
             onChange={(event) => {
               setGithubUrl(event.target.value);
               clearError('githubUrl');
@@ -431,6 +433,7 @@ export default function ProjectForm({
         >
           <BaseInput
             value={communicationUrl}
+            data-cy="project-form-communication"
             onChange={(event) => {
               setCommunicationUrl(event.target.value);
               clearError('communicationUrl');
@@ -450,6 +453,7 @@ export default function ProjectForm({
                 icon={category.icon}
                 label={category.label}
                 selected={projectCategoryId === category.id}
+                dataCy={`project-form-category-${category.id}`}
                 onClick={() => {
                   setProjectCategoryId(category.id);
                   clearError('categoryId');
@@ -462,6 +466,7 @@ export default function ProjectForm({
         <BaseField errorText={fieldErrors.description} hintText="" label="프로젝트 소개 글">
           <BaseTextarea
             value={description}
+            data-cy="project-form-description"
             onChange={(event) => {
               setDescription(event.target.value);
               clearError('description');
@@ -483,6 +488,7 @@ export default function ProjectForm({
                   role="button"
                   tabIndex={0}
                   onClick={() => handlePlatformToggle(platform)}
+                  data-cy={`project-form-platform-${platform}`}
                   onKeyDown={(event) => {
                     if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault();
@@ -515,6 +521,7 @@ export default function ProjectForm({
                 placeholder="직군 선택"
                 open={myOpenDropdown === 'major'}
                 items={majorOptions}
+                dataCy="project-form-my-major"
                 onToggle={() => toggleMyDropdown('major')}
                 onSelect={(selectedMajor) => {
                   setMyInterest({ major: selectedMajor, minor: '' });
@@ -531,6 +538,7 @@ export default function ProjectForm({
                 placeholder="상세 분야 선택"
                 open={myOpenDropdown === 'minor'}
                 items={getMinors(myInterest.major)}
+                dataCy="project-form-my-minor"
                 onToggle={() => myInterest.major && toggleMyDropdown('minor')}
                 onSelect={(selectedMinor) => {
                   setMyInterest((prev) => ({ ...prev, minor: selectedMinor }));
@@ -573,6 +581,7 @@ export default function ProjectForm({
                       openRecruitDropdown?.index === index && openRecruitDropdown.key === 'major'
                     }
                     items={majorOptions}
+                    dataCy={`project-form-recruit-major-${index}`}
                     onToggle={() => toggleRecruitDropdown(index, 'major')}
                     onSelect={(selectedMajor) => {
                       updateRecruitInterest(index, { major: selectedMajor, minor: '' });
@@ -590,6 +599,7 @@ export default function ProjectForm({
                       openRecruitDropdown?.index === index && openRecruitDropdown.key === 'minor'
                     }
                     items={getMinors(interest.major)}
+                    dataCy={`project-form-recruit-minor-${index}`}
                     onToggle={() => interest.major && toggleRecruitDropdown(index, 'minor')}
                     onSelect={(selectedMinor) => {
                       updateRecruitInterest(index, { major: interest.major, minor: selectedMinor });
@@ -683,6 +693,7 @@ export default function ProjectForm({
               variant="primary"
               type="submit"
               disabled={!editable || isSubmitting || isLoadingJobOptions}
+              data-cy="project-form-submit"
               className="w-full max-w-md shadow-xl shadow-brand-400/40"
             >
               {isSubmitting ? '저장 중...' : '저장하기'}
@@ -695,6 +706,7 @@ export default function ProjectForm({
               variant="primary"
               type="submit"
               disabled={!editable || isSubmitting || isLoadingJobOptions}
+              data-cy="project-form-submit"
               className="w-full max-w-md shadow-xl shadow-brand-400/40"
             >
               {isSubmitting ? '프로젝트 등록 중...' : '프로젝트 등록하기'}

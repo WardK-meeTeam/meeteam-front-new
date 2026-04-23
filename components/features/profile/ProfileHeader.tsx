@@ -71,6 +71,7 @@ export default function ProfileHeader({
           variant="primary"
           onClick={onAction}
           disabled={actionDisabled}
+          data-cy="profile-action-button"
           className="self-start px-5 shadow-[0_4px_6px_-1px_var(--color-brand-100),0_2px_4px_-2px_var(--color-brand-100)] sm:self-auto"
         >
           {actionLabel}

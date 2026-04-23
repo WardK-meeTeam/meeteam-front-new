@@ -21,6 +21,7 @@ export default function IntroductionCard({
           textareaSize="L"
           rows={8}
           value={value}
+          data-cy="profile-introduction-input"
           onChange={(event) => onChange?.(event.target.value)}
           placeholder="본인을 자유롭게 소개해주세요. (경험, 관심사, 작업 스타일 등)"
           className="min-h-60 rounded-2xl border-divider-soft px-6 py-6 text-base leading-7 placeholder:text-muted-gray resize-none"

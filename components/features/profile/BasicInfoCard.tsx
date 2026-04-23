@@ -155,6 +155,7 @@ export default function BasicInfoCard({
                 placeholder="직군 대분류"
                 open={isCategoryOpen}
                 items={categoryOptions}
+                dataCy="profile-field-category"
                 onToggle={() => setIsCategoryOpen((current) => !current)}
                 onSelect={(value) => {
                   onFieldChange('fieldCategory', value);
@@ -170,6 +171,7 @@ export default function BasicInfoCard({
                 placeholder="직군 세부 분야"
                 open={isRoleOpen}
                 items={roleOptions}
+                dataCy="profile-field-role"
                 onToggle={() => setIsRoleOpen((current) => !current)}
                 onSelect={(value) => {
                   onFieldChange('fieldRole', value);
@@ -211,6 +213,7 @@ export default function BasicInfoCard({
                 <BaseInput
                   inputSize="S"
                   value={formData[field]}
+                  data-cy={field === 'github' ? 'profile-github-input' : 'profile-blog-input'}
                   onChange={(event) => onFieldChange(field, event.target.value)}
                   className="rounded-lg text-sm leading-5 font-medium text-text-body"
                 />

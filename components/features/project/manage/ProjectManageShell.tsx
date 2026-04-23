@@ -235,6 +235,7 @@ export default function ProjectManageShell({
                     type="button"
                     onClick={() => setIsStatusMenuOpen((prev) => !prev)}
                     disabled={isStatusUpdating}
+                    data-cy="project-manage-status-button"
                     className={`inline-flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm leading-5 font-bold text-white shadow-md transition-colors ${
                       projectStatus === 'CLOSED'
                         ? 'bg-project-status-closed hover:opacity-95'
@@ -256,6 +257,7 @@ export default function ProjectManageShell({
                       type="button"
                       onClick={handleToggleStatus}
                       disabled={!canToggleStatus || isStatusUpdating}
+                      data-cy="project-manage-status-toggle"
                       className="flex w-full items-center justify-between rounded-xl bg-brand-50 px-4 py-2.5 text-sm leading-5 font-bold text-brand-500 transition-colors hover:bg-brand-100 disabled:cursor-not-allowed disabled:bg-surface-soft disabled:text-text-gray"
                     >
                       {statusCopy.actionLabel ?? '변경 불가'}

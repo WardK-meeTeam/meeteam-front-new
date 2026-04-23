@@ -162,3 +162,5 @@ describe('프로젝트 지원 흐름', () => {
     cy.location('pathname').should('eq', `/projects/${PROJECT_ID}`);
   });
 });
+
+export {};

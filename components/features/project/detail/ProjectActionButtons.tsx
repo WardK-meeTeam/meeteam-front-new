@@ -97,6 +97,7 @@ export default function ProjectActionButtons({
           aria-label={liked ? '프로젝트 좋아요 취소' : '프로젝트 좋아요'}
           aria-pressed={liked}
           disabled={isToggling}
+          data-cy="project-like-button"
           onClick={handleLikeToggle}
           className={`inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl border border-border-gray px-4 text-base leading-6 font-bold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-70
             ${

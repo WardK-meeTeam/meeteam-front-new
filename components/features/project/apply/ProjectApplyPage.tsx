@@ -343,6 +343,7 @@ export default function ProjectApplyPage({
             <select
               id="project-application-position"
               value={selectedJobPositionCode}
+              data-cy="project-application-position"
               onChange={(event) => setSelectedJobPositionCode(event.target.value)}
               disabled={positionOptions.length === 0 || isSubmitting}
               className="h-12 w-full rounded-xl border border-border-gray bg-white px-4 text-sm leading-5 font-medium text-text-black outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-400/20 disabled:cursor-not-allowed disabled:bg-surface-soft disabled:text-muted-gray"
@@ -377,6 +378,7 @@ export default function ProjectApplyPage({
             <BaseTextarea
               rows={6}
               value={motivation}
+              data-cy="project-application-motivation"
               onChange={(event) => setMotivation(event.target.value)}
               disabled={isSubmitting || positionOptions.length === 0}
               placeholder="이 프로젝트에 지원하게 된 계기와 본인의 강점을 자유롭게 작성해주세요."
@@ -393,6 +395,7 @@ export default function ProjectApplyPage({
               full
               type="submit"
               disabled={isSubmitting || positionOptions.length === 0}
+              data-cy="project-application-submit"
               className="h-14 rounded-xl shadow-xl shadow-brand-400/40"
             >
               {isSubmitting ? '지원 중' : '지원하기'}

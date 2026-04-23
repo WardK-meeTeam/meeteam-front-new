@@ -8,6 +8,35 @@ function createTechStacks(names: string[]) {
   }));
 }
 
+const JOB_OPTIONS = {
+  fields: [
+    {
+      code: 'FRONTEND',
+      name: '프론트',
+      positions: [{ id: 1, code: 'WEB_FRONTEND', name: '웹 프론트엔드' }],
+      techStacks: createTechStacks(['React Query', 'Next.js', 'React', 'TypeScript', 'Cypress']),
+    },
+    {
+      code: 'BACKEND',
+      name: '백엔드',
+      positions: [{ id: 2, code: 'JAVA_SPRING', name: 'Java/Spring' }],
+      techStacks: createTechStacks(['Spring Boot', 'MySQL', 'NestJS', 'PostgreSQL']),
+    },
+    {
+      code: 'DESIGN',
+      name: '디자인',
+      positions: [{ id: 3, code: 'UI_UX_DESIGNER', name: 'UI/UX 디자이너' }],
+      techStacks: createTechStacks(['Figma', 'Illustrator']),
+    },
+    {
+      code: 'PLANNING',
+      name: '기획',
+      positions: [{ id: 4, code: 'PRODUCT_MANAGER', name: 'PM 프로덕트 매니저' }],
+      techStacks: createTechStacks(['Notion', 'Jira']),
+    },
+  ],
+};
+
 const ALL_TEAMMATES = [
   {
     memberId: 1,
@@ -203,6 +232,38 @@ const ALL_TEAMMATES = [
   },
 ];
 
+const OTHER_MEMBER_PROFILE = {
+  memberId: 14,
+  name: '권나은',
+  age: 26,
+  gender: 'FEMALE',
+  email: 'kwon@example.com',
+  githubUrl: 'https://github.com/kwon',
+  blogUrl: 'https://kwon.blog',
+  projectExperienceCount: 8,
+  representativePosition: '웹 프론트엔드',
+  jobPositions: ['웹 프론트엔드'],
+  isParticipating: true,
+  introduce: '제품 감도가 높은 프론트엔드 개발자입니다.',
+  participatedProjectCount: 0,
+  profileImageUrl: null,
+  participatedProjects: [],
+  groupedSkills: [
+    {
+      jobFieldName: '프론트엔드',
+      jobPositionName: '웹 프론트엔드',
+      techStacks: ['React Query', 'Next.js'],
+    },
+  ],
+};
+
+const JOB_FIELD_BY_ID: Record<string, string> = {
+  '1': '기획',
+  '2': '디자인',
+  '3': '프론트',
+  '4': '백엔드',
+};
+
 function getTeammateCards() {
   return cy.get('[data-cy="teammate-card"]');
 }
@@ -211,23 +272,77 @@ function getTeammateNames() {
   return cy.get('[data-cy="teammate-card-name"]');
 }
 
-describe('팀원 찾기 흐름', () => {
-  beforeEach(() => {
-    cy.intercept('GET', '**/api/v1/main/members*', {
+function installJobOptionsIntercept() {
+  cy.intercept('GET', '**/api/v1/jobs/options', {
+    statusCode: 200,
+    body: {
+      result: JOB_OPTIONS,
+    },
+  }).as('jobOptionsRequest');
+}
+
+function installTeammateSearchIntercept() {
+  cy.intercept('GET', '**/api/v1/members/search*', (request) => {
+    const url = new URL(request.url);
+    const name = (url.searchParams.get('name') ?? '').toLowerCase();
+    const jobFieldId = url.searchParams.get('jobFieldId');
+    const techStackNames = url.searchParams.getAll('techStackNames');
+    const sort = url.searchParams.get('sort') ?? 'projectExperienceCount,desc';
+    const page = Number(url.searchParams.get('page') ?? '0');
+    const size = Number(url.searchParams.get('size') ?? '15');
+
+    let teammates = [...ALL_TEAMMATES];
+
+    if (name) {
+      teammates = teammates.filter((teammate) => teammate.name.toLowerCase().includes(name));
+    }
+
+    if (jobFieldId) {
+      teammates = teammates.filter(
+        (teammate) => teammate.jobFieldName === JOB_FIELD_BY_ID[jobFieldId],
+      );
+    }
+
+    if (techStackNames.length > 0) {
+      teammates = teammates.filter((teammate) =>
+        techStackNames.every((skillName) =>
+          teammate.techStacks.some((techStack) => techStack.name === skillName),
+        ),
+      );
+    }
+
+    teammates.sort((left, right) =>
+      sort === 'realName,asc'
+        ? left.name.localeCompare(right.name, 'ko')
+        : right.projectExperienceCount - left.projectExperienceCount,
+    );
+
+    const start = page * size;
+    const content = teammates.slice(start, start + size);
+
+    request.reply({
       statusCode: 200,
       body: {
         result: {
-          content: ALL_TEAMMATES,
-          last: true,
-          number: 0,
-          size: 100,
-          empty: false,
+          content,
+          last: start + size >= teammates.length,
+          number: page,
+          size,
+          empty: content.length === 0,
+          totalElements: teammates.length,
         },
       },
-    }).as('allTeammatesRequest');
+    });
+  }).as('teammateSearchRequest');
+}
 
+describe('팀원 찾기 흐름', () => {
+  beforeEach(() => {
+    installJobOptionsIntercept();
+    installTeammateSearchIntercept();
     cy.visit(TEAMMATES_PATH);
-    cy.wait('@allTeammatesRequest');
+    cy.wait('@teammateSearchRequest');
+    cy.wait('@jobOptionsRequest');
   });
 
   it('기본 진입 시 프로젝트 경험 많은 순으로 팀원 목록을 보여준다', () => {
@@ -239,18 +354,32 @@ describe('팀원 찾기 흐름', () => {
     cy.get('[data-cy="teammate-card-experience"]').first().should('contain', '11회');
   });
 
-  it('이름, 분야, 기술 스택 조건을 함께 적용해 팀원을 필터링한다', () => {
+  it('이름, 분야, 기술 스택 조건을 함께 적용해 팀원을 필터링하고 기존 조작으로 초기화한다', () => {
     cy.get('[data-cy="teammate-search-input"]').type('권');
+    cy.wait('@teammateSearchRequest');
     cy.get('[data-cy="teammate-role-filter"][data-role="프론트엔드"]').click();
-    cy.get('[data-cy="teammate-skill-input"]').type('React Query');
+    cy.wait('@teammateSearchRequest');
+    cy.get('[data-cy="teammate-skill-input"]').type('React Query{enter}');
+    cy.wait('@teammateSearchRequest');
 
     cy.get('[data-cy="teammate-total-count"]').should('contain', '1');
     getTeammateCards().should('have.length', 1).first().should('have.attr', 'href', '/profile/14');
     getTeammateNames().should('have.text', '권나은');
+
+    cy.get('[data-cy="teammate-search-input"]').clear();
+    cy.wait('@teammateSearchRequest');
+    cy.get('[data-cy="teammate-role-filter"][data-role="전체"]').click();
+    cy.wait('@teammateSearchRequest');
+    cy.get('button[aria-label="React Query 삭제"]').click();
+    cy.wait('@teammateSearchRequest');
+    cy.get('[data-cy="teammate-search-input"]').should('have.value', '');
+    cy.get('[data-cy="teammate-total-count"]').should('contain', '24');
+    getTeammateCards().should('have.length', 15);
   });
 
   it('정렬을 이름순으로 변경하면 목록 순서가 한글 오름차순으로 바뀐다', () => {
     cy.get('[data-cy="teammate-sort-select"]').select('name-asc');
+    cy.wait('@teammateSearchRequest');
 
     cy.get('[data-cy="teammate-total-count"]').should('contain', '24');
     getTeammateCards().should('have.length', 15);
@@ -259,19 +388,19 @@ describe('팀원 찾기 흐름', () => {
     getTeammateNames().eq(2).should('have.text', '김도윤');
   });
 
-  it('목록 하단에 도달하면 추가 팀원 카드를 순차적으로 불러온다', () => {
+  it('목록 하단에 도달하면 추가 팀원 카드를 불러온다', () => {
     getTeammateCards().should('have.length', 15);
 
     cy.get('[data-cy="teammate-load-more-trigger"]').scrollIntoView();
-    getTeammateCards().should('have.length', 20);
+    cy.wait('@teammateSearchRequest');
 
-    cy.get('[data-cy="teammate-load-more-trigger"]').scrollIntoView();
     getTeammateCards().should('have.length', 24);
     cy.get('[data-cy="teammate-load-more-trigger"]').should('not.exist');
   });
 
   it('조건에 맞는 팀원이 없으면 빈 상태를 보여준다', () => {
     cy.get('[data-cy="teammate-search-input"]').type('없는이름');
+    cy.wait('@teammateSearchRequest');
 
     cy.get('[data-cy="teammate-total-count"]').should('contain', '0');
     cy.get('[data-cy="teammate-list"]').find('[data-cy="teammate-card"]').should('have.length', 0);
@@ -279,11 +408,31 @@ describe('팀원 찾기 흐름', () => {
       .should('be.visible')
       .and('contain', '조건에 맞는 팀원이 아직 없어요.');
   });
+
+  it('프로필 카드를 클릭하면 다른 유저 프로필 상세로 이동한다', () => {
+    cy.intercept('GET', '**/api/v1/members/14', {
+      statusCode: 200,
+      body: {
+        result: OTHER_MEMBER_PROFILE,
+      },
+    }).as('memberProfileRequest');
+
+    cy.get('[data-cy="teammate-card"][href="/profile/14"]').click();
+    cy.wait('@memberProfileRequest');
+
+    cy.location('pathname').should('eq', '/profile/14');
+    cy.contains('권나은').should('be.visible');
+    cy.contains('제품 감도가 높은 프론트엔드 개발자입니다.').should('be.visible');
+  });
 });
 
 describe('팀원 찾기 예외 흐름', () => {
+  beforeEach(() => {
+    installJobOptionsIntercept();
+  });
+
   it('초기 팀원 조회가 실패하면 에러 상태를 보여준다', () => {
-    cy.intercept('GET', '**/api/v1/main/members*', {
+    cy.intercept('GET', '**/api/v1/members/search*', {
       statusCode: 500,
       body: {
         message: '팀원 목록을 불러오지 못했습니다.',
@@ -299,7 +448,7 @@ describe('팀원 찾기 예외 흐름', () => {
   });
 
   it('백엔드 에러 메시지가 없어도 기본 에러 문구를 보여준다', () => {
-    cy.intercept('GET', '**/api/v1/main/members*', {
+    cy.intercept('GET', '**/api/v1/members/search*', {
       statusCode: 500,
       body: {},
     }).as('fallbackFailedTeammatesRequest');
@@ -312,7 +461,7 @@ describe('팀원 찾기 예외 흐름', () => {
   });
 
   it('초기 팀원 응답 형식이 올바르지 않으면 파싱 에러를 보여준다', () => {
-    cy.intercept('GET', '**/api/v1/main/members*', {
+    cy.intercept('GET', '**/api/v1/members/search*', {
       statusCode: 200,
       body: {},
     }).as('invalidTeammatesResponseRequest');
@@ -325,3 +474,5 @@ describe('팀원 찾기 예외 흐름', () => {
     cy.get('[data-cy="teammate-empty-state"]').should('not.exist');
   });
 });
+
+export {};

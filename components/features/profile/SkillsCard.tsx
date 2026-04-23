@@ -25,7 +25,7 @@ export default function SkillsCard({
   onSkillsChange,
 }: SkillsCardProps) {
   return (
-    <ProfileCard className={editable ? 'min-h-[297px]' : 'min-h-56'}>
+    <ProfileCard className={editable ? 'min-h-74.25' : 'min-h-56'}>
       <h2 className="text-lg leading-7 font-bold text-text-black">보유 기술</h2>
 
       <div className="mt-4 space-y-5">
@@ -60,6 +60,7 @@ export default function SkillsCard({
             {editable ? (
               <TechStackPicker
                 inputId={`profile-skills-${groupIndex}`}
+                inputDataCy={`profile-skills-input-${groupIndex}`}
                 options={availableSkills}
                 value={group.skills}
                 onChange={(nextSkills) => onSkillsChange?.(groupIndex, nextSkills)}
