@@ -16,6 +16,7 @@ export default function ProjectDetailTabButton({
   return (
     <button
       type="button"
+      data-cy={`project-detail-tab-${tab}`}
       onClick={() => onSelect(tab)}
       className={`shrink-0 border-b-2 pb-4 text-sm leading-5 font-bold transition-colors ${
         isActive

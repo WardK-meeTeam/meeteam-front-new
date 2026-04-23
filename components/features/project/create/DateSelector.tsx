@@ -5,6 +5,7 @@ import { useRef } from 'react';
 
 interface DateSelectorProps {
   id?: string;
+  dataCy?: string;
   value: string;
   onChange: (nextValue: string) => void;
   placeholder?: string;
@@ -16,6 +17,7 @@ interface DateSelectorProps {
 
 export default function DateSelector({
   id,
+  dataCy,
   value,
   onChange,
   placeholder = 'YYYY년 MM월 DD일',
@@ -53,6 +55,7 @@ export default function DateSelector({
         id={id}
         type="date"
         value={value}
+        data-cy={dataCy}
         min={minDate}
         max={maxDate}
         disabled={disabled}

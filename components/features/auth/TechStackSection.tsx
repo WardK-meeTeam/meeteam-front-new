@@ -97,6 +97,7 @@ export default function TechStackSection({
 
         <TechStackPicker
           inputId="tech"
+          inputDataCy="project-form-tech-input"
           options={selectedField?.techStacks.map((tech) => tech.name) ?? []}
           value={interestItems.includes(currentLabel) ? (value[currentLabel] ?? []) : []}
           onChange={(nextSelectedTechStacks) => {

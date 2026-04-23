@@ -37,6 +37,7 @@ export default function RecruitDeadlineField({
             <input
               type="checkbox"
               checked={untilComplete}
+              data-cy="project-form-until-complete"
               onChange={(event) => onUntilCompleteChange(event.target.checked)}
               className="peer sr-only"
             />
@@ -60,6 +61,7 @@ export default function RecruitDeadlineField({
 
       <DateSelector
         value={deadline}
+        dataCy="project-form-deadline"
         onChange={onDeadlineChange}
         minDate={minDate}
         maxDate={maxDate}
