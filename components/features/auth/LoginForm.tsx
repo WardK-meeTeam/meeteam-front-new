@@ -2,19 +2,21 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Lock, Mail } from 'lucide-react';
+import { Lock, UserRound } from 'lucide-react';
 
 import BaseButton from '@/components/shared/BaseButton';
 import BaseInput from '@/components/shared/BaseInput';
 import ToastMessage from '@/components/shared/ToastMessage';
+import { fetchMyProfile } from '@/components/features/profile/profileApi';
 import { useAuthStore } from '@/stores/useAuthStore';
 import type { LoginFormValues } from '@/types/auth';
 
 import { loginMember } from './loginApi';
+import { saveSejongOnboardingCode } from './sejongOnboardingStorage';
 import { loginFormSchema, type LoginFieldErrors } from './schema';
 
 const INITIAL_FORM_VALUES: LoginFormValues = {
-  email: '',
+  studentId: '',
   password: '',
 };
 
@@ -42,7 +44,7 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
 
     const flattened = result.error.flatten().fieldErrors;
     setFieldErrors({
-      email: flattened.email?.[0],
+      studentId: flattened.studentId?.[0],
       password: flattened.password?.[0],
     });
     return false;
@@ -63,8 +65,25 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
     setIsSubmitting(true);
 
     try {
-      const session = await loginMember(formValues);
-      setSession(session);
+      const result = await loginMember(formValues);
+
+      if (result.isNewMember) {
+        if (!result.code) {
+          throw new Error('회원가입용 인증 코드가 없습니다. 다시 시도해 주세요.');
+        }
+
+        saveSejongOnboardingCode(result.code);
+        await onSuccess?.();
+        router.push('/auth/sign-up/sejong');
+        return;
+      }
+
+      const profile = await fetchMyProfile();
+      setSession({
+        memberId: profile.memberId,
+        name: profile.name,
+        email: profile.email,
+      });
       await onSuccess?.();
 
       if (redirectPath !== pathname) {
@@ -91,23 +110,23 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
       <ToastMessage message={fieldErrors.form} />
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="email" className="font-bold text-text-black">
-          이메일
+        <label htmlFor="studentId" className="font-bold text-text-black">
+          학번
         </label>
         <BaseInput
-          id="email"
-          type="email"
-          value={formValues.email}
-          onChange={(event) => updateField('email', event.target.value)}
-          leftIcon={<Mail className="h-5 w-5" strokeWidth={1.8} />}
-          placeholder="example@email.com"
-          autoComplete="email"
-          aria-invalid={Boolean(fieldErrors.email)}
-          data-cy="login-email"
+          id="studentId"
+          type="text"
+          value={formValues.studentId}
+          onChange={(event) => updateField('studentId', event.target.value)}
+          leftIcon={<UserRound className="h-5 w-5" strokeWidth={1.8} />}
+          placeholder="학번을 입력해 주세요"
+          autoComplete="username"
+          aria-invalid={Boolean(fieldErrors.studentId)}
+          data-cy="login-student-id"
         />
-        {fieldErrors.email ? (
+        {fieldErrors.studentId ? (
           <p className="text-sm text-danger-500" role="alert">
-            {fieldErrors.email}
+            {fieldErrors.studentId}
           </p>
         ) : null}
       </div>

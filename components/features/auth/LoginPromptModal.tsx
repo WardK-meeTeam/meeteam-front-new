@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { X } from 'lucide-react';
 
 import BaseModal from '@/components/shared/BaseModal';
@@ -41,16 +40,9 @@ export default function LoginPromptModal() {
         <LoginForm redirectPath={redirectPath ?? undefined} onSuccess={closeLoginModal} />
         <SocialLogin />
 
-        <div className="flex justify-center gap-1 text-sm leading-5">
-          <span className="text-text-gray">신규 회원이신가요?</span>
-          <Link
-            href="/auth/sign-up"
-            onClick={closeLoginModal}
-            className="font-bold text-brand-500 transition-colors hover:text-brand-700"
-          >
-            회원가입
-          </Link>
-        </div>
+        <p className="text-center text-sm leading-5 text-text-gray">
+          신규 회원은 세종대 포털 로그인 후 가입 단계를 이어서 진행할 수 있어요.
+        </p>
       </section>
     </BaseModal>
   );

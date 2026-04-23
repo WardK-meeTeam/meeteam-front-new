@@ -1,11 +1,11 @@
 describe('로그인 흐름', () => {
   it('로그인에 성공하면 인증 세션을 저장하고 홈으로 이동한다', () => {
-    cy.intercept('POST', '**/api/v1/auth/login', {
+    cy.intercept('POST', '**/api/v1/auth/login/sejong', {
       statusCode: 200,
       body: {
-        result: {
-          name: '홍길동',
-          memberId: 42,
+        data: {
+          isNewMember: false,
+          code: null,
         },
       },
     }).as('loginRequest');
@@ -38,17 +38,17 @@ describe('로그인 흐름', () => {
 
     cy.visit('/auth/login');
 
-    cy.get('[data-cy="login-email"]').type('hello@example.com');
+    cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('password123');
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@loginRequest')
       .its('request.body')
-      .should('deep.equal', { email: 'hello@example.com', password: 'password123' });
+      .should('deep.equal', { studentId: '21013220', password: 'password123' });
 
     cy.wait('@myProfileRequest');
     cy.location('pathname').should('eq', '/');
-    cy.contains('아이디어가 현실이 되는 곳').should('be.visible');
+    cy.contains('대학생 전용 프로젝트 플랫폼').should('be.visible');
 
     cy.window().then((window) => {
       const storedSession = window.localStorage.getItem('meeteam-auth-storage');
@@ -70,57 +70,57 @@ describe('로그인 흐름', () => {
 
     cy.get('[data-cy="login-submit"]').click();
 
-    cy.contains('이메일을 입력해 주세요.').should('be.visible');
+    cy.contains('학번을 입력해 주세요.').should('be.visible');
     cy.contains('비밀번호를 입력해 주세요.').should('be.visible');
   });
 
-  it('이메일 형식이 올바르지 않으면 요청을 보내지 않고 유효성 에러를 보여준다', () => {
+  it('학번에 숫자가 아닌 값이 들어가면 요청을 보내지 않고 유효성 에러를 보여준다', () => {
     let loginRequestCount = 0;
 
-    cy.intercept('POST', '**/api/v1/auth/login', () => {
+    cy.intercept('POST', '**/api/v1/auth/login/sejong', () => {
       loginRequestCount += 1;
-    }).as('invalidEmailLoginRequest');
+    }).as('invalidStudentIdLoginRequest');
 
     cy.visit('/auth/login');
 
-    cy.get('[data-cy="login-email"]').type('invalid-email');
+    cy.get('[data-cy="login-student-id"]').type('abc123');
     cy.get('[data-cy="login-password"]').type('password123');
     cy.get('[data-cy="login-submit"]').click();
 
-    cy.contains('올바른 이메일 형식을 입력해 주세요.').should('be.visible');
+    cy.contains('학번은 숫자만 입력해 주세요.').should('be.visible');
     cy.then(() => {
       expect(loginRequestCount).to.equal(0);
     });
   });
 
   it('자격 증명이 올바르지 않으면 백엔드 에러 메시지를 보여준다', () => {
-    cy.intercept('POST', '**/api/v1/auth/login', {
+    cy.intercept('POST', '**/api/v1/auth/login/sejong', {
       statusCode: 401,
       body: {
-        code: 'BAD_CREDENTIALS',
-        message: '이메일 또는 비밀번호가 올바르지 않습니다.',
+        code: 'SEJONG401',
+        message: '학번 또는 비밀번호가 일치하지 않습니다.',
       },
     }).as('failedLoginRequest');
 
     cy.visit('/auth/login');
 
-    cy.get('[data-cy="login-email"]').type('wrong@example.com');
+    cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('wrong-password');
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@failedLoginRequest');
     cy.location('pathname').should('eq', '/auth/login');
-    cy.contains('이메일 또는 비밀번호가 올바르지 않습니다.').should('be.visible');
+    cy.contains('학번 또는 비밀번호가 일치하지 않습니다.').should('be.visible');
   });
 
   it('로그인 요청이 네트워크 수준에서 실패하면 기본 에러 메시지를 보여준다', () => {
-    cy.intercept('POST', '**/api/v1/auth/login', {
+    cy.intercept('POST', '**/api/v1/auth/login/sejong', {
       forceNetworkError: true,
     }).as('networkFailedLoginRequest');
 
     cy.visit('/auth/login');
 
-    cy.get('[data-cy="login-email"]').type('hello@example.com');
+    cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('password123');
     cy.get('[data-cy="login-submit"]').click();
 
@@ -129,14 +129,14 @@ describe('로그인 흐름', () => {
   });
 
   it('로그인 응답 형식이 올바르지 않으면 파싱 에러를 보여준다', () => {
-    cy.intercept('POST', '**/api/v1/auth/login', {
+    cy.intercept('POST', '**/api/v1/auth/login/sejong', {
       statusCode: 200,
       body: {},
     }).as('invalidLoginResponseRequest');
 
     cy.visit('/auth/login');
 
-    cy.get('[data-cy="login-email"]').type('hello@example.com');
+    cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('password123');
     cy.get('[data-cy="login-submit"]').click();
 
@@ -148,14 +148,14 @@ describe('로그인 흐름', () => {
   it('로그인 실패 후 다시 시도하면 다음 성공 요청으로 정상 복구된다', () => {
     let loginAttempt = 0;
 
-    cy.intercept('POST', '**/api/v1/auth/login', (request) => {
+    cy.intercept('POST', '**/api/v1/auth/login/sejong', (request) => {
       loginAttempt += 1;
 
       if (loginAttempt === 1) {
         request.reply({
           statusCode: 401,
           body: {
-            message: '이메일 또는 비밀번호가 올바르지 않습니다.',
+            message: '학번 또는 비밀번호가 일치하지 않습니다.',
           },
         });
         return;
@@ -165,8 +165,8 @@ describe('로그인 흐름', () => {
         statusCode: 200,
         body: {
           result: {
-            name: '홍길동',
-            memberId: 42,
+            isNewMember: false,
+            code: null,
           },
         },
       });
@@ -200,19 +200,44 @@ describe('로그인 흐름', () => {
 
     cy.visit('/auth/login');
 
-    cy.get('[data-cy="login-email"]').type('hello@example.com');
+    cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('wrong-password');
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@loginAttemptRequest');
-    cy.contains('이메일 또는 비밀번호가 올바르지 않습니다.').should('be.visible');
+    cy.contains('학번 또는 비밀번호가 일치하지 않습니다.').should('be.visible');
 
     cy.get('[data-cy="login-password"]').clear().type('password123');
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@loginAttemptRequest');
     cy.wait('@retryMyProfileRequest');
-    cy.contains('이메일 또는 비밀번호가 올바르지 않습니다.').should('not.exist');
+    cy.contains('학번 또는 비밀번호가 일치하지 않습니다.').should('not.exist');
     cy.location('pathname').should('eq', '/');
+  });
+
+  it('신규 회원이면 세종대 온보딩 페이지로 이동하고 인증 코드를 저장한다', () => {
+    cy.intercept('POST', '**/api/v1/auth/login/sejong', {
+      statusCode: 200,
+      body: {
+        data: {
+          isNewMember: true,
+          code: 'temp-code',
+        },
+      },
+    }).as('newMemberLoginRequest');
+
+    cy.visit('/auth/login');
+
+    cy.get('[data-cy="login-student-id"]').type('21013220');
+    cy.get('[data-cy="login-password"]').type('password123');
+    cy.get('[data-cy="login-submit"]').click();
+
+    cy.wait('@newMemberLoginRequest');
+    cy.location('pathname').should('eq', '/auth/sign-up/sejong');
+
+    cy.window().then((window) => {
+      expect(window.sessionStorage.getItem('meeteam-sejong-onboarding-code')).to.equal('temp-code');
+    });
   });
 });

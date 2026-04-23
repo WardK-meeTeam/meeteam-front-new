@@ -1,11 +1,17 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import type { JobFieldOption, RegisterRequestPayload, SignupSuccessResponse } from '@/types/auth';
+import type {
+  JobFieldOption,
+  RegisterRequestPayload,
+  SejongRegisterRequestPayload,
+  SignupSuccessResponse,
+} from '@/types/auth';
 
 import {
   checkEmailDuplicate,
   fetchJobOptions,
   registerMember,
+  registerSejongMember,
 } from '@/components/features/auth/signupApi';
 
 const originalFetch = global.fetch;
@@ -83,6 +89,51 @@ describe('registerMember', () => {
 
     const [, requestInit] = vi.mocked(global.fetch).mock.calls[0] ?? [];
     expect(requestInit?.method).toBe('POST');
+    expect(requestInit?.body).toBeInstanceOf(FormData);
+
+    const formData = requestInit?.body as FormData;
+    const requestBlob = formData.get('request');
+    expect(requestBlob).toBeInstanceOf(Blob);
+    await expect((requestBlob as Blob).text()).resolves.toBe(JSON.stringify(payload));
+    expect(formData.get('file')).toBe(imageFile);
+  });
+});
+
+describe('registerSejongMember', () => {
+  it('submits multipart form data with onboarding code to the Sejong register endpoint', async () => {
+    const payload: SejongRegisterRequestPayload = {
+      code: 'temp-code',
+      name: '홍길동',
+      birthDate: '1998-03-15',
+      gender: 'MALE',
+      jobPositions: [
+        {
+          jobFieldCode: 'BACKEND',
+          jobPositionCode: 'JAVA_SPRING',
+          techStacks: [{ id: 1, displayOrder: 1 }],
+        },
+      ],
+      projectExperienceCount: 2,
+    };
+
+    const imageFile = new File(['avatar'], 'avatar.png', { type: 'image/png' });
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: null }),
+    } as Response);
+
+    await expect(registerSejongMember(payload, imageFile)).resolves.toBeUndefined();
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'http://localhost:8080/api/v1/auth/register/sejong',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'include',
+      }),
+    );
+
+    const [, requestInit] = vi.mocked(global.fetch).mock.calls[0] ?? [];
     expect(requestInit?.body).toBeInstanceOf(FormData);
 
     const formData = requestInit?.body as FormData;

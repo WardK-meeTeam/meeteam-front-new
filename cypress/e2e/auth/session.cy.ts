@@ -191,7 +191,7 @@ describe('인증 세션 흐름', () => {
     });
 
     cy.location('pathname').should('eq', '/');
-    cy.contains('아이디어가 현실이 되는 곳').should('be.visible');
+    cy.contains('대학생 전용 프로젝트 플랫폼').should('be.visible');
     cy.get('[data-cy="login-form"]').should('not.exist');
   });
 
@@ -205,7 +205,7 @@ describe('인증 세션 흐름', () => {
     });
 
     cy.location('pathname').should('eq', '/');
-    cy.contains('아이디어가 현실이 되는 곳').should('be.visible');
+    cy.contains('대학생 전용 프로젝트 플랫폼').should('be.visible');
     cy.get('[data-cy="signup-form"]').should('not.exist');
   });
 

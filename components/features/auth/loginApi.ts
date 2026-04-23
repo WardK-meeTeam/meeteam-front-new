@@ -1,9 +1,4 @@
-import type {
-  ApiEnvelope,
-  AuthSession,
-  LoginRequestPayload,
-  LoginSuccessResponse,
-} from '@/types/auth';
+import type { ApiEnvelope, LoginRequestPayload, SejongLoginResponse } from '@/types/auth';
 
 import { extractApiData } from './signupTransform';
 
@@ -26,18 +21,18 @@ async function readJson<T>(response: Response) {
   return payload;
 }
 
-export async function loginMember(payload: LoginRequestPayload): Promise<AuthSession> {
+export async function loginMember(payload: LoginRequestPayload): Promise<SejongLoginResponse> {
   let response: Response;
 
   try {
-    response = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+    response = await fetch(`${API_BASE_URL}/api/v1/auth/login/sejong`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
       body: JSON.stringify({
-        email: payload.email.trim(),
+        studentId: payload.studentId.trim(),
         password: payload.password,
       }),
     });
@@ -45,12 +40,8 @@ export async function loginMember(payload: LoginRequestPayload): Promise<AuthSes
     throw new Error(LOGIN_REQUEST_ERROR_MESSAGE);
   }
 
-  const data = await readJson<LoginSuccessResponse>(response);
-
-  return {
-    ...extractApiData(data),
-    email: payload.email.trim(),
-  };
+  const data = await readJson<SejongLoginResponse>(response);
+  return extractApiData(data);
 }
 
 export async function logoutMember() {

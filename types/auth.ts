@@ -20,7 +20,7 @@ export type SignupFormValues = {
   profileImage: File | null;
 };
 
-export type OAuthSignupFormValues = {
+export type OnboardingFormValues = {
   name: string;
   birth: string;
   gender: GenderValue;
@@ -33,7 +33,7 @@ export type OAuthSignupFormValues = {
 };
 
 export type LoginFormValues = {
-  email: string;
+  studentId: string;
   password: string;
 };
 
@@ -83,7 +83,7 @@ export type RegisterRequestPayload = {
   blogUrl?: string;
 };
 
-export type OAuth2RegisterRequestPayload = {
+export type OnboardingRequestPayload = {
   code: string;
   name: string;
   birthDate: string;
@@ -93,6 +93,10 @@ export type OAuth2RegisterRequestPayload = {
   githubUrl?: string;
   blogUrl?: string;
 };
+
+export type OAuth2RegisterRequestPayload = OnboardingRequestPayload;
+
+export type SejongRegisterRequestPayload = OnboardingRequestPayload;
 
 export type SignupSuccessResponse = {
   memberId: number;
@@ -105,16 +109,18 @@ export type OAuth2RegisterSuccessResponse = SignupSuccessResponse & {
 
 export type LoginRequestPayload = LoginFormValues;
 
-export type LoginSuccessResponse = {
-  name: string;
-  memberId: number;
+export type SejongLoginResponse = {
+  isNewMember: boolean;
+  code: string | null;
 };
 
 export type OAuthTokenExchangeResponse = {
   accessToken: string;
 };
 
-export type AuthSession = LoginSuccessResponse & {
+export type AuthSession = {
+  memberId: number;
+  name: string;
   email: string;
 };
 

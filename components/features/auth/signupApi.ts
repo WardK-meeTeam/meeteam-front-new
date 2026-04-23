@@ -2,6 +2,7 @@ import type {
   EmailDuplicateResponse,
   JobFieldOption,
   RegisterRequestPayload,
+  SejongRegisterRequestPayload,
   SignupSuccessResponse,
 } from '@/types/auth';
 
@@ -26,9 +27,10 @@ export async function fetchJobOptions() {
     method: 'GET',
     cache: 'no-store',
   });
-  const payload = await readJson<{ data?: { fields: JobFieldOption[] }; result?: { fields: JobFieldOption[] } }>(
-    response,
-  );
+  const payload = await readJson<{
+    data?: { fields: JobFieldOption[] };
+    result?: { fields: JobFieldOption[] };
+  }>(response);
 
   return extractApiData(payload).fields;
 }
@@ -38,9 +40,10 @@ export async function checkEmailDuplicate(email: string) {
   const response = await fetch(`${API_BASE_URL}/api/v1/auth/email?email=${encodedEmail}`, {
     method: 'POST',
   });
-  const payload = await readJson<{ data?: EmailDuplicateResponse; result?: EmailDuplicateResponse }>(
-    response,
-  );
+  const payload = await readJson<{
+    data?: EmailDuplicateResponse;
+    result?: EmailDuplicateResponse;
+  }>(response);
 
   return extractApiData(payload);
 }
@@ -62,4 +65,23 @@ export async function registerMember(payload: RegisterRequestPayload, file?: Fil
   );
 
   return extractApiData(data);
+}
+
+export async function registerSejongMember(
+  payload: SejongRegisterRequestPayload,
+  file?: File | null,
+) {
+  const formData = new FormData();
+  formData.append('request', new Blob([JSON.stringify(payload)], { type: 'application/json' }));
+
+  if (file) {
+    formData.append('file', file);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/v1/auth/register/sejong`, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+  await readJson<{ data?: null; result?: null }>(response);
 }

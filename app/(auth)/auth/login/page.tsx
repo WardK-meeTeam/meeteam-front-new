@@ -17,19 +17,16 @@ export default function Page() {
             meeTeam
           </Link>
           <h2 className="text-text-gray font-medium text-[16px] text-center">
-            다시 오신 것을 환영합니다!
+            세종대 포털 계정으로 로그인해 주세요.
           </h2>
         </div>
 
         <LoginForm />
         <SocialLogin />
 
-        <div className="flex gap-1 justify-center">
-          <span className="text-text-gray text-sm font-normal leading-5">신규 회원이신가요? </span>
-          <Link href="/auth/sign-up" className="text-brand-500 text-sm font-bold leading-5">
-            회원가입
-          </Link>
-        </div>
+        <p className="text-center text-sm font-normal leading-5 text-text-gray">
+          신규 회원은 로그인 후 가입 정보를 이어서 입력할 수 있어요.
+        </p>
       </section>
     </RedirectIfAuthenticated>
   );

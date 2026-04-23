@@ -2,10 +2,12 @@ import type {
   ApiEnvelope,
   Interest,
   JobFieldOption,
+  OnboardingFormValues,
+  OnboardingRequestPayload,
   OAuth2RegisterRequestPayload,
-  OAuthSignupFormValues,
   RegisterJobPositionPayload,
   RegisterRequestPayload,
+  SejongRegisterRequestPayload,
   SignupFormValues,
 } from '@/types/auth';
 
@@ -99,11 +101,11 @@ export function buildRegisterRequestPayload(
   };
 }
 
-export function buildOAuthRegisterRequestPayload(
-  values: OAuthSignupFormValues,
+function buildOnboardingRequestPayload(
+  values: OnboardingFormValues,
   jobFields: JobFieldOption[],
   code: string,
-): OAuth2RegisterRequestPayload {
+): OnboardingRequestPayload {
   return {
     code,
     name: values.name.trim(),
@@ -114,4 +116,20 @@ export function buildOAuthRegisterRequestPayload(
     githubUrl: normalizeUrl(values.githubUrl),
     blogUrl: normalizeUrl(values.blogUrl),
   };
+}
+
+export function buildOAuthRegisterRequestPayload(
+  values: OnboardingFormValues,
+  jobFields: JobFieldOption[],
+  code: string,
+): OAuth2RegisterRequestPayload {
+  return buildOnboardingRequestPayload(values, jobFields, code);
+}
+
+export function buildSejongRegisterRequestPayload(
+  values: OnboardingFormValues,
+  jobFields: JobFieldOption[],
+  code: string,
+): SejongRegisterRequestPayload {
+  return buildOnboardingRequestPayload(values, jobFields, code);
 }

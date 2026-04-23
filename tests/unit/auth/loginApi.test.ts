@@ -10,34 +10,56 @@ afterEach(() => {
 });
 
 describe('loginMember', () => {
-  it('returns the authenticated session when backend login succeeds', async () => {
+  it('returns existing member state when Sejong login succeeds for an existing member', async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        result: {
-          name: '홍길동',
-          memberId: 42,
+        data: {
+          isNewMember: false,
+          code: null,
         },
       }),
     } as Response);
 
     await expect(
       loginMember({
-        email: 'hello@example.com',
+        studentId: '21013220',
         password: 'password123',
       }),
-    ).resolves.toEqual({
-      name: '홍길동',
-      memberId: 42,
-      email: 'hello@example.com',
-    });
+    ).resolves.toEqual({ isNewMember: false, code: null });
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:8080/api/v1/auth/login',
+      'http://localhost:8080/api/v1/auth/login/sejong',
       expect.objectContaining({
         method: 'POST',
         credentials: 'include',
+        body: JSON.stringify({
+          studentId: '21013220',
+          password: 'password123',
+        }),
       }),
     );
+  });
+
+  it('returns onboarding code when Sejong login succeeds for a new member', async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        result: {
+          isNewMember: true,
+          code: 'temp-code',
+        },
+      }),
+    } as Response);
+
+    await expect(
+      loginMember({
+        studentId: '21013220',
+        password: 'password123',
+      }),
+    ).resolves.toEqual({
+      isNewMember: true,
+      code: 'temp-code',
+    });
   });
 });

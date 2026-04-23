@@ -1,7 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import BaseButton from '@/components/shared/BaseButton';
 import ToastMessage from '@/components/shared/ToastMessage';
@@ -14,10 +15,10 @@ import ProfileExtraSection from '@/components/features/auth/ProfileExtraSection'
 import ProfileSection from '@/components/features/auth/ProfileSection';
 import SignupTechStackSection from '@/components/features/auth/SignupTechStackSection';
 
-import { registerOAuthMember } from './oauthApi';
-import { fetchJobOptions } from './signupApi';
 import { onboardingFormSchema, type OnboardingFieldErrors } from './schema';
-import { buildOAuthRegisterRequestPayload, getInterestKey } from './signupTransform';
+import { clearSejongOnboardingCode, readSejongOnboardingCode } from './sejongOnboardingStorage';
+import { fetchJobOptions, registerSejongMember } from './signupApi';
+import { buildSejongRegisterRequestPayload, getInterestKey } from './signupTransform';
 
 const INITIAL_INTEREST: Interest = { major: '', minor: '' };
 
@@ -33,21 +34,31 @@ const INITIAL_FORM_VALUES: OnboardingFormValues = {
   profileImage: null,
 };
 
-export default function OAuthSignupForm() {
+export default function SejongSignupForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const oauthCode = searchParams.get('code') ?? '';
   const setSession = useAuthStore((state) => state.setSession);
 
   const [formValues, setFormValues] = useState<OnboardingFormValues>(INITIAL_FORM_VALUES);
   const [jobFields, setJobFields] = useState<JobFieldOption[]>([]);
   const [fieldErrors, setFieldErrors] = useState<OnboardingFieldErrors>({});
   const [jobOptionsError, setJobOptionsError] = useState('');
+  const [isCodeReady, setIsCodeReady] = useState(false);
+  const [onboardingCode, setOnboardingCode] = useState('');
   const [isLoadingJobOptions, setIsLoadingJobOptions] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [profileImagePreviewUrl, setProfileImagePreviewUrl] = useState('');
 
   useEffect(() => {
+    setOnboardingCode(readSejongOnboardingCode());
+    setIsCodeReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isCodeReady || !onboardingCode) {
+      setIsLoadingJobOptions(false);
+      return;
+    }
+
     let isMounted = true;
 
     async function loadJobOptions() {
@@ -79,7 +90,7 @@ export default function OAuthSignupForm() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [isCodeReady, onboardingCode]);
 
   useEffect(() => {
     if (!formValues.profileImage) {
@@ -197,10 +208,10 @@ export default function OAuthSignupForm() {
       return;
     }
 
-    if (!oauthCode) {
+    if (!onboardingCode) {
       setFieldErrors((prev) => ({
         ...prev,
-        form: 'OAuth 인증 코드가 없습니다. 처음부터 다시 시도해 주세요.',
+        form: '인증 코드가 없습니다. 로그인부터 다시 진행해 주세요.',
       }));
       return;
     }
@@ -217,8 +228,10 @@ export default function OAuthSignupForm() {
       setIsSubmitting(true);
       setFieldErrors((prev) => ({ ...prev, form: undefined }));
 
-      const payload = buildOAuthRegisterRequestPayload(formValues, jobFields, oauthCode);
-      await registerOAuthMember(payload, formValues.profileImage);
+      const payload = buildSejongRegisterRequestPayload(formValues, jobFields, onboardingCode);
+      await registerSejongMember(payload, formValues.profileImage);
+
+      clearSejongOnboardingCode();
 
       const profile = await fetchMyProfile();
       setSession({
@@ -230,20 +243,46 @@ export default function OAuthSignupForm() {
       router.replace('/');
       router.refresh();
     } catch (error) {
+      const message =
+        error instanceof Error ? error.message : '세종대 회원가입 중 오류가 발생했습니다.';
+
+      if (message.includes('인증 코드')) {
+        clearSejongOnboardingCode();
+        setOnboardingCode('');
+      }
+
       setFieldErrors((prev) => ({
         ...prev,
-        form: error instanceof Error ? error.message : 'OAuth 회원가입 중 오류가 발생했습니다.',
+        form: message,
       }));
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  if (!isCodeReady) {
+    return <p className="text-sm leading-6 font-medium text-text-gray">불러오는 중...</p>;
+  }
+
+  if (!onboardingCode) {
+    return (
+      <section className="flex flex-col gap-4">
+        <ToastMessage message="세종대 포털 인증 정보가 없습니다. 로그인부터 다시 진행해 주세요." />
+        <Link
+          href="/auth/login"
+          className="inline-flex h-12 items-center justify-center rounded-xl bg-brand-500 px-5 text-sm font-bold text-white"
+        >
+          로그인으로 돌아가기
+        </Link>
+      </section>
+    );
+  }
+
   return (
     <form
       className="flex w-full flex-col gap-5"
       onSubmit={handleSubmit}
-      data-cy="oauth-signup-form"
+      data-cy="sejong-signup-form"
     >
       <ProfileSection
         name={formValues.name}
@@ -310,9 +349,9 @@ export default function OAuthSignupForm() {
         full={true}
         type="submit"
         disabled={isSubmitting || isLoadingJobOptions}
-        data-cy="oauth-signup-submit"
+        data-cy="sejong-signup-submit"
       >
-        <span className="font-bold">{isSubmitting ? '가입 중...' : '소셜 회원가입 완료'}</span>
+        <span className="font-bold">{isSubmitting ? '가입 중...' : '회원가입 완료'}</span>
       </BaseButton>
     </form>
   );
