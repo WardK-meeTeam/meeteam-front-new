@@ -26,7 +26,7 @@ import BaseDropdown from '@/components/shared/BaseDropdown';
 import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
 import BaseTag from '@/components/shared/BaseTag';
-import BaseTextarea from '@/components/shared/BaseTextarea';
+import MarkdownEditor from '@/components/shared/MarkdownEditor';
 import ToastMessage from '@/components/shared/ToastMessage';
 
 type OpenDropdownKey = 'major' | 'minor' | null;
@@ -464,15 +464,20 @@ export default function ProjectForm({
         </BaseField>
 
         <BaseField errorText={fieldErrors.description} hintText="" label="프로젝트 소개 글">
-          <BaseTextarea
+          <MarkdownEditor
             value={description}
-            data-cy="project-form-description"
-            onChange={(event) => {
-              setDescription(event.target.value);
+            dataCy="project-form-description"
+            onChange={(nextDescription) => {
+              setDescription(nextDescription);
               clearError('description');
             }}
-            placeholder="프로젝트를 설명해주세요"
+            placeholder={`## 우리가 만들고 있는 것
+
+- 해결하고 싶은 문제
+- 지금까지 준비된 것
+- 함께하면 좋을 사람`}
             rows={isEdit ? 8 : 4}
+            previewEmptyText="프로젝트 이야기를 적으면, 팀원들이 이 모습으로 읽게 돼요."
           />
         </BaseField>
 

@@ -40,6 +40,7 @@ describe('로그인 흐름', () => {
 
     cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('password123');
+    cy.get('[data-cy="login-consent"]').check({ force: true });
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@loginRequest')
@@ -85,6 +86,7 @@ describe('로그인 흐름', () => {
 
     cy.get('[data-cy="login-student-id"]').type('abc123');
     cy.get('[data-cy="login-password"]').type('password123');
+    cy.get('[data-cy="login-consent"]').check({ force: true });
     cy.get('[data-cy="login-submit"]').click();
 
     cy.contains('학번은 숫자만 입력해 주세요.').should('be.visible');
@@ -106,6 +108,7 @@ describe('로그인 흐름', () => {
 
     cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('wrong-password');
+    cy.get('[data-cy="login-consent"]').check({ force: true });
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@failedLoginRequest');
@@ -122,6 +125,7 @@ describe('로그인 흐름', () => {
 
     cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('password123');
+    cy.get('[data-cy="login-consent"]').check({ force: true });
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@networkFailedLoginRequest');
@@ -138,6 +142,7 @@ describe('로그인 흐름', () => {
 
     cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('password123');
+    cy.get('[data-cy="login-consent"]').check({ force: true });
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@invalidLoginResponseRequest');
@@ -202,6 +207,7 @@ describe('로그인 흐름', () => {
 
     cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('wrong-password');
+    cy.get('[data-cy="login-consent"]').check({ force: true });
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@loginAttemptRequest');
@@ -231,6 +237,7 @@ describe('로그인 흐름', () => {
 
     cy.get('[data-cy="login-student-id"]').type('21013220');
     cy.get('[data-cy="login-password"]').type('password123');
+    cy.get('[data-cy="login-consent"]').check({ force: true });
     cy.get('[data-cy="login-submit"]').click();
 
     cy.wait('@newMemberLoginRequest');
@@ -239,5 +246,15 @@ describe('로그인 흐름', () => {
     cy.window().then((window) => {
       expect(window.sessionStorage.getItem('meeteam-sejong-onboarding-code')).to.equal('temp-code');
     });
+  });
+
+  it('동의 체크 전에는 로그인 버튼이 비활성화된다', () => {
+    cy.visit('/auth/login');
+
+    cy.get('[data-cy="login-student-id"]').type('21013220');
+    cy.get('[data-cy="login-password"]').type('password123');
+    cy.get('[data-cy="login-submit"]').should('be.disabled');
+    cy.get('[data-cy="login-consent"]').check({ force: true });
+    cy.get('[data-cy="login-submit"]').should('not.be.disabled');
   });
 });

@@ -69,7 +69,9 @@ export default function StartJourneyModalTrigger() {
       <BaseModal isOpen={open} onClose={() => setOpen(false)}>
         <section className="overflow-hidden rounded-4xl border border-border-gray bg-white shadow-2xl">
           <header className="border-b border-border-gray px-6 py-6">
-            <h2 className="text-2xl font-extrabold text-text-black">어떤 여정을 시작하시겠어요?</h2>
+            <h2 className="font-brand-display text-2xl text-text-black">
+              어떤 여정을 시작하시겠어요?
+            </h2>
             <p className="mt-2 text-base text-text-gray">meeTeam과 함께할 방식을 선택해주세요.</p>
           </header>
 

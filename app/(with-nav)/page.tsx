@@ -36,7 +36,7 @@ export default async function Page() {
               대학생 전용 프로젝트 플랫폼
             </div>
             <div className="space-y-3 hero-fade-up hero-delay-2">
-              <h1 className="text-3xl font-extrabold leading-tight tracking-tight text-text-black md:text-4xl xl:text-5xl">
+              <h1 className="font-brand-display text-3xl leading-tight text-text-black md:text-4xl xl:text-5xl">
                 캠퍼스에서 바로
                 <br />
                 <span className="text-brand-500">프로젝트를 시작해요</span>
@@ -76,7 +76,7 @@ export default async function Page() {
                 </div>
                 <div className="absolute bottom-5 left-5 right-5">
                   <div className="max-w-sm rounded-2xl border border-white bg-overlay-white p-4 backdrop-blur-sm">
-                    <h2 className="text-xl font-extrabold text-text-black">
+                    <h2 className="font-brand-display text-xl text-text-black">
                       캠퍼스에서 시작하는 협업
                     </h2>
                     <p className="mt-2 text-sm leading-6 text-text-body">
@@ -106,7 +106,7 @@ export default async function Page() {
 
       <section className="space-y-6">
         <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-bold text-text-black">팀을 구해요!</h2>
+          <h2 className="font-brand-display text-2xl text-text-black">팀을 구해요!</h2>
           <Link href="/teammates" className="text-sm font-semibold text-brand-500">
             더 많은 멤버 보기 &gt;
           </Link>

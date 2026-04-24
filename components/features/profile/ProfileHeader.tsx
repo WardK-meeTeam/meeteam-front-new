@@ -2,12 +2,16 @@
 
 import { Camera } from 'lucide-react';
 import { useId } from 'react';
+
 import BaseButton from '@/components/shared/BaseButton';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import UniversityLogo from '@/components/shared/UniversityLogo';
+import { findUniversityByEmail } from '@/components/shared/universityLogoRegistry';
 
 interface ProfileHeaderProps {
   name: string;
   role: string;
+  email?: string;
   profileImageUrl?: string | null;
   actionLabel?: string;
   isEditing?: boolean;
@@ -19,6 +23,7 @@ interface ProfileHeaderProps {
 export default function ProfileHeader({
   name,
   role,
+  email,
   profileImageUrl,
   actionLabel = '프로필 수정',
   isEditing = false,
@@ -27,6 +32,7 @@ export default function ProfileHeader({
   actionDisabled = false,
 }: ProfileHeaderProps) {
   const inputId = useId();
+  const university = findUniversityByEmail(email);
 
   return (
     <section className="overflow-hidden rounded-3xl border border-border-gray bg-white shadow-md">
@@ -60,9 +66,26 @@ export default function ProfileHeader({
             />
           </div>
 
-          <div className="space-y-0.5 pb-1">
+          <div className="space-y-1.5 pb-1">
             <h1 className="text-3xl leading-9 font-bold tracking-tight text-text-black">{name}</h1>
-            <p className="text-base leading-6 font-medium text-text-gray">{role}</p>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+              <p className="text-base leading-6 font-medium text-text-gray">{role}</p>
+              {university ? (
+                <>
+                  <span className="h-1 w-1 rounded-full bg-divider-soft" aria-hidden />
+                  <div className="inline-flex items-center gap-2.5">
+                    <UniversityLogo
+                      universityId={university.id}
+                      variant="icon"
+                      className="h-6 w-6 shrink-0"
+                    />
+                    <span className="text-base leading-6 font-semibold text-text-black">
+                      {university.nameKo}
+                    </span>
+                  </div>
+                </>
+              ) : null}
+            </div>
           </div>
         </div>
 

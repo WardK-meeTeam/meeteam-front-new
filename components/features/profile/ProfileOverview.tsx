@@ -412,6 +412,7 @@ export default function ProfileOverview({
         <ProfileHeader
           name={profileForm.name}
           role={roleLabel}
+          email={profileForm.email}
           profileImageUrl={imagePreviewUrl ?? profileForm.profileImageUrl}
           actionLabel={currentActionLabel}
           isEditing={isEditing}

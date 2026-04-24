@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Lock, UserRound } from 'lucide-react';
+import { Check, Lock, UserRound } from 'lucide-react';
 
 import BaseButton from '@/components/shared/BaseButton';
 import BaseInput from '@/components/shared/BaseInput';
@@ -33,6 +33,7 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
   const [formValues, setFormValues] = useState<LoginFormValues>(INITIAL_FORM_VALUES);
   const [fieldErrors, setFieldErrors] = useState<LoginFieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isConsentChecked, setIsConsentChecked] = useState(false);
 
   const validateForm = () => {
     const result = loginFormSchema.safeParse(formValues);
@@ -46,6 +47,7 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
     setFieldErrors({
       studentId: flattened.studentId?.[0],
       password: flattened.password?.[0],
+      agreement: undefined,
     });
     return false;
   };
@@ -53,6 +55,11 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
   const updateField = <K extends keyof LoginFormValues>(key: K, value: LoginFormValues[K]) => {
     setFormValues((prev) => ({ ...prev, [key]: value }));
     setFieldErrors((prev) => ({ ...prev, [key]: undefined, form: undefined }));
+  };
+
+  const updateConsent = (checked: boolean) => {
+    setIsConsentChecked(checked);
+    setFieldErrors((prev) => ({ ...prev, agreement: undefined, form: undefined }));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -153,7 +160,44 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
         ) : null}
       </div>
 
-      <BaseButton size="L" full={true} type="submit" disabled={isSubmitting} data-cy="login-submit">
+      <div className="rounded-2xl border border-border-gray bg-surface-soft px-4 py-3">
+        <label className="flex cursor-pointer items-start gap-3" htmlFor="login-consent">
+          <span className="relative mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center">
+            <input
+              id="login-consent"
+              type="checkbox"
+              checked={isConsentChecked}
+              onChange={(event) => updateConsent(event.target.checked)}
+              className="peer sr-only"
+              data-cy="login-consent"
+            />
+            <span className="flex h-5 w-5 items-center justify-center rounded-md border border-border-gray bg-white text-white transition-colors peer-checked:border-brand-500 peer-checked:bg-brand-500 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400/20">
+              <Check className="h-3.5 w-3.5" strokeWidth={2.4} />
+            </span>
+          </span>
+          <span className="flex flex-col gap-1">
+            <span className="text-sm font-semibold text-text-black">
+              포털 인증 진행에 동의합니다.
+            </span>
+            <span className="text-sm leading-5 text-text-gray">
+              입력한 정보는 학교 인증 확인에만 사용돼요.
+            </span>
+          </span>
+        </label>
+        {fieldErrors.agreement ? (
+          <p className="mt-2 text-sm text-danger-500" role="alert">
+            {fieldErrors.agreement}
+          </p>
+        ) : null}
+      </div>
+
+      <BaseButton
+        size="L"
+        full={true}
+        type="submit"
+        disabled={isSubmitting || !isConsentChecked}
+        data-cy="login-submit"
+      >
         {isSubmitting ? '로그인 중...' : '로그인'}
       </BaseButton>
     </form>

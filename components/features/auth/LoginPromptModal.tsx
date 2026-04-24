@@ -3,6 +3,7 @@
 import { X } from 'lucide-react';
 
 import BaseModal from '@/components/shared/BaseModal';
+import AppLogo from '@/components/shared/AppLogo';
 import { useLoginModalStore } from '@/stores/useLoginModalStore';
 
 import LoginForm from './LoginForm';
@@ -20,7 +21,7 @@ export default function LoginPromptModal() {
       <section className="mx-auto flex w-full max-w-md flex-col gap-6 rounded-3xl border border-border-gray bg-white p-6 shadow-2xl">
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-2">
-            <p className="text-lg font-bold text-text-black">meeTeam</p>
+            <AppLogo className="h-8 w-36" />
             <div className="space-y-1">
               <h2 className="text-xl font-extrabold text-text-black">{title}</h2>
               <p className="text-sm leading-6 text-text-gray">{description}</p>

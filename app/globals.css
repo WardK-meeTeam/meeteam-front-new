@@ -51,6 +51,11 @@ body {
   background-color: #fff;
 }
 
+.font-brand-display {
+  font-family: var(--font-brand-display), var(--font-inter), sans-serif;
+  letter-spacing: 0;
+}
+
 :where(img, svg, video, canvas) {
   display: block;
   max-width: 100%;

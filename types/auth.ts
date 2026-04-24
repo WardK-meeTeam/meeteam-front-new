@@ -109,6 +109,12 @@ export type OAuth2RegisterSuccessResponse = SignupSuccessResponse & {
 
 export type LoginRequestPayload = LoginFormValues;
 
+export type SejongLoginApiResult = {
+  isNewMember?: boolean;
+  newMember?: boolean;
+  code: string | null;
+};
+
 export type SejongLoginResponse = {
   isNewMember: boolean;
   code: string | null;

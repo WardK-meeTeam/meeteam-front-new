@@ -1,4 +1,9 @@
-import type { ApiEnvelope, LoginRequestPayload, SejongLoginResponse } from '@/types/auth';
+import type {
+  ApiEnvelope,
+  LoginRequestPayload,
+  SejongLoginApiResult,
+  SejongLoginResponse,
+} from '@/types/auth';
 
 import { extractApiData } from './signupTransform';
 
@@ -21,6 +26,19 @@ async function readJson<T>(response: Response) {
   return payload;
 }
 
+function normalizeLoginResponse(payload: SejongLoginApiResult): SejongLoginResponse {
+  const isNewMember = payload.isNewMember ?? payload.newMember;
+
+  if (typeof isNewMember !== 'boolean') {
+    throw new Error('로그인 응답 형식을 해석할 수 없습니다.');
+  }
+
+  return {
+    isNewMember,
+    code: payload.code ?? null,
+  };
+}
+
 export async function loginMember(payload: LoginRequestPayload): Promise<SejongLoginResponse> {
   let response: Response;
 
@@ -40,8 +58,8 @@ export async function loginMember(payload: LoginRequestPayload): Promise<SejongL
     throw new Error(LOGIN_REQUEST_ERROR_MESSAGE);
   }
 
-  const data = await readJson<SejongLoginResponse>(response);
-  return extractApiData(data);
+  const data = await readJson<SejongLoginApiResult>(response);
+  return normalizeLoginResponse(extractApiData(data));
 }
 
 export async function logoutMember() {

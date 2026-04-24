@@ -16,7 +16,7 @@ import {
 } from '@/components/features/project/projectJobOptions';
 import { projectApplicationSchema } from '@/components/features/project/apply/schema';
 import BaseButton from '@/components/shared/BaseButton';
-import BaseTextarea from '@/components/shared/BaseTextarea';
+import MarkdownEditor from '@/components/shared/MarkdownEditor';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import ToastMessage from '@/components/shared/ToastMessage';
 import type { JobFieldOption } from '@/types/auth';
@@ -375,14 +375,19 @@ export default function ProjectApplyPage({
               </h2>
             </div>
 
-            <BaseTextarea
+            <MarkdownEditor
               rows={6}
               value={motivation}
-              data-cy="project-application-motivation"
-              onChange={(event) => setMotivation(event.target.value)}
+              dataCy="project-application-motivation"
+              onChange={setMotivation}
               disabled={isSubmitting || positionOptions.length === 0}
-              placeholder="이 프로젝트에 지원하게 된 계기와 본인의 강점을 자유롭게 작성해주세요."
-              className="min-h-40 rounded-2xl border-border-gray bg-surface-soft px-5 py-5 text-sm leading-6 placeholder:text-muted-gray"
+              placeholder={`## 지원하게 된 이유
+
+- 이 프로젝트에서 끌렸던 점
+- 제가 잘 도울 수 있는 부분
+- 함께 일할 때 기대하는 방식`}
+              textareaClassName="min-h-40 bg-surface-soft text-sm leading-6"
+              previewEmptyText="지원 이유와 자기소개를 적으면, 리더가 이 모습으로 읽게 돼요."
             />
           </div>
 

@@ -2,6 +2,7 @@
 
 import { ExternalLink, Mail, UserRound } from 'lucide-react';
 import BaseModal from '@/components/shared/BaseModal';
+import MarkdownContent from '@/components/shared/MarkdownContent';
 import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectApplicant } from '@/types/project';
 
@@ -79,9 +80,19 @@ export default function ProjectApplicantDetailModal({
 
           <div className="rounded-2xl border border-border-gray bg-white p-4">
             <p className="text-xs font-bold text-text-gray">자기소개</p>
-            <p className="mt-2 text-sm leading-6 text-text-body">
-              {isLoading ? '지원서 상세 정보를 불러오는 중입니다.' : applicant.introduction}
-            </p>
+            <div className="mt-2">
+              {isLoading ? (
+                <p className="text-sm leading-6 text-text-body">
+                  지원서 상세 정보를 불러오는 중입니다.
+                </p>
+              ) : (
+                <MarkdownContent
+                  value={applicant.introduction}
+                  emptyText="아직 자기소개가 비어 있어요."
+                  className="text-sm leading-6"
+                />
+              )}
+            </div>
           </div>
         </div>
 

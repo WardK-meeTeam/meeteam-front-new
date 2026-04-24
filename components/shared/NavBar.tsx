@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import AuthLink from '@/components/features/auth/AuthLink';
 import { useNotificationStore } from '@/components/features/notification/store';
 import { useNotificationSync } from '@/components/features/notification/useNotificationSync';
+import AppLogo from '@/components/shared/AppLogo';
 import ProfileMenu from '@/components/shared/ProfileMenu';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -51,8 +52,8 @@ export function NavBar() {
     >
       <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-8">
         <div className="flex items-center gap-8">
-          <Link href="/" className="text-xl leading-7 font-bold tracking-tight text-text-black">
-            meeTeam
+          <Link href="/" className="inline-flex items-center" aria-label="meeTeam 홈">
+            <AppLogo className="h-9 w-40" priority />
           </Link>
 
           <ul className="flex list-none items-center gap-6 p-0">

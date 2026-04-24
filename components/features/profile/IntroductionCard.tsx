@@ -1,5 +1,6 @@
 import { Info } from 'lucide-react';
-import BaseTextarea from '@/components/shared/BaseTextarea';
+import MarkdownContent from '@/components/shared/MarkdownContent';
+import MarkdownEditor from '@/components/shared/MarkdownEditor';
 
 interface IntroductionCardProps {
   editable?: boolean;
@@ -17,14 +18,17 @@ export default function IntroductionCard({
       <section className="space-y-4">
         <h2 className="text-xl leading-7 font-bold text-text-black">자기소개</h2>
 
-        <BaseTextarea
-          textareaSize="L"
+        <MarkdownEditor
           rows={8}
           value={value}
-          data-cy="profile-introduction-input"
-          onChange={(event) => onChange?.(event.target.value)}
-          placeholder="본인을 자유롭게 소개해주세요. (경험, 관심사, 작업 스타일 등)"
-          className="min-h-60 rounded-2xl border-divider-soft px-6 py-6 text-base leading-7 placeholder:text-muted-gray resize-none"
+          onChange={(nextValue) => onChange?.(nextValue)}
+          dataCy="profile-introduction-input"
+          placeholder={`## 이런 사람입니다
+
+- 요즘 관심 있는 것
+- 함께 일할 때 좋아하는 방식
+- 해본 프로젝트나 맡았던 역할`}
+          previewEmptyText="아직 자기소개가 비어 있어요. 편하게 한 줄부터 시작해도 좋아요."
         />
       </section>
     );
@@ -36,7 +40,7 @@ export default function IntroductionCard({
         <h2 className="text-xl leading-7 font-bold text-text-black">자기소개</h2>
 
         <div className="rounded-2xl border border-border-gray bg-white px-6 py-6">
-          <p className="whitespace-pre-wrap text-base leading-7 text-text-body">{value}</p>
+          <MarkdownContent value={value} />
         </div>
       </section>
     );

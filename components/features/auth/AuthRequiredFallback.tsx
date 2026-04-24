@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 
+import AppLogo from '@/components/shared/AppLogo';
+
 type AuthRequiredFallbackProps = {
   title?: string;
   description?: string;
@@ -14,7 +16,9 @@ export default function AuthRequiredFallback({
   return (
     <section className="mx-auto flex min-h-[420px] w-full max-w-3xl items-center justify-center px-4 py-16 text-center">
       <div className="w-full rounded-3xl border border-border-gray bg-white px-6 py-10 shadow-sm">
-        <p className="text-sm leading-5 font-bold text-brand-500">meeTeam</p>
+        <div className="flex justify-center">
+          <AppLogo className="h-9 w-40" />
+        </div>
         <h1 className="mt-2 text-2xl leading-8 font-extrabold text-text-black">{title}</h1>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-text-gray">{description}</p>
         <Link

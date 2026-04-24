@@ -9,6 +9,7 @@ import {
   fetchProjectApplications,
   type ProjectApplicationDecision,
 } from '@/components/features/project/projectApi';
+import MarkdownContent from '@/components/shared/MarkdownContent';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
 import ToastMessage from '@/components/shared/ToastMessage';
@@ -263,8 +264,12 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
                           </span>
                         </div>
 
-                        <div className="rounded-xl bg-surface-soft px-3 py-3 text-sm leading-6 text-text-body">
-                          "{applicant.introduction}"
+                        <div className="max-h-36 min-w-0 overflow-hidden rounded-xl bg-surface-soft px-3 py-3 text-sm leading-6 text-text-body">
+                          <MarkdownContent
+                            value={applicant.introduction}
+                            emptyText="아직 자기소개가 비어 있어요."
+                            className="space-y-2 text-sm leading-6"
+                          />
                         </div>
 
                         <div className="flex flex-wrap items-center gap-3 pt-1">

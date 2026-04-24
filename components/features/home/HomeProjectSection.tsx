@@ -78,7 +78,7 @@ export default function HomeProjectSection() {
 
       <div className="space-y-4">
         <div className="flex items-end justify-between">
-          <h2 className="text-2xl font-bold text-text-black">프로젝트</h2>
+          <h2 className="font-brand-display text-2xl text-text-black">프로젝트</h2>
           <Link href="/projects" className="text-sm font-semibold text-brand-500">
             전체보기 &gt;
           </Link>

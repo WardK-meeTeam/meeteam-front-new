@@ -46,7 +46,7 @@ describe('loginMember', () => {
       ok: true,
       json: async () => ({
         result: {
-          isNewMember: true,
+          newMember: true,
           code: 'temp-code',
         },
       }),

@@ -62,7 +62,7 @@ export type SignupFieldErrors = Partial<
   >
 >;
 
-export type LoginFieldErrors = Partial<Record<'studentId' | 'password' | 'form', string>>;
+export type LoginFieldErrors = Partial<Record<'studentId' | 'password' | 'agreement' | 'form', string>>;
 
 export type OnboardingFieldErrors = Partial<
   Record<'name' | 'birth' | 'projectExperienceCount' | 'interests' | 'form', string>
