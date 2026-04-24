@@ -81,7 +81,7 @@ function fillRequiredSignupFields() {
   cy.contains('label', '기술 스택').should('be.visible');
   cy.get('[data-cy="signup-tech-interest"]').should('not.exist');
   cy.get('[data-cy="signup-tech-input"]').type('React{enter}');
-  cy.contains('React').should('be.visible');
+  cy.get('[data-cy="signup-tech-selected"]').should('contain', 'React');
 
   cy.get('[data-cy="signup-project-count"]').clear().type('3');
   cy.get('[data-cy="signup-github-url"]').type('github.com/wardk');
@@ -157,7 +157,7 @@ describe('회원가입 흐름', () => {
     cy.get('[data-cy="signup-tech-interest"]').should('not.exist');
     cy.get('[data-cy="signup-tech-input"]').type('React{enter}');
 
-    cy.contains('React').should('be.visible');
+    cy.get('[data-cy="signup-tech-selected"]').should('contain', 'React');
   });
 
   it('중복된 이메일이면 중복 안내 메시지를 보여준다', () => {
