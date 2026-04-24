@@ -1,6 +1,16 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Pretendard';
+  src: url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/variable/woff2/PretendardVariable.woff2')
+    format('woff2-variations');
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
+  --font-service: 'Pretendard';
   --mt-bg: #fcfcfe;
   --mt-bg-soft: #f6f9fe;
   --mt-badge-bg: #eff5fd;
@@ -78,12 +88,13 @@ body {
 }
 
 body {
+  font-family: var(--font-service), system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--mt-text-primary);
   background-color: var(--mt-bg);
 }
 
 .font-brand-display {
-  font-family: var(--font-brand-display), var(--font-inter), sans-serif;
+  font-family: var(--font-brand-display), var(--font-service), sans-serif;
   letter-spacing: 0;
 }
 
@@ -167,11 +178,17 @@ input,
 button,
 textarea,
 select {
-  font: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 button {
   cursor: pointer;
+}
+
+.hero-primary-cta {
+  font-weight: 700;
 }
 
 @keyframes hero-fade-up {

@@ -157,7 +157,7 @@ export default function HomeMemberSection() {
       <ToastMessage message={errorMessage} />
 
       <div className="flex items-end justify-between">
-        <h2 className="font-brand-display text-2xl text-mt-text-primary">팀을 구해요!</h2>
+        <h2 className="text-2xl font-extrabold text-mt-text-primary">팀을 구해요!</h2>
         <Link href="/teammates" className="text-sm font-semibold text-mt-primary">
           더 많은 멤버 보기 &gt;
         </Link>

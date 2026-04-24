@@ -1,14 +1,9 @@
 import type { Metadata } from 'next';
-import { Inter, Jua } from 'next/font/google';
+import { Jua } from 'next/font/google';
 import LoginPromptModal from '@/components/features/auth/LoginPromptModal';
 import ToastViewport from '@/components/shared/ToastViewport';
 
 import './globals.css';
-
-const inter = Inter({
-  variable: '--font-inter',
-  subsets: ['latin'],
-});
 
 const jua = Jua({
   variable: '--font-brand-display',
@@ -28,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${inter.className} ${inter.variable} ${jua.variable} antialiased`}>
+      <body className={`${jua.variable} antialiased`}>
         {children}
         <LoginPromptModal />
         <ToastViewport />

@@ -233,6 +233,21 @@ function QuestionComposer({
   );
 }
 
+function AuthRequiredQuestionPrompt() {
+  return (
+    <div className="rounded-2xl border border-mt-border bg-mt-white px-5 py-5 shadow-sm">
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-mt-badge-bg text-mt-primary">
+          <Lock className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+        </span>
+        <p className="min-w-0 text-sm leading-5 font-bold text-mt-text-primary">
+          로그인 후 Q&A를 작성할 수 있어요.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function canWriteAnswer(project: ProjectRecord, qna: ProjectQna, memberId: number | null) {
   if (!memberId) {
     return false;
@@ -244,6 +259,7 @@ function canWriteAnswer(project: ProjectRecord, qna: ProjectQna, memberId: numbe
 export default function ProjectQnaSection({ project }: { project: ProjectRecord }) {
   const handleAuthRequired = useAuthRequiredModal();
   const memberId = useAuthStore((state) => state.memberId);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const [qnas, setQnas] = useState<ProjectQna[]>([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -300,6 +316,13 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
 
   const handleQuestionSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!isAuthenticated) {
+      handleAuthRequired(new Error('로그인이 필요합니다.'), {
+        redirectPath: `/projects/${project.id}`,
+      });
+      return;
+    }
 
     const question = questionDraft.trim();
 
@@ -507,14 +530,18 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
         </BaseButton>
       ) : null}
 
-      <QuestionComposer
-        value={questionDraft}
-        isSecret={isSecretQuestion}
-        isSubmitting={isQuestionSubmitting}
-        onChange={setQuestionDraft}
-        onSecretChange={setIsSecretQuestion}
-        onSubmit={handleQuestionSubmit}
-      />
+      {isAuthenticated ? (
+        <QuestionComposer
+          value={questionDraft}
+          isSecret={isSecretQuestion}
+          isSubmitting={isQuestionSubmitting}
+          onChange={setQuestionDraft}
+          onSecretChange={setIsSecretQuestion}
+          onSubmit={handleQuestionSubmit}
+        />
+      ) : (
+        <AuthRequiredQuestionPrompt />
+      )}
     </section>
   );
 }
