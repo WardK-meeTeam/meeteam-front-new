@@ -46,7 +46,7 @@ export function NavBar() {
 
   return (
     <nav
-      className={`sticky top-0 z-40 border-b border-home-blue-100 bg-white/95 backdrop-blur-md transition-transform duration-300 ease-out ${
+      className={`sticky top-0 z-40 border-b border-mt-border bg-mt-white/95 backdrop-blur-md transition-transform duration-300 ease-out ${
         isAtTop ? 'translate-y-0' : '-translate-y-full'
       }`}
     >
@@ -63,8 +63,8 @@ export function NavBar() {
                   <AuthLink
                     className={
                       isActiveLink(item.href)
-                        ? 'text-sm leading-5 font-semibold text-home-blue-500'
-                        : 'text-sm leading-5 font-medium text-text-gray transition-colors hover:text-home-blue-500'
+                        ? 'text-sm leading-5 font-semibold text-mt-primary'
+                        : 'text-sm leading-5 font-medium text-mt-text-secondary transition-colors hover:text-mt-primary'
                     }
                     href={item.href}
                   >
@@ -74,8 +74,8 @@ export function NavBar() {
                   <Link
                     className={
                       isActiveLink(item.href)
-                        ? 'text-sm leading-5 font-semibold text-home-blue-500'
-                        : 'text-sm leading-5 font-medium text-text-gray transition-colors hover:text-home-blue-500'
+                        ? 'text-sm leading-5 font-semibold text-mt-primary'
+                        : 'text-sm leading-5 font-medium text-mt-text-secondary transition-colors hover:text-mt-primary'
                     }
                     href={item.href}
                   >
@@ -92,25 +92,25 @@ export function NavBar() {
             <Link href="/notifications">
               <button
                 type="button"
-                className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-text-gray transition-colors hover:bg-home-blue-100 hover:text-home-blue-500"
+                className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-mt-text-secondary transition-colors hover:bg-mt-border hover:text-mt-primary"
                 aria-label="알림"
               >
                 <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
                 {unreadCount > 0 ? (
                   <span
-                    className="absolute right-2.5 top-2.5 flex min-h-2 min-w-2 items-center justify-center rounded-full border-2 border-white bg-danger-500"
+                    className="absolute right-2.5 top-2.5 flex min-h-2 min-w-2 items-center justify-center rounded-full border-2 border-mt-white bg-mt-hero-blue"
                     aria-hidden
                   />
                 ) : null}
               </button>
             </Link>
-            <span className="h-6 w-px bg-home-blue-100" aria-hidden />
+            <span className="h-6 w-px bg-mt-border" aria-hidden />
             <ProfileMenu />
           </div>
         ) : (
           <Link
             href="/auth/login"
-            className="inline-flex h-10 items-center justify-center rounded-full border border-home-blue-100 bg-white px-5 text-sm leading-5 font-bold text-home-blue-500 shadow-sm transition-colors hover:bg-home-blue-100 hover:text-text-black"
+            className="inline-flex h-10 items-center justify-center rounded-full border border-mt-border bg-mt-white px-5 text-sm leading-5 font-bold text-mt-primary shadow-sm transition-colors hover:bg-mt-border hover:text-mt-text-primary"
           >
             로그인
           </Link>

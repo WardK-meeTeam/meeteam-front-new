@@ -26,7 +26,7 @@ export default function ProjectFindPage() {
 
   return (
     <section className="space-y-6 pb-16 pt-2">
-      <h1 className="text-3xl leading-9 font-bold text-text-black">프로젝트 찾기</h1>
+      <h1 className="text-3xl leading-9 font-bold text-mt-text-primary">프로젝트 찾기</h1>
 
       <ProjectFindFilters
         searchValue={filters.searchValue}

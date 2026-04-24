@@ -39,8 +39,8 @@ type ApplicationPositionOption = {
 function InfoChip({ label, tone = 'indigo' }: { label: string; tone?: 'indigo' | 'sky' }) {
   const toneClass =
     tone === 'sky'
-      ? 'border-brand-100 bg-brand-50 text-brand-500'
-      : 'border-brand-100 bg-chip-bg text-brand-700';
+      ? 'border-mt-border bg-mt-badge-bg text-mt-primary'
+      : 'border-mt-border bg-mt-badge-bg text-mt-primary';
 
   return (
     <span
@@ -54,10 +54,10 @@ function InfoChip({ label, tone = 'indigo' }: { label: string; tone?: 'indigo' |
 function ApplicantInfoRow({ label, value }: { label: string; value: string | React.ReactNode }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="w-20 shrink-0 text-sm leading-5 font-bold text-text-black">{label}</span>
-      <div className="min-w-0 text-sm leading-5 font-medium text-project-status-closed">
-        {value}
-      </div>
+      <span className="w-20 shrink-0 text-sm leading-5 font-bold text-mt-text-primary">
+        {label}
+      </span>
+      <div className="min-w-0 text-sm leading-5 font-medium text-mt-text-nav">{value}</div>
     </div>
   );
 }
@@ -237,9 +237,9 @@ export default function ProjectApplyPage({
     return (
       <section className="min-h-screen">
         <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4 py-12">
-          <div className="h-8 w-32 rounded-xl bg-surface-soft" />
-          <div className="h-8 w-48 rounded-xl bg-surface-soft" />
-          <div className="h-96 rounded-3xl border border-border-soft bg-white" />
+          <div className="h-8 w-32 rounded-xl bg-mt-bg-soft" />
+          <div className="h-8 w-48 rounded-xl bg-mt-bg-soft" />
+          <div className="h-96 rounded-3xl border border-mt-border bg-mt-white" />
         </div>
       </section>
     );
@@ -251,11 +251,11 @@ export default function ProjectApplyPage({
         <ToastMessage message={errorMessage} />
 
         <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-12">
-          <div className="rounded-3xl border border-border-soft bg-white px-8 py-12 text-center shadow-sm">
-            <h1 className="text-2xl leading-8 font-extrabold text-text-black">
+          <div className="rounded-3xl border border-mt-border bg-mt-white px-8 py-12 text-center shadow-sm">
+            <h1 className="text-2xl leading-8 font-extrabold text-mt-text-primary">
               지원 정보를 불러오지 못했습니다.
             </h1>
-            <p className="mt-2 text-sm leading-6 text-text-gray">
+            <p className="mt-2 text-sm leading-6 text-mt-text-secondary">
               {errorMessage ?? '프로젝트 상태를 확인한 뒤 다시 시도해 주세요.'}
             </p>
           </div>
@@ -269,18 +269,20 @@ export default function ProjectApplyPage({
       <div className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-12">
         <div className="space-y-4">
           <div>
-            <h1 className="text-2xl leading-8 font-extrabold text-text-black">프로젝트 지원하기</h1>
+            <h1 className="text-2xl leading-8 font-extrabold text-mt-text-primary">
+              프로젝트 지원하기
+            </h1>
           </div>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="overflow-hidden rounded-3xl border border-border-soft bg-white p-8 shadow-sm"
+          className="overflow-hidden rounded-3xl border border-mt-border bg-mt-white p-8 shadow-sm"
         >
-          <div className="rounded-xl bg-surface-soft px-3 py-3">
-            <div className="flex items-start gap-2 text-xs leading-4 font-normal text-text-gray">
+          <div className="rounded-xl bg-mt-bg-soft px-3 py-3">
+            <div className="flex items-start gap-2 text-xs leading-4 font-normal text-mt-text-secondary">
               <Info
-                className="mt-0.5 h-4 w-4 shrink-0 text-brand-400"
+                className="mt-0.5 h-4 w-4 shrink-0 text-mt-logo-blue"
                 aria-hidden
                 strokeWidth={2}
               />
@@ -299,14 +301,14 @@ export default function ProjectApplyPage({
                 sizeClassName="h-24 w-24"
                 shape="rounded"
                 textClassName="text-2xl"
-                className="border-4 border-white bg-border-gray text-text-gray shadow-lg"
+                className="border-4 border-mt-white bg-mt-border text-mt-text-secondary shadow-lg"
               />
 
               <div className="space-y-1 text-center">
-                <p className="text-2xl leading-7 font-bold text-text-black">
+                <p className="text-2xl leading-7 font-bold text-mt-text-primary">
                   {applicant?.name ?? '-'}
                 </p>
-                <p className="text-xs leading-4 font-medium text-muted-gray">지원자</p>
+                <p className="text-xs leading-4 font-medium text-mt-text-secondary">지원자</p>
               </div>
             </div>
 
@@ -331,12 +333,12 @@ export default function ProjectApplyPage({
             </div>
           </div>
 
-          <div className="my-6 h-px w-full bg-surface-soft" />
+          <div className="my-6 h-px w-full bg-mt-bg-soft" />
 
           <div className="space-y-3">
             <label
               htmlFor="project-application-position"
-              className="block text-sm leading-5 font-bold text-text-black"
+              className="block text-sm leading-5 font-bold text-mt-text-primary"
             >
               지원 포지션
             </label>
@@ -346,7 +348,7 @@ export default function ProjectApplyPage({
               data-cy="project-application-position"
               onChange={(event) => setSelectedJobPositionCode(event.target.value)}
               disabled={positionOptions.length === 0 || isSubmitting}
-              className="h-12 w-full rounded-xl border border-border-gray bg-white px-4 text-sm leading-5 font-medium text-text-black outline-none transition-colors focus:border-brand-500 focus:ring-2 focus:ring-brand-400/20 disabled:cursor-not-allowed disabled:bg-surface-soft disabled:text-muted-gray"
+              className="h-12 w-full rounded-xl border border-mt-border bg-mt-white px-4 text-sm leading-5 font-medium text-mt-text-primary outline-none transition-colors focus:border-mt-primary focus:ring-2 focus:ring-mt-logo-blue/20 disabled:cursor-not-allowed disabled:bg-mt-bg-soft disabled:text-mt-text-secondary"
             >
               {positionOptions.length === 0 ? (
                 <option value="">모집 중인 포지션이 없습니다.</option>
@@ -369,8 +371,8 @@ export default function ProjectApplyPage({
 
           <div className="mt-6 space-y-3 pb-1">
             <div className="flex items-center gap-2">
-              <span className="h-6 w-1 rounded-full bg-brand-400" />
-              <h2 className="text-base leading-6 font-bold text-text-black">
+              <span className="h-6 w-1 rounded-full bg-mt-logo-blue" />
+              <h2 className="text-base leading-6 font-bold text-mt-text-primary">
                 지원 사유 및 자기소개
               </h2>
             </div>
@@ -386,7 +388,7 @@ export default function ProjectApplyPage({
 - 이 프로젝트에서 끌렸던 점
 - 제가 잘 도울 수 있는 부분
 - 함께 일할 때 기대하는 방식`}
-              textareaClassName="min-h-40 bg-surface-soft text-sm leading-6"
+              textareaClassName="min-h-40 bg-mt-bg-soft text-sm leading-6"
               previewEmptyText="지원 이유와 자기소개를 적으면, 리더가 이 모습으로 읽게 돼요."
             />
           </div>
@@ -401,7 +403,7 @@ export default function ProjectApplyPage({
               type="submit"
               disabled={isSubmitting || positionOptions.length === 0}
               data-cy="project-application-submit"
-              className="h-14 rounded-xl shadow-xl shadow-brand-400/40"
+              className="h-14 rounded-xl shadow-xl shadow-mt-logo-blue/40"
             >
               {isSubmitting ? '지원 중' : '지원하기'}
             </BaseButton>

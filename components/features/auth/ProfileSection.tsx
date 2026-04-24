@@ -42,7 +42,7 @@ export default function ProfileSection({
       </div>
       <div>
         <BaseField label="성별" htmlFor="gender">
-          <div className="flex h-13 justify-center rounded-xl bg-surface-soft p-1">
+          <div className="flex h-13 justify-center rounded-xl bg-mt-bg-soft p-1">
             <div className="flex-1">
               <input
                 type="radio"
@@ -57,8 +57,8 @@ export default function ProfileSection({
               <label
                 htmlFor="male"
                 className="flex items-center justify-center rounded-lg font-bold cursor-pointer h-11
-                   text-muted-gray
-                   peer-checked:border peer-checked:border-border-gray peer-checked:text-brand-500 peer-checked:bg-white peer-checked:shadow-sm"
+                   text-mt-text-secondary
+                   peer-checked:border peer-checked:border-mt-border peer-checked:text-mt-primary peer-checked:bg-mt-white peer-checked:shadow-sm"
               >
                 남성
               </label>
@@ -77,8 +77,8 @@ export default function ProfileSection({
               <label
                 htmlFor="female"
                 className="flex items-center justify-center rounded-lg font-bold cursor-pointer h-11
-                   text-muted-gray
-                   peer-checked:border peer-checked:border-border-gray peer-checked:text-brand-500 peer-checked:bg-white peer-checked:shadow-sm"
+                   text-mt-text-secondary
+                   peer-checked:border peer-checked:border-mt-border peer-checked:text-mt-primary peer-checked:bg-mt-white peer-checked:shadow-sm"
               >
                 여성
               </label>

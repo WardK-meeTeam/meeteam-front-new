@@ -34,10 +34,10 @@ export default function AuthSection({
   const emailHintText = !emailError && emailFeedbackTone === 'default' ? emailFeedback : undefined;
   const emailMessageClassName =
     emailFeedbackTone === 'success'
-      ? 'text-brand-500'
+      ? 'text-mt-primary'
       : emailFeedbackTone === 'error'
-        ? 'text-error-red'
-        : 'text-text-gray';
+        ? 'text-mt-hero-blue'
+        : 'text-mt-text-secondary';
 
   return (
     <>
@@ -57,7 +57,7 @@ export default function AuthSection({
             size="M"
             onClick={onCheckEmail}
             disabled={!email.trim() || isCheckingEmail}
-            className="shrink-0 border-none bg-chip-bg text-brand-500"
+            className="shrink-0 border-none bg-mt-badge-bg text-mt-primary"
             data-cy="signup-email-check"
           >
             <span className="font-bold">{isCheckingEmail ? '확인 중...' : '중복 확인'}</span>

@@ -1,72 +1,39 @@
 @import 'tailwindcss';
 
+:root {
+  --mt-bg: #fcfcfe;
+  --mt-bg-soft: #f6f9fe;
+  --mt-badge-bg: #eff5fd;
+  --mt-border: #d7e4f8;
+  --mt-primary: #6aa0e6;
+  --mt-logo-blue: #7ba9e8;
+  --mt-mascot-blue: #bed6f5;
+  --mt-cheek-blue: #8cb9f1;
+  --mt-mint: #67c5c2;
+  --mt-text-primary: #202730;
+  --mt-text-secondary: #5f6d82;
+  --mt-text-nav: #647185;
+  --mt-shadow-blue: #dee8f6;
+  --mt-white: #fefeff;
+  --mt-hero-blue: #1683f8;
+}
+
 @theme {
-  /* Brand blue from the blue logo: primary buttons, active navigation, links, focus rings. */
-  --color-brand-50: #f4f9ff;
-  --color-brand-100: #e6f2ff;
-  --color-brand-200: #c0e0ff;
-  --color-brand-300: #98b8e8;
-  --color-brand-400: #75a0df;
-  --color-brand-500: #4f86d8;
-  --color-brand-600: #346ec4;
-  --color-brand-700: #28589d;
-  --color-brand-800: #223f6d;
-
-  /* Blue-based accents: small badges, secondary highlights, selected quiet surfaces. */
-  --color-accent-aqua-50: #f0fffc;
-  --color-accent-aqua-100: #d6f7f1;
-  --color-accent-aqua-300: #88d0c8;
-  --color-accent-aqua-500: #48a9a0;
-  --color-accent-aqua-700: #2f746f;
-  --color-accent-sky-50: #f3fbff;
-  --color-accent-sky-100: #d8f0ff;
-  --color-accent-sky-300: #90c8ff;
-  --color-accent-sky-500: #4d9df0;
-
-  /* Neutral ink: text hierarchy, borders, page surfaces. */
-  --color-ink-50: #f8fafc;
-  --color-ink-100: #eef3f8;
-  --color-ink-200: #dde7f0;
-  --color-ink-300: #c6d4e1;
-  --color-ink-400: #90a3b7;
-  --color-ink-500: #68798c;
-  --color-ink-600: #4b5b6c;
-  --color-ink-700: #334155;
-  --color-ink-800: #1f2937;
-  --color-ink-900: #111827;
-
-  /* Semantic aliases used across components. */
-  --color-danger-400: #f15b70;
-  --color-danger-500: #dc3048;
-  --color-danger-soft: #ffe5ea;
-  --color-error-red: #dc3048;
-  --color-project-recruiting-bg: #d6f7f1;
-  --color-role-leader-bg: #e6f2ff;
-  --color-role-leader-text: #28589d;
-  --color-project-status-closed: #4b5b6c;
-  --color-project-status-progress: #0f835f;
-  --color-muted-gray: #90a3b7;
-  --color-border-gray: #dde7f0;
-  --color-text-black: #111827;
-  --color-text-gray: #68798c;
-  --color-surface-soft: #f8fafc;
-  --color-divider-soft: #c6d4e1;
-  --color-label-dark: #1f2937;
-  --color-text-body: #334155;
-  --color-chip-bg: #f2f8ff;
-  --color-chip-text: #0756ad;
-  --color-border-soft: #eef3f8;
-  --color-text-soft: #68798c;
-
-  /* Home aliases keep existing pages stable while sharing the service palette. */
-  --color-home-blue-50: #f4f9ff;
-  --color-home-blue-100: #e6f2ff;
-  --color-home-blue-200: #c0e0ff;
-  --color-home-blue-300: #98b8e8;
-  --color-home-blue-400: #75a0df;
-  --color-home-blue-500: #4f86d8;
-  --color-overlay-dark: rgb(0 0 0 / 40%);
-  --color-overlay-white: rgb(255 255 255 / 50%);
+  --color-mt-bg: var(--mt-bg);
+  --color-mt-bg-soft: var(--mt-bg-soft);
+  --color-mt-badge-bg: var(--mt-badge-bg);
+  --color-mt-border: var(--mt-border);
+  --color-mt-primary: var(--mt-primary);
+  --color-mt-logo-blue: var(--mt-logo-blue);
+  --color-mt-mascot-blue: var(--mt-mascot-blue);
+  --color-mt-cheek-blue: var(--mt-cheek-blue);
+  --color-mt-mint: var(--mt-mint);
+  --color-mt-text-primary: var(--mt-text-primary);
+  --color-mt-text-secondary: var(--mt-text-secondary);
+  --color-mt-text-nav: var(--mt-text-nav);
+  --color-mt-shadow-blue: var(--mt-shadow-blue);
+  --color-mt-white: var(--mt-white);
+  --color-mt-hero-blue: var(--mt-hero-blue);
 }
 
 *,
@@ -83,8 +50,8 @@ body {
 }
 
 body {
-  color: var(--color-text-black);
-  background-color: #fff;
+  color: var(--mt-text-primary);
+  background-color: var(--mt-bg);
 }
 
 .font-brand-display {
@@ -100,7 +67,7 @@ body {
 
 .project-card-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--color-divider-soft) 70%, transparent) transparent;
+  scrollbar-color: color-mix(in srgb, var(--mt-border) 70%, transparent) transparent;
 }
 
 .project-card-scrollbar::-webkit-scrollbar {
@@ -109,16 +76,16 @@ body {
 
 .project-card-scrollbar::-webkit-scrollbar-track {
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--color-divider-soft) 12%, transparent);
+  background: color-mix(in srgb, var(--mt-border) 12%, transparent);
 }
 
 .project-card-scrollbar::-webkit-scrollbar-thumb {
   border-radius: 9999px;
-  background: color-mix(in srgb, var(--color-divider-soft) 65%, transparent);
+  background: color-mix(in srgb, var(--mt-border) 65%, transparent);
 }
 
 .project-card-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in srgb, var(--color-divider-soft) 85%, transparent);
+  background: color-mix(in srgb, var(--mt-border) 85%, transparent);
 }
 
 input,

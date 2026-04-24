@@ -28,10 +28,10 @@ export default function BaseTextarea({
     <textarea
       disabled={disabled}
       rows={rows}
-      className={`min-h-30 rounded-xl border border-border-gray bg-white text-text-black outline-none transition-all duration-200 ease-out
-        placeholder:text-muted-gray
-        focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-400/20
-        disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-gray
+      className={`min-h-30 rounded-xl border border-mt-border bg-mt-white text-mt-text-primary outline-none transition-all duration-200 ease-out
+        placeholder:text-mt-text-secondary
+        focus:border-mt-primary focus:bg-mt-white focus:outline-none focus:ring-2 focus:ring-mt-logo-blue/20
+        disabled:cursor-not-allowed disabled:bg-mt-bg-soft disabled:text-mt-text-secondary
         ${sizeClass}
         ${className}
         ${widthClass}

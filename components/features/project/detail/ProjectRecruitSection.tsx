@@ -79,18 +79,18 @@ export default function ProjectRecruitSection({
         return (
           <article
             key={position.id}
-            className={`w-full rounded-2xl border border-border-gray bg-white px-6 pb-6 pt-7 shadow-sm ${isOpen ? '' : 'opacity-60'}`}
+            className={`w-full rounded-2xl border border-mt-border bg-mt-white px-6 pb-6 pt-7 shadow-sm ${isOpen ? '' : 'opacity-60'}`}
           >
             <div className="flex items-start justify-between gap-6">
               <div className="flex min-w-0 flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-base leading-5 font-bold text-text-black">
+                  <h3 className="text-base leading-5 font-bold text-mt-text-primary">
                     {position.role} ({position.specialty})
                   </h3>
                   <StatusBadge status={position.status} />
                 </div>
 
-                <p className="text-base leading-5 font-medium text-text-black">
+                <p className="text-base leading-5 font-medium text-mt-text-primary">
                   {position.joined} / {position.total}명 합류
                 </p>
               </div>
@@ -103,10 +103,10 @@ export default function ProjectRecruitSection({
                 >
                   <BaseButton
                     size="S"
-                    className={`h-10 min-w-24 rounded-xl px-5 text-xs leading-4 font-bold text-white shadow-none ${
+                    className={`h-10 min-w-24 rounded-xl px-5 text-xs leading-4 font-bold text-mt-white shadow-none ${
                       canApply
-                        ? 'bg-text-black hover:bg-label-dark'
-                        : 'cursor-not-allowed bg-muted-gray'
+                        ? 'bg-mt-text-primary hover:bg-mt-text-primary'
+                        : 'cursor-not-allowed bg-mt-text-secondary'
                     }`}
                   >
                     지원하기
@@ -115,12 +115,10 @@ export default function ProjectRecruitSection({
               ) : null}
             </div>
 
-            <div className="my-6 h-px w-full bg-surface-soft" />
+            <div className="my-6 h-px w-full bg-mt-bg-soft" />
 
             <div className="flex flex-wrap items-center gap-6">
-              <span className="text-sm leading-5 font-medium text-project-status-closed">
-                기술스택
-              </span>
+              <span className="text-sm leading-5 font-medium text-mt-text-nav">기술스택</span>
               <div className="flex flex-wrap items-center gap-2">
                 {position.techStack.map((tech) => (
                   <SkillChip key={tech} label={tech} />

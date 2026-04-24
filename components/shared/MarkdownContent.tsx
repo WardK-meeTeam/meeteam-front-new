@@ -21,11 +21,11 @@ export default function MarkdownContent({
   const blocks = parseMarkdownBlocks(value);
 
   if (blocks.length === 0) {
-    return <p className={`text-base leading-7 text-text-gray ${className}`}>{emptyText}</p>;
+    return <p className={`text-base leading-7 text-mt-text-secondary ${className}`}>{emptyText}</p>;
   }
 
   return (
-    <div className={`space-y-4 break-words text-base leading-7 text-text-body ${className}`}>
+    <div className={`space-y-4 break-words text-base leading-7 text-mt-text-nav ${className}`}>
       {blocks.map((block, index) => renderBlock(block, index))}
     </div>
   );
@@ -142,8 +142,8 @@ function renderBlock(block: Block, index: number) {
     case 'heading': {
       const className =
         block.level === 2
-          ? 'text-xl leading-7 font-bold text-text-black'
-          : 'text-lg leading-7 font-bold text-text-black';
+          ? 'text-xl leading-7 font-bold text-mt-text-primary'
+          : 'text-lg leading-7 font-bold text-mt-text-primary';
 
       return (
         <h3 key={index} className={className}>
@@ -155,7 +155,7 @@ function renderBlock(block: Block, index: number) {
       return (
         <blockquote
           key={index}
-          className="border-l-4 border-brand-100 bg-brand-50 px-4 py-3 text-text-body"
+          className="border-l-4 border-mt-border bg-mt-badge-bg px-4 py-3 text-mt-text-nav"
         >
           {renderInlineMarkdown(block.content)}
         </blockquote>
@@ -163,8 +163,8 @@ function renderBlock(block: Block, index: number) {
     case 'list': {
       const ListTag = block.ordered ? 'ol' : 'ul';
       const listClassName = block.ordered
-        ? 'list-decimal space-y-2 pl-6 text-text-body'
-        : 'list-disc space-y-2 pl-6 text-text-body';
+        ? 'list-decimal space-y-2 pl-6 text-mt-text-nav'
+        : 'list-disc space-y-2 pl-6 text-mt-text-nav';
 
       return (
         <ListTag key={index} className={listClassName}>
@@ -178,7 +178,7 @@ function renderBlock(block: Block, index: number) {
       return (
         <pre
           key={index}
-          className="overflow-x-auto rounded-xl border border-border-gray bg-surface-soft px-4 py-3 text-sm leading-6 text-text-black"
+          className="overflow-x-auto rounded-xl border border-mt-border bg-mt-bg-soft px-4 py-3 text-sm leading-6 text-mt-text-primary"
         >
           <code>{block.content}</code>
         </pre>
@@ -186,7 +186,7 @@ function renderBlock(block: Block, index: number) {
     case 'paragraph':
     default:
       return (
-        <p key={index} className="whitespace-pre-wrap text-text-body">
+        <p key={index} className="whitespace-pre-wrap text-mt-text-nav">
           {renderInlineMarkdown(block.content)}
         </p>
       );
@@ -208,7 +208,7 @@ function renderInlineMarkdown(value: string) {
 
     if (token.startsWith('**')) {
       parts.push(
-        <strong key={parts.length} className="font-bold text-text-black">
+        <strong key={parts.length} className="font-bold text-mt-text-primary">
           {token.slice(2, -2)}
         </strong>,
       );
@@ -216,7 +216,7 @@ function renderInlineMarkdown(value: string) {
       parts.push(
         <code
           key={parts.length}
-          className="rounded-md bg-surface-soft px-1.5 py-0.5 text-sm text-project-status-closed"
+          className="rounded-md bg-mt-bg-soft px-1.5 py-0.5 text-sm text-mt-text-nav"
         >
           {token.slice(1, -1)}
         </code>,
@@ -232,7 +232,7 @@ function renderInlineMarkdown(value: string) {
             href={href}
             target="_blank"
             rel="noreferrer"
-            className="font-semibold text-brand-500 underline underline-offset-4"
+            className="font-semibold text-mt-primary underline underline-offset-4"
           >
             {linkMatch?.[1]}
           </a>

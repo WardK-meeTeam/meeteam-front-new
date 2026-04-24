@@ -39,50 +39,50 @@ export default function ProjectApplicantDetailModal({
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      <div className="overflow-hidden rounded-[28px] bg-white shadow-2xl">
+      <div className="overflow-hidden rounded-[28px] bg-mt-white shadow-2xl">
         <ToastMessage message={errorMessage} />
 
-        <div className="border-b border-border-gray bg-surface-soft px-6 py-5">
-          <p className="text-sm font-bold text-brand-500">지원서 상세</p>
-          <h2 className="mt-1 text-2xl font-extrabold text-text-black">{applicant.name}</h2>
-          <p className="mt-1 text-sm text-text-gray">
+        <div className="border-b border-mt-border bg-mt-bg-soft px-6 py-5">
+          <p className="text-sm font-bold text-mt-primary">지원서 상세</p>
+          <h2 className="mt-1 text-2xl font-extrabold text-mt-text-primary">{applicant.name}</h2>
+          <p className="mt-1 text-sm text-mt-text-secondary">
             {applicant.position} / {applicant.specialty}
           </p>
         </div>
 
         <div className="space-y-5 px-6 py-6">
-          <div className="flex flex-wrap gap-3 text-sm text-text-gray">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 font-medium text-brand-500">
+          <div className="flex flex-wrap gap-3 text-sm text-mt-text-secondary">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-mt-badge-bg px-3 py-1 font-medium text-mt-primary">
               <UserRound className="h-4 w-4" aria-hidden strokeWidth={1.8} />
               {applicant.appliedAt}
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-soft px-3 py-1 font-medium text-text-gray">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-mt-bg-soft px-3 py-1 font-medium text-mt-text-secondary">
               <Mail className="h-4 w-4" aria-hidden strokeWidth={1.8} />
               {applicant.email}
             </span>
           </div>
 
-          <div className="rounded-2xl border border-border-gray bg-white p-4">
-            <p className="text-xs font-bold text-text-gray">지원자 정보</p>
+          <div className="rounded-2xl border border-mt-border bg-mt-white p-4">
+            <p className="text-xs font-bold text-mt-text-secondary">지원자 정보</p>
             <dl className="mt-3 grid gap-3 text-sm leading-5 sm:grid-cols-2">
               <div>
-                <dt className="font-bold text-text-black">나이</dt>
-                <dd className="mt-1 text-text-gray">
+                <dt className="font-bold text-mt-text-primary">나이</dt>
+                <dd className="mt-1 text-mt-text-secondary">
                   {typeof applicant.age === 'number' ? `${applicant.age}세` : '-'}
                 </dd>
               </div>
               <div>
-                <dt className="font-bold text-text-black">성별</dt>
-                <dd className="mt-1 text-text-gray">{getGenderLabel(applicant.gender)}</dd>
+                <dt className="font-bold text-mt-text-primary">성별</dt>
+                <dd className="mt-1 text-mt-text-secondary">{getGenderLabel(applicant.gender)}</dd>
               </div>
             </dl>
           </div>
 
-          <div className="rounded-2xl border border-border-gray bg-white p-4">
-            <p className="text-xs font-bold text-text-gray">자기소개</p>
+          <div className="rounded-2xl border border-mt-border bg-mt-white p-4">
+            <p className="text-xs font-bold text-mt-text-secondary">자기소개</p>
             <div className="mt-2">
               {isLoading ? (
-                <p className="text-sm leading-6 text-text-body">
+                <p className="text-sm leading-6 text-mt-text-nav">
                   지원서 상세 정보를 불러오는 중입니다.
                 </p>
               ) : (
@@ -96,11 +96,11 @@ export default function ProjectApplicantDetailModal({
           </div>
         </div>
 
-        <div className="flex justify-end border-t border-border-gray px-6 py-4">
+        <div className="flex justify-end border-t border-mt-border px-6 py-4">
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border-gray bg-white px-4 py-2.5 text-sm font-bold text-text-gray transition-colors hover:bg-surface-soft"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-mt-border bg-mt-white px-4 py-2.5 text-sm font-bold text-mt-text-secondary transition-colors hover:bg-mt-bg-soft"
           >
             <ExternalLink className="h-4 w-4" aria-hidden strokeWidth={1.8} />
             닫기

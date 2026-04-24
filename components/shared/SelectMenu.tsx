@@ -13,12 +13,12 @@ export default function SelectMenu({
 }: DropdownProps) {
   return (
     <ul
-      className={`absolute top-full w-full bg-white border border-border-gray rounded-xl shadow-sm z-10 ${className}`}
+      className={`absolute top-full w-full bg-mt-white border border-mt-border rounded-xl shadow-sm z-10 ${className}`}
     >
       {items.map((item) => (
         <li
           key={item}
-          className={`px-4 py-2 hover:bg-gray-100 cursor-pointer font-normal text-sm rounded-xl ${itemClassName}`}
+          className={`cursor-pointer rounded-xl px-4 py-2 text-sm font-normal hover:bg-mt-bg-soft ${itemClassName}`}
           onClick={() => onSelect(item)}
         >
           {item}

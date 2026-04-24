@@ -80,9 +80,9 @@ export default function ProjectManageEdit({ projectId }: ProjectManageEditProps)
       <ProjectManageShell projectId={projectId} activeTab="edit">
         <ToastMessage message={errorMessage} />
 
-        <section className="rounded-3xl border border-border-gray bg-white px-8 py-12 text-center shadow-sm">
-          <h2 className="text-xl font-bold text-text-black">프로젝트를 찾을 수 없습니다.</h2>
-          <p className="mt-2 text-sm text-text-gray">
+        <section className="rounded-3xl border border-mt-border bg-mt-white px-8 py-12 text-center shadow-sm">
+          <h2 className="text-xl font-bold text-mt-text-primary">프로젝트를 찾을 수 없습니다.</h2>
+          <p className="mt-2 text-sm text-mt-text-secondary">
             {errorMessage ?? '올바른 프로젝트인지 다시 확인해주세요.'}
           </p>
         </section>

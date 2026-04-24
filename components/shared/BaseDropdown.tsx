@@ -71,14 +71,14 @@ export default function BaseDropdown({
         onClick={onToggle}
         disabled={disabled}
         data-cy={dataCy}
-        className={`flex w-full rounded-xl border border-border-gray text-text-body
-          disabled:cursor-not-allowed disabled:bg-surface-soft disabled:text-muted-gray ${buttonClassName}`}
+        className={`flex w-full rounded-xl border border-mt-border text-mt-text-nav
+          disabled:cursor-not-allowed disabled:bg-mt-bg-soft disabled:text-mt-text-secondary ${buttonClassName}`}
       >
         <span className={textClassName}>{label}</span>
         {open ? (
-          <ChevronUp className="h-4 w-4 text-muted-gray" aria-hidden strokeWidth={1.8} />
+          <ChevronUp className="h-4 w-4 text-mt-text-secondary" aria-hidden strokeWidth={1.8} />
         ) : (
-          <ChevronDown className="h-4 w-4 text-muted-gray" aria-hidden strokeWidth={1.8} />
+          <ChevronDown className="h-4 w-4 text-mt-text-secondary" aria-hidden strokeWidth={1.8} />
         )}
       </button>
       {open && items.length > 0 && (

@@ -49,14 +49,14 @@ function Avatar({
       imageUrl={imageUrl}
       sizeClassName={sizeClassName}
       textClassName="text-sm"
-      className="bg-border-gray text-text-gray"
+      className="bg-mt-border text-mt-text-secondary"
     />
   );
 }
 
 function QnaAnswerItem({ answer }: { answer: ProjectQnaAnswer }) {
   return (
-    <div className="flex w-full items-start gap-3 rounded-xl bg-surface-soft px-4 py-3">
+    <div className="flex w-full items-start gap-3 rounded-xl bg-mt-bg-soft px-4 py-3">
       <Avatar
         name={answer.writerName}
         imageUrl={answer.writerProfileImageUrl}
@@ -65,14 +65,14 @@ function QnaAnswerItem({ answer }: { answer: ProjectQnaAnswer }) {
 
       <div className="flex min-w-0 flex-1 flex-col gap-0.5 self-stretch">
         <div className="flex w-full items-center gap-2">
-          <p className="text-xs leading-4 font-bold text-brand-700">
+          <p className="text-xs leading-4 font-bold text-mt-primary">
             {answer.isLeader ? '팀장' : answer.writerName}
           </p>
-          <p className="text-xs leading-4 font-normal text-muted-gray">
+          <p className="text-xs leading-4 font-normal text-mt-text-secondary">
             {formatQnaDate(answer.createdAt)}
           </p>
         </div>
-        <p className="text-sm leading-5 font-normal whitespace-pre-wrap text-project-status-closed">
+        <p className="text-sm leading-5 font-normal whitespace-pre-wrap text-mt-text-nav">
           {answer.content}
         </p>
       </div>
@@ -86,7 +86,7 @@ function ProjectQnaSkeleton() {
       {Array.from({ length: 3 }).map((_, index) => (
         <article
           key={`qna-skeleton-${index}`}
-          className="rounded-2xl border border-border-gray bg-white px-5 py-4 shadow-sm"
+          className="rounded-2xl border border-mt-border bg-mt-white px-5 py-4 shadow-sm"
         >
           <div className="flex items-start gap-3">
             <SkeletonBlock className="h-9 w-9 rounded-full" />
@@ -119,7 +119,7 @@ function AnswerComposer({
   onSubmit: () => void;
 }) {
   return (
-    <div className="w-full rounded-xl border border-border-gray bg-white px-4 py-3">
+    <div className="w-full rounded-xl border border-mt-border bg-mt-white px-4 py-3">
       <BaseTextarea
         textareaSize="S"
         rows={2}
@@ -129,14 +129,14 @@ function AnswerComposer({
         placeholder="답변을 입력해 주세요."
         disabled={isSubmitting}
       />
-      <div className="mt-3 flex justify-end gap-2 border-t border-surface-soft pt-3">
+      <div className="mt-3 flex justify-end gap-2 border-t border-mt-bg-soft pt-3">
         <BaseButton
           type="button"
           size="XS"
           variant="gray"
           onClick={onCancel}
           disabled={isSubmitting}
-          className="h-8 rounded-md px-3 text-xs font-semibold shadow-none hover:bg-surface-soft hover:text-text-black"
+          className="h-8 rounded-md px-3 text-xs font-semibold shadow-none hover:bg-mt-bg-soft hover:text-mt-text-primary"
         >
           취소
         </BaseButton>
@@ -144,7 +144,7 @@ function AnswerComposer({
           size="XS"
           onClick={onSubmit}
           disabled={isSubmitting}
-          className="h-8 rounded-md border-none bg-text-black px-3.5 text-xs font-semibold text-white shadow-none hover:bg-label-dark"
+          className="h-8 rounded-md border-none bg-mt-text-primary px-3.5 text-xs font-semibold text-mt-white shadow-none hover:bg-mt-text-primary"
         >
           {isSubmitting ? '등록 중' : '답변 등록'}
         </BaseButton>
@@ -166,11 +166,11 @@ function QuestionComposer({
 }) {
   return (
     <form
-      className="rounded-2xl border border-border-gray bg-white px-5 py-4 shadow-sm"
+      className="rounded-2xl border border-mt-border bg-mt-white px-5 py-4 shadow-sm"
       onSubmit={onSubmit}
     >
-      <div className="flex items-center gap-2 text-sm leading-5 font-bold text-text-black">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-500">
+      <div className="flex items-center gap-2 text-sm leading-5 font-bold text-mt-text-primary">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-mt-badge-bg text-mt-primary">
           <MessageCircle className="h-4 w-4" aria-hidden strokeWidth={1.8} />
         </span>
         <span>질문 작성</span>
@@ -180,17 +180,17 @@ function QuestionComposer({
         rows={2}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-3 min-h-20 w-full resize-none rounded-none border-transparent bg-transparent px-0 py-0 text-sm text-text-black placeholder:text-muted-gray focus:border-transparent focus:ring-0"
+        className="mt-3 min-h-20 w-full resize-none rounded-none border-transparent bg-transparent px-0 py-0 text-sm text-mt-text-primary placeholder:text-mt-text-secondary focus:border-transparent focus:ring-0"
         placeholder="프로젝트에 대해 궁금한 점을 남겨주세요."
         disabled={isSubmitting}
       />
 
-      <div className="mt-3 flex justify-end border-t border-surface-soft pt-3">
+      <div className="mt-3 flex justify-end border-t border-mt-bg-soft pt-3">
         <BaseButton
           type="submit"
           size="XS"
           disabled={isSubmitting || !value.trim()}
-          className="h-8 rounded-md border-none bg-text-black px-3.5 text-xs font-semibold text-white shadow-none hover:bg-label-dark disabled:bg-divider-soft"
+          className="h-8 rounded-md border-none bg-mt-text-primary px-3.5 text-xs font-semibold text-mt-white shadow-none hover:bg-mt-text-primary disabled:bg-mt-shadow-blue"
         >
           {isSubmitting ? '등록 중' : '등록'}
         </BaseButton>
@@ -358,7 +358,7 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
             return (
               <article
                 key={qna.id}
-                className="rounded-2xl border border-border-gray bg-white px-5 py-4 shadow-sm"
+                className="rounded-2xl border border-mt-border bg-mt-white px-5 py-4 shadow-sm"
                 data-node-id="97:1455"
               >
                 <div className="flex items-start gap-3" data-node-id="97:1458">
@@ -374,26 +374,26 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
                       data-node-id="97:1459"
                     >
                       <p
-                        className="text-sm leading-5 font-bold text-text-black"
+                        className="text-sm leading-5 font-bold text-mt-text-primary"
                         data-node-id="97:1461"
                       >
                         {qna.questionerName}
                       </p>
                       <p
-                        className="text-xs leading-4 font-normal text-muted-gray"
+                        className="text-xs leading-4 font-normal text-mt-text-secondary"
                         data-node-id="97:1463"
                       >
                         {formatQnaDate(qna.createdAt)}
                       </p>
                       {qna.answers.length > 0 ? (
-                        <span className="rounded-full bg-brand-50 px-2 py-0.5 text-[10px] leading-4 font-bold text-brand-500">
+                        <span className="rounded-full bg-mt-badge-bg px-2 py-0.5 text-[10px] leading-4 font-bold text-mt-primary">
                           답변 {qna.answers.length}
                         </span>
                       ) : null}
                     </div>
 
                     <p
-                      className="mt-2 w-full text-sm leading-6 font-normal whitespace-pre-wrap text-text-body"
+                      className="mt-2 w-full text-sm leading-6 font-normal whitespace-pre-wrap text-mt-text-nav"
                       data-node-id="97:1465"
                     >
                       {qna.question}
@@ -402,7 +402,7 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
                 </div>
 
                 {qna.answers.length > 0 ? (
-                  <div className="mt-4 space-y-2 border-t border-border-soft pt-3">
+                  <div className="mt-4 space-y-2 border-t border-mt-border pt-3">
                     {qna.answers.map((answer) => (
                       <QnaAnswerItem key={answer.id} answer={answer} />
                     ))}
@@ -426,7 +426,7 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
                         size="XS"
                         variant="gray"
                         onClick={() => setActiveAnswerQnaId(qna.id)}
-                        className="h-8 rounded-md px-3 text-xs font-semibold shadow-none hover:bg-surface-soft hover:text-text-black"
+                        className="h-8 rounded-md px-3 text-xs font-semibold shadow-none hover:bg-mt-bg-soft hover:text-mt-text-primary"
                       >
                         답변하기
                       </BaseButton>
@@ -438,12 +438,16 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
           })}
         </div>
       ) : (
-        <div className="rounded-2xl border border-border-gray bg-white px-6 py-12 text-center shadow-sm">
-          <MessageCircle className="mx-auto h-8 w-8 text-brand-500" aria-hidden strokeWidth={1.8} />
-          <p className="mt-3 text-base leading-6 font-bold text-text-black">
+        <div className="rounded-2xl border border-mt-border bg-mt-white px-6 py-12 text-center shadow-sm">
+          <MessageCircle
+            className="mx-auto h-8 w-8 text-mt-primary"
+            aria-hidden
+            strokeWidth={1.8}
+          />
+          <p className="mt-3 text-base leading-6 font-bold text-mt-text-primary">
             아직 등록된 Q&A가 없습니다.
           </p>
-          <p className="mt-1 text-sm leading-5 text-text-gray">
+          <p className="mt-1 text-sm leading-5 text-mt-text-secondary">
             프로젝트에 대해 궁금한 점을 가장 먼저 남겨보세요.
           </p>
         </div>

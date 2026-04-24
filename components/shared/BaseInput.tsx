@@ -35,18 +35,18 @@ export default function BaseInput({
   return (
     <div className={`relative ${widthClass}`}>
       {leftIcon && (
-        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-muted-gray">
+        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-mt-text-secondary">
           {leftIcon}
         </span>
       )}
       <input
         type={type}
         disabled={disabled}
-        className={`rounded-xl border border-border-gray bg-white text-text-black outline-none transition-all duration-200 ease-out
-          placeholder:text-muted-gray
-          focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-400/20
-          ${error ? 'border-error-red bg-danger-soft/20 focus:border-error-red focus:ring-danger-400/20' : ''}
-          disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-muted-gray
+        className={`rounded-xl border border-mt-border bg-mt-white text-mt-text-primary outline-none transition-all duration-200 ease-out
+          placeholder:text-mt-text-secondary
+          focus:border-mt-primary focus:bg-mt-white focus:outline-none focus:ring-2 focus:ring-mt-logo-blue/20
+          ${error ? 'border-mt-hero-blue bg-mt-badge-bg/20 focus:border-mt-hero-blue focus:ring-mt-hero-blue/20' : ''}
+          disabled:cursor-not-allowed disabled:bg-mt-bg-soft disabled:text-mt-text-secondary
           ${sizeClass}
           ${leftPaddingClass}
           ${rightPaddingClass}
@@ -55,7 +55,7 @@ export default function BaseInput({
         {...props}
       />
       {rightIcon && (
-        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-muted-gray">
+        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-mt-text-secondary">
           {rightIcon}
         </span>
       )}

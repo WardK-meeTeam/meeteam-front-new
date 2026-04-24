@@ -113,8 +113,8 @@ export default function ProjectForm({
   notEditableReason,
   onSubmit,
 }: ProjectFormProps) {
-  const messageIcon = <MessageCircle className="h-5 w-5 text-muted-gray" />;
-  const githubIcon = <GithubLoginIcon className="h-5 w-5 text-muted-gray" aria-hidden />;
+  const messageIcon = <MessageCircle className="h-5 w-5 text-mt-text-secondary" />;
+  const githubIcon = <GithubLoginIcon className="h-5 w-5 text-mt-text-secondary" aria-hidden />;
   const isEdit = variant === 'edit';
   const hydratedInitialValues = initialValues ?? DEFAULT_FORM_VALUES;
 
@@ -371,15 +371,15 @@ export default function ProjectForm({
 
   return (
     <section
-      className={`mx-auto flex w-full flex-col bg-white ${
+      className={`mx-auto flex w-full flex-col bg-mt-white ${
         isEdit
-          ? 'max-w-3xl rounded-3xl border border-border-soft px-8 py-10 shadow-sm md:px-12'
-          : 'max-w-3xl rounded-3xl p-10 shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]'
+          ? 'max-w-3xl rounded-3xl border border-mt-border px-8 py-10 shadow-sm md:px-12'
+          : 'max-w-3xl rounded-3xl p-10 shadow-xl'
       }`}
     >
       {!isEdit ? (
         <header>
-          <h1 className="text-2xl leading-8 font-extrabold text-text-black">프로젝트 등록</h1>
+          <h1 className="text-2xl leading-8 font-extrabold text-mt-text-primary">프로젝트 등록</h1>
         </header>
       ) : null}
 
@@ -388,7 +388,7 @@ export default function ProjectForm({
         onSubmit={handleSubmit}
       >
         {!editable && notEditableReason ? (
-          <div className="rounded-2xl border border-border-gray bg-surface-soft px-5 py-4 text-sm leading-6 font-medium text-project-status-closed">
+          <div className="rounded-2xl border border-mt-border bg-mt-bg-soft px-5 py-4 text-sm leading-6 font-medium text-mt-text-nav">
             {notEditableReason}
           </div>
         ) : null}
@@ -518,7 +518,7 @@ export default function ProjectForm({
           />
         </BaseField>
 
-        <div className={`w-full ${isEdit ? 'border-t border-border-gray pt-9' : ''}`}>
+        <div className={`w-full ${isEdit ? 'border-t border-mt-border pt-9' : ''}`}>
           <BaseField errorText={fieldErrors.myInterest} hintText="" label="나의 분야">
             <div className="flex w-full gap-2">
               <BaseDropdown
@@ -561,11 +561,11 @@ export default function ProjectForm({
 
         <div className="flex w-full flex-col gap-2">
           <div className="flex items-center justify-between">
-            <label className="text-lg leading-7 font-bold text-text-black">모집 분야</label>
+            <label className="text-lg leading-7 font-bold text-mt-text-primary">모집 분야</label>
             <button
               type="button"
               onClick={addRecruitInterest}
-              className="inline-flex items-center gap-1 text-xs leading-4 font-bold text-brand-500"
+              className="inline-flex items-center gap-1 text-xs leading-4 font-bold text-mt-primary"
             >
               <Plus className="h-4 w-4" aria-hidden strokeWidth={1.8} />
               추가하기
@@ -617,20 +617,20 @@ export default function ProjectForm({
                   />
                 </div>
 
-                <div className="flex h-12 items-center self-start rounded-xl border border-border-gray bg-white px-2 text-sm font-medium text-text-gray md:self-auto">
+                <div className="flex h-12 items-center self-start rounded-xl border border-mt-border bg-mt-white px-2 text-sm font-medium text-mt-text-secondary md:self-auto">
                   <button
                     type="button"
                     onClick={() => updateRecruitCount(index, -1)}
-                    className="flex h-8 w-7 items-center justify-center rounded-md hover:bg-surface-soft"
+                    className="flex h-8 w-7 items-center justify-center rounded-md hover:bg-mt-bg-soft"
                     aria-label="인원수 감소"
                   >
                     -
                   </button>
-                  <span className="w-6 text-center text-text-black">{interest.count}</span>
+                  <span className="w-6 text-center text-mt-text-primary">{interest.count}</span>
                   <button
                     type="button"
                     onClick={() => updateRecruitCount(index, 1)}
-                    className="flex h-8 w-7 items-center justify-center rounded-md hover:bg-surface-soft"
+                    className="flex h-8 w-7 items-center justify-center rounded-md hover:bg-mt-bg-soft"
                     aria-label="인원수 증가"
                   >
                     +
@@ -643,7 +643,7 @@ export default function ProjectForm({
                     onClick={() => removeRecruitInterest(index)}
                     disabled={interest.deletable === false}
                     title={interest.notDeletableReason ?? undefined}
-                    className="self-start text-xs font-bold text-error-red disabled:cursor-not-allowed disabled:text-muted-gray md:self-auto"
+                    className="self-start text-xs font-bold text-mt-hero-blue disabled:cursor-not-allowed disabled:text-mt-text-secondary md:self-auto"
                     aria-label="모집 분야 삭제"
                   >
                     삭제
@@ -654,7 +654,7 @@ export default function ProjectForm({
           </div>
 
           {fieldErrors.recruitInterests ? (
-            <p className="text-sm leading-5 text-error-red">{fieldErrors.recruitInterests}</p>
+            <p className="text-sm leading-5 text-mt-hero-blue">{fieldErrors.recruitInterests}</p>
           ) : null}
         </div>
 
@@ -699,7 +699,7 @@ export default function ProjectForm({
               type="submit"
               disabled={!editable || isSubmitting || isLoadingJobOptions}
               data-cy="project-form-submit"
-              className="w-full max-w-md shadow-xl shadow-brand-400/40"
+              className="w-full max-w-md shadow-xl shadow-mt-logo-blue/40"
             >
               {isSubmitting ? '저장 중...' : '저장하기'}
             </BaseButton>
@@ -712,7 +712,7 @@ export default function ProjectForm({
               type="submit"
               disabled={!editable || isSubmitting || isLoadingJobOptions}
               data-cy="project-form-submit"
-              className="w-full max-w-md shadow-xl shadow-brand-400/40"
+              className="w-full max-w-md shadow-xl shadow-mt-logo-blue/40"
             >
               {isSubmitting ? '프로젝트 등록 중...' : '프로젝트 등록하기'}
             </BaseButton>

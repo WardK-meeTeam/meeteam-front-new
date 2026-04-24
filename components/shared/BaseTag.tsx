@@ -16,10 +16,10 @@ const SIZE_MAP: Record<BaseTagSize, string> = {
 };
 
 const BASE_MAP: string =
-  'border border-border-gray bg-white text-text-gray/90 hover:border-brand-500/45 hover:bg-brand-400/18 hover:text-brand-500';
+  'border border-mt-border bg-mt-white text-mt-text-secondary/90 hover:border-mt-primary/45 hover:bg-mt-logo-blue/18 hover:text-mt-primary';
 
 const SELECTED_MAP: string =
-  'border-brand-400 bg-brand-50 text-brand-500 hover:border-brand-500 hover:bg-brand-50';
+  'border-mt-logo-blue bg-mt-badge-bg text-mt-primary hover:border-mt-primary hover:bg-mt-badge-bg';
 
 export default function BaseTag({
   size = 'M',

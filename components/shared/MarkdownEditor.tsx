@@ -53,16 +53,16 @@ export default function MarkdownEditor({
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border-gray bg-white">
-      <div className="flex flex-col gap-3 border-b border-border-gray bg-surface-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="overflow-hidden rounded-2xl border border-mt-border bg-mt-white">
+      <div className="flex flex-col gap-3 border-b border-mt-border bg-mt-bg-soft px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setMode('write')}
             className={`inline-flex h-9 items-center gap-2 rounded-lg px-3 text-sm font-bold transition-colors ${
               mode === 'write'
-                ? 'bg-white text-text-black shadow-sm'
-                : 'text-text-gray hover:bg-white hover:text-text-black'
+                ? 'bg-mt-white text-mt-text-primary shadow-sm'
+                : 'text-mt-text-secondary hover:bg-mt-white hover:text-mt-text-primary'
             }`}
           >
             <PencilLine className="h-4 w-4" aria-hidden strokeWidth={1.8} />
@@ -73,8 +73,8 @@ export default function MarkdownEditor({
             onClick={() => setMode('preview')}
             className={`inline-flex h-9 items-center gap-2 rounded-lg px-3 text-sm font-bold transition-colors ${
               mode === 'preview'
-                ? 'bg-white text-text-black shadow-sm'
-                : 'text-text-gray hover:bg-white hover:text-text-black'
+                ? 'bg-mt-white text-mt-text-primary shadow-sm'
+                : 'text-mt-text-secondary hover:bg-mt-white hover:text-mt-text-primary'
             }`}
           >
             <Eye className="h-4 w-4" aria-hidden strokeWidth={1.8} />
@@ -94,7 +94,7 @@ export default function MarkdownEditor({
                 disabled={disabled}
                 aria-label={`${action.label} 넣기`}
                 title={`${action.label} 넣기`}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-text-gray transition-colors hover:bg-white hover:text-text-black disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-mt-text-secondary transition-colors hover:bg-mt-white hover:text-mt-text-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
               </button>
@@ -120,11 +120,9 @@ export default function MarkdownEditor({
         </div>
       )}
 
-      <div className="flex flex-col gap-1 border-t border-border-gray bg-surface-soft px-4 py-3 text-sm leading-5 text-text-gray sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-1 border-t border-mt-border bg-mt-bg-soft px-4 py-3 text-sm leading-5 text-mt-text-secondary sm:flex-row sm:items-center sm:justify-between">
         <p>{helperText}</p>
-        <span className="font-semibold text-project-status-closed">
-          {characterCount.toLocaleString()}자
-        </span>
+        <span className="font-semibold text-mt-text-nav">{characterCount.toLocaleString()}자</span>
       </div>
     </div>
   );

@@ -10,6 +10,12 @@ export interface UserCardProps {
   experience: string;
   skills: string[];
   imageUrl: string;
+  className?: string;
+  dataCy?: string;
+  dataUserId?: string | number;
+  dataTeammateId?: string | number;
+  nameDataCy?: string;
+  experienceDataCy?: string;
 }
 
 export default function UserCard({
@@ -19,13 +25,22 @@ export default function UserCard({
   experience,
   skills,
   imageUrl,
+  className = '',
+  dataCy,
+  dataUserId,
+  dataTeammateId,
+  nameDataCy,
+  experienceDataCy,
 }: UserCardProps) {
   const [primarySkill, secondarySkill] = skills;
 
   return (
     <AuthLink
       href={`/profile/${userId}`}
-      className="group block h-full rounded-2xl border border-home-blue-100 bg-white px-6 pt-6 pb-14 shadow-sm transition-shadow hover:shadow-md"
+      data-cy={dataCy}
+      data-user-id={dataUserId}
+      data-teammate-id={dataTeammateId}
+      className={`group block h-full rounded-2xl border border-mt-border bg-mt-white px-6 pt-6 pb-14 shadow-sm transition-shadow hover:shadow-md ${className}`}
     >
       <div className="relative h-16 w-full">
         <ProfileAvatar
@@ -38,26 +53,28 @@ export default function UserCard({
           imageClassName="transition-transform duration-400 group-hover:scale-135"
         />
 
-        <span className="absolute top-0 right-0 rounded-lg bg-home-blue-50 px-2 py-1 text-xs font-medium text-home-blue-500">
+        <span className="absolute top-0 right-0 rounded-lg bg-mt-badge-bg px-2 py-1 text-xs font-medium text-mt-primary">
           {role}
         </span>
       </div>
 
       <div className="mt-6 space-y-1">
-        <h3 className="text-base font-bold text-text-black">{name}</h3>
+        <h3 data-cy={nameDataCy} className="text-base font-bold text-mt-text-primary">
+          {name}
+        </h3>
 
-        <div className="flex items-center gap-1.5 text-xs text-text-gray">
+        <div className="flex items-center gap-1.5 text-xs text-mt-text-secondary">
           <BriefcaseBusiness
             aria-hidden
-            className="h-3.5 w-3.5 text-muted-gray"
+            className="h-3.5 w-3.5 text-mt-text-secondary"
             strokeWidth={1.8}
           />
-          <p>{experience}</p>
+          <p data-cy={experienceDataCy}>{experience}</p>
         </div>
       </div>
 
       <div className="mt-5">
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-gray">
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-mt-text-secondary">
           Main Skills
         </p>
         <div className="flex flex-wrap gap-2">

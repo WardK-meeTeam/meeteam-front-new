@@ -93,8 +93,8 @@ export default function NotificationsPage() {
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-3xl leading-9 font-bold text-text-black">알림 센터</h1>
-            <span className="inline-flex items-center rounded-full border border-border-gray bg-white px-3 py-1 text-sm leading-5 font-medium text-text-gray">
+            <h1 className="text-3xl leading-9 font-bold text-mt-text-primary">알림 센터</h1>
+            <span className="inline-flex items-center rounded-full border border-mt-border bg-mt-white px-3 py-1 text-sm leading-5 font-medium text-mt-text-secondary">
               {unreadCount}개의 안 읽은 알림
             </span>
           </div>
@@ -103,7 +103,7 @@ export default function NotificationsPage() {
             type="button"
             onClick={handleMarkAllRead}
             disabled={unreadCount === 0}
-            className="w-fit text-sm leading-5 font-semibold text-brand-500 transition-colors hover:text-brand-700"
+            className="w-fit text-sm leading-5 font-semibold text-mt-primary transition-colors hover:text-mt-primary"
           >
             모두 읽음 처리
           </button>
@@ -119,11 +119,11 @@ export default function NotificationsPage() {
           ) : null}
 
           {!isLoading && notifications.length === 0 ? (
-            <div className="rounded-2xl border border-border-gray bg-white px-5 py-12 text-center">
-              <p className="text-base leading-6 font-bold text-text-black">
+            <div className="rounded-2xl border border-mt-border bg-mt-white px-5 py-12 text-center">
+              <p className="text-base leading-6 font-bold text-mt-text-primary">
                 도착한 알림이 없습니다.
               </p>
-              <p className="mt-2 text-sm leading-5 text-text-gray">
+              <p className="mt-2 text-sm leading-5 text-mt-text-secondary">
                 프로젝트 지원과 팀 합류 소식이 생기면 이곳에 표시됩니다.
               </p>
             </div>
@@ -141,7 +141,7 @@ export default function NotificationsPage() {
             type="button"
             onClick={() => void loadNotifications(page + 1)}
             disabled={isLoadingMore}
-            className="mx-auto inline-flex h-10 w-fit items-center justify-center gap-2 rounded-xl border border-border-gray bg-white px-4 text-sm leading-5 font-bold text-text-gray shadow-sm transition-colors hover:text-text-black disabled:cursor-not-allowed disabled:opacity-50"
+            className="mx-auto inline-flex h-10 w-fit items-center justify-center gap-2 rounded-xl border border-mt-border bg-mt-white px-4 text-sm leading-5 font-bold text-mt-text-secondary shadow-sm transition-colors hover:text-mt-text-primary disabled:cursor-not-allowed disabled:opacity-50"
           >
             <RotateCw className="h-4 w-4" aria-hidden strokeWidth={1.8} />
             {isLoadingMore ? '불러오는 중' : '더보기'}

@@ -99,11 +99,11 @@ export default function ProjectActionButtons({
           disabled={isToggling}
           data-cy="project-like-button"
           onClick={handleLikeToggle}
-          className={`inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl border border-border-gray px-4 text-base leading-6 font-bold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-70
+          className={`inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl border border-mt-border px-4 text-base leading-6 font-bold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-70
             ${
               liked
-                ? 'bg-danger-soft text-danger-500'
-                : 'bg-white text-project-status-closed hover:bg-danger-soft'
+                ? 'bg-mt-badge-bg text-mt-hero-blue'
+                : 'bg-mt-white text-mt-text-nav hover:bg-mt-badge-bg'
             }`}
         >
           <Heart
@@ -115,7 +115,7 @@ export default function ProjectActionButtons({
         </button>
 
         <button
-          className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-border-gray bg-white text-project-status-closed shadow-sm transition-colors hover:bg-brand-50"
+          className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-mt-border bg-mt-white text-mt-text-nav shadow-sm transition-colors hover:bg-mt-badge-bg"
           type="button"
         >
           <Share2 className="h-5 w-5" aria-hidden strokeWidth={1.8} />

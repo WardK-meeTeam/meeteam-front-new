@@ -27,7 +27,7 @@ export function TeammateFinderPanel({
     <div className="space-y-6 pt-4">
       <label className="relative block">
         <Search
-          className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-gray"
+          className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-mt-text-secondary"
           aria-hidden
           strokeWidth={1.8}
         />
@@ -37,14 +37,14 @@ export function TeammateFinderPanel({
           onChange={(event) => onSearchChange(event.target.value)}
           placeholder={TEAMMATE_PAGE_COPY.searchPlaceholder}
           data-cy="teammate-search-input"
-          className="h-14 w-full rounded-xl border border-border-gray bg-white py-4 pl-12 pr-5 text-base leading-6 text-text-black shadow-sm outline-none placeholder:text-muted-gray focus:border-brand-400 focus:ring-2 focus:ring-brand-400/15"
+          className="h-14 w-full rounded-xl border border-mt-border bg-mt-white py-4 pl-12 pr-5 text-base leading-6 text-mt-text-primary shadow-sm outline-none placeholder:text-mt-text-secondary focus:border-mt-logo-blue focus:ring-2 focus:ring-mt-logo-blue/15"
         />
       </label>
 
-      <div className="rounded-2xl border border-border-gray bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-mt-border bg-mt-white p-6 shadow-sm">
         <div className="space-y-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-            <span className="w-16 shrink-0 text-sm leading-5 font-semibold text-text-black">
+            <span className="w-16 shrink-0 text-sm leading-5 font-semibold text-mt-text-primary">
               분야
             </span>
             <div className="flex flex-wrap gap-x-2 gap-y-2">
@@ -59,10 +59,10 @@ export function TeammateFinderPanel({
             </div>
           </div>
 
-          <div className="h-px w-full bg-border-soft" />
+          <div className="h-px w-full bg-mt-border" />
 
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-            <span className="w-16 shrink-0 text-sm leading-5 font-semibold text-text-black">
+            <span className="w-16 shrink-0 text-sm leading-5 font-semibold text-mt-text-primary">
               기술 스택
             </span>
             <div className="w-full max-w-md">

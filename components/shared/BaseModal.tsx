@@ -39,7 +39,7 @@ export default function BaseModal({ isOpen, onClose, children }: BaseModalProps)
   return (
     <Portal>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-text-black/40 px-4"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-mt-text-primary/40 px-4"
         onClick={onClose}
         role="presentation"
       >

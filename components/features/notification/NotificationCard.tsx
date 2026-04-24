@@ -23,44 +23,44 @@ const CARD_VARIANT_STYLES: Record<
   }
 > = {
   welcome: {
-    containerClassName: 'border-brand-100 shadow-sm',
-    iconWrapperClassName: 'bg-brand-100',
+    containerClassName: 'border-mt-border shadow-sm',
+    iconWrapperClassName: 'bg-mt-border',
     icon: CircleCheck,
-    iconClassName: 'text-project-status-progress',
-    titleClassName: 'text-text-black',
-    descriptionClassName: 'text-project-status-closed',
+    iconClassName: 'text-mt-mint',
+    titleClassName: 'text-mt-text-primary',
+    descriptionClassName: 'text-mt-text-nav',
   },
   applicant: {
-    containerClassName: 'border-brand-100 shadow-sm',
-    iconWrapperClassName: 'bg-brand-100',
+    containerClassName: 'border-mt-border shadow-sm',
+    iconWrapperClassName: 'bg-mt-border',
     icon: UserRoundPlus,
-    iconClassName: 'text-brand-500',
-    titleClassName: 'text-text-black',
-    descriptionClassName: 'text-project-status-closed',
+    iconClassName: 'text-mt-primary',
+    titleClassName: 'text-mt-text-primary',
+    descriptionClassName: 'text-mt-text-nav',
   },
   rejected: {
-    containerClassName: 'border-border-gray opacity-80',
-    iconWrapperClassName: 'bg-chip-bg',
+    containerClassName: 'border-mt-border opacity-80',
+    iconWrapperClassName: 'bg-mt-badge-bg',
     icon: CircleX,
-    iconClassName: 'text-danger-500',
-    titleClassName: 'text-text-body',
-    descriptionClassName: 'text-text-gray',
+    iconClassName: 'text-mt-hero-blue',
+    titleClassName: 'text-mt-text-nav',
+    descriptionClassName: 'text-mt-text-secondary',
   },
   submitted: {
-    containerClassName: 'border-border-gray opacity-80',
-    iconWrapperClassName: 'bg-border-soft',
+    containerClassName: 'border-mt-border opacity-80',
+    iconWrapperClassName: 'bg-mt-border',
     icon: Clock3,
-    iconClassName: 'text-text-gray',
-    titleClassName: 'text-text-body',
-    descriptionClassName: 'text-text-gray',
+    iconClassName: 'text-mt-text-secondary',
+    titleClassName: 'text-mt-text-nav',
+    descriptionClassName: 'text-mt-text-secondary',
   },
   ended: {
-    containerClassName: 'border-border-gray opacity-80',
-    iconWrapperClassName: 'bg-border-soft',
+    containerClassName: 'border-mt-border opacity-80',
+    iconWrapperClassName: 'bg-mt-border',
     icon: CircleAlert,
-    iconClassName: 'text-project-status-closed',
-    titleClassName: 'text-text-body',
-    descriptionClassName: 'text-text-gray',
+    iconClassName: 'text-mt-text-nav',
+    titleClassName: 'text-mt-text-nav',
+    descriptionClassName: 'text-mt-text-secondary',
   },
 };
 
@@ -85,7 +85,7 @@ export function NotificationCard({
 
   return (
     <article
-      className={`relative flex items-start gap-4 rounded-2xl border bg-white p-5 ${containerClassName}`}
+      className={`relative flex items-start gap-4 rounded-2xl border bg-mt-white p-5 ${containerClassName}`}
     >
       <div
         className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconWrapperClassName}`}
@@ -97,11 +97,13 @@ export function NotificationCard({
         <div className="flex items-start justify-between gap-4 pr-4">
           <h2 className={`text-base leading-6 font-bold ${titleClassName}`}>{title}</h2>
           <div className="relative shrink-0 pt-1 pr-4">
-            <span className="text-xs leading-4 font-medium text-muted-gray">{timestamp}</span>
+            <span className="text-xs leading-4 font-medium text-mt-text-secondary">
+              {timestamp}
+            </span>
 
             {unread ? (
               <span
-                className="absolute right-0 top-0 block h-2.5 w-2.5 rounded-full bg-danger-500"
+                className="absolute right-0 top-0 block h-2.5 w-2.5 rounded-full bg-mt-hero-blue"
                 aria-hidden
               />
             ) : null}
@@ -113,7 +115,7 @@ export function NotificationCard({
         {actionHref && actionLabel ? (
           <Link
             href={actionHref}
-            className="mt-3 inline-flex items-center gap-0.5 text-sm leading-5 font-bold text-brand-500 transition-colors hover:text-brand-700"
+            className="mt-3 inline-flex items-center gap-0.5 text-sm leading-5 font-bold text-mt-primary transition-colors hover:text-mt-primary"
           >
             {actionLabel}
             <ChevronRight className="h-4 w-4" aria-hidden strokeWidth={1.8} />

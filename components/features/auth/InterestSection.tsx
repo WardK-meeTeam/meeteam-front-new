@@ -24,13 +24,13 @@ export default function InterestSection({
   return (
     <div className="flex w-full flex-col gap-2">
       <div className="flex justify-between items-center">
-        <label className="text-lg font-bold leading-7 text-text-black">관심 분야</label>
+        <label className="text-lg font-bold leading-7 text-mt-text-primary">관심 분야</label>
         <button
           type="button"
           onClick={onAdd}
           disabled={disabled}
           data-cy="signup-interest-add"
-          className="cursor-pointer text-brand-500 text-xs font-bold leading-4 disabled:cursor-not-allowed disabled:text-muted-gray"
+          className="cursor-pointer text-mt-primary text-xs font-bold leading-4 disabled:cursor-not-allowed disabled:text-mt-text-secondary"
         >
           + 분야 추가
         </button>
@@ -51,7 +51,7 @@ export default function InterestSection({
         ))}
       </div>
 
-      {errorText ? <p className="text-sm text-error-red">{errorText}</p> : null}
+      {errorText ? <p className="text-sm text-mt-hero-blue">{errorText}</p> : null}
     </div>
   );
 }

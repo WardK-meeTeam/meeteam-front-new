@@ -27,10 +27,10 @@ function FilterChip({
       data-cy={dataCy}
       data-value={label}
       aria-pressed={active}
-      className={`rounded-full px-3.5 py-1.5 text-sm leading-5 transition-all ${
+      className={`rounded-full border px-3.5 py-1.5 text-sm leading-5 transition-all ${
         active
-          ? 'bg-text-black font-medium text-white shadow-sm'
-          : 'font-normal text-text-gray hover:text-text-black'
+          ? 'border-mt-border bg-mt-white font-bold text-mt-primary shadow-sm'
+          : 'border-transparent font-normal text-mt-text-secondary hover:bg-mt-badge-bg hover:text-mt-primary'
       }`}
     >
       {label}
@@ -57,7 +57,7 @@ function SelectField({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         data-cy={dataCy}
-        className="h-12 w-full appearance-none rounded-xl border border-border-gray bg-white py-3 pl-4 pr-10 text-sm leading-5 font-medium text-text-body shadow-sm outline-none transition-colors focus:border-brand-400"
+        className="h-12 w-full appearance-none rounded-xl border border-mt-border bg-mt-white py-3 pl-4 pr-10 text-sm leading-5 font-medium text-mt-text-nav shadow-sm outline-none transition-colors focus:border-mt-logo-blue"
       >
         {options.map((option) => (
           <option key={option} value={option}>
@@ -66,7 +66,7 @@ function SelectField({
         ))}
       </select>
       <ChevronDown
-        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-gray"
+        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-mt-text-secondary"
         aria-hidden
         strokeWidth={1.8}
       />
@@ -104,7 +104,7 @@ export function ProjectFindFilters({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
         <label className="relative block flex-1 lg:max-w-3xl">
           <Search
-            className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-gray"
+            className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-mt-text-secondary"
             aria-hidden
             strokeWidth={1.8}
           />
@@ -114,7 +114,7 @@ export function ProjectFindFilters({
             onChange={(event) => onSearchValueChange(event.target.value)}
             placeholder="프로젝트 이름 또는 리더 이름으로 검색하세요."
             data-cy="project-search-input"
-            className="h-14 w-full rounded-xl border border-border-gray bg-white py-4 pl-12 pr-5 text-base text-text-black shadow-sm outline-none placeholder:text-muted-gray focus:border-brand-400"
+            className="h-14 w-full rounded-xl border border-mt-border bg-mt-white py-4 pl-12 pr-5 text-base text-mt-text-primary shadow-sm outline-none placeholder:text-mt-text-secondary focus:border-mt-logo-blue"
           />
         </label>
 
@@ -138,10 +138,10 @@ export function ProjectFindFilters({
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border-gray bg-white p-6 shadow-sm">
+      <div className="rounded-2xl border border-mt-border bg-mt-white p-6 shadow-sm">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-            <span className="w-12 shrink-0 text-sm leading-5 font-semibold text-text-black">
+            <span className="w-12 shrink-0 text-sm leading-5 font-semibold text-mt-text-primary">
               플랫폼
             </span>
             <div className="flex flex-wrap gap-2">
@@ -157,10 +157,10 @@ export function ProjectFindFilters({
             </div>
           </div>
 
-          <div className="h-px w-full bg-border-soft" />
+          <div className="h-px w-full bg-mt-border" />
 
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
-            <span className="w-12 shrink-0 text-sm leading-5 font-semibold text-text-black">
+            <span className="w-12 shrink-0 text-sm leading-5 font-semibold text-mt-text-primary">
               분야
             </span>
             <div className="flex flex-wrap gap-2">

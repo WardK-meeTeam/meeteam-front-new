@@ -260,7 +260,7 @@ export default function SejongSignupForm() {
   };
 
   if (!isCodeReady) {
-    return <p className="text-sm leading-6 font-medium text-text-gray">불러오는 중...</p>;
+    return <p className="text-sm leading-6 font-medium text-mt-text-secondary">불러오는 중...</p>;
   }
 
   if (!onboardingCode) {
@@ -269,7 +269,7 @@ export default function SejongSignupForm() {
         <ToastMessage message="세종대 포털 인증 정보가 없습니다. 로그인부터 다시 진행해 주세요." />
         <Link
           href="/auth/login"
-          className="inline-flex h-12 items-center justify-center rounded-xl bg-brand-500 px-5 text-sm font-bold text-white"
+          className="inline-flex h-12 items-center justify-center rounded-xl bg-mt-primary px-5 text-sm font-bold text-mt-white"
         >
           로그인으로 돌아가기
         </Link>

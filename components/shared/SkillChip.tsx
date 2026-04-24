@@ -12,9 +12,9 @@ type SkillChipProps = {
 };
 
 const VARIANT_CLASS: Record<SkillChipVariant, string> = {
-  primary: 'border-transparent bg-home-blue-50 text-home-blue-500',
-  neutral: 'border-transparent bg-surface-soft text-label-dark',
-  outline: 'border-border-gray bg-white text-project-status-closed',
+  primary: 'border-transparent bg-mt-badge-bg text-mt-primary',
+  neutral: 'border-transparent bg-mt-bg-soft text-mt-text-primary',
+  outline: 'border-mt-border bg-mt-white text-mt-text-nav',
 };
 
 const SIZE_CLASS: Record<SkillChipSize, string> = {
@@ -38,7 +38,7 @@ export default function SkillChip({
         <button
           type="button"
           onClick={onRemove}
-          className="text-muted-gray transition-colors hover:text-danger-400"
+          className="text-mt-text-secondary transition-colors hover:text-mt-hero-blue"
           aria-label={`${label} 삭제`}
         >
           <X className="h-3.5 w-3.5" aria-hidden strokeWidth={2} />

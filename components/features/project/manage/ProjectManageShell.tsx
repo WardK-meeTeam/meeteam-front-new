@@ -215,18 +215,20 @@ export default function ProjectManageShell({
       <div className="space-y-6 md:space-y-8">
         <ToastMessage message={errorMessage} />
 
-        <header className="flex flex-col gap-5 border-b border-border-gray pb-6 md:gap-6">
+        <header className="flex flex-col gap-5 border-b border-mt-border pb-6 md:gap-6">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div className="space-y-0.5">
               {isHeaderLoading ? (
                 <SkeletonBlock className="h-8 w-64 max-w-full" />
               ) : (
-                <h1 className="text-2xl leading-8 font-bold text-text-black">{projectTitle}</h1>
+                <h1 className="text-2xl leading-8 font-bold text-mt-text-primary">
+                  {projectTitle}
+                </h1>
               )}
             </div>
 
             <div className="flex items-center gap-3 self-end md:self-auto">
-              <span className="text-sm leading-5 font-bold text-project-status-closed">상태:</span>
+              <span className="text-sm leading-5 font-bold text-mt-text-nav">상태:</span>
               <div className="relative" ref={statusMenuRef}>
                 {isHeaderLoading ? (
                   <SkeletonBlock className="h-10 w-28 rounded-xl" />
@@ -236,10 +238,10 @@ export default function ProjectManageShell({
                     onClick={() => setIsStatusMenuOpen((prev) => !prev)}
                     disabled={isStatusUpdating}
                     data-cy="project-manage-status-button"
-                    className={`inline-flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm leading-5 font-bold text-white shadow-md transition-colors ${
+                    className={`inline-flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm leading-5 font-bold text-mt-white shadow-md transition-colors ${
                       projectStatus === 'CLOSED'
-                        ? 'bg-project-status-closed hover:opacity-95'
-                        : 'bg-brand-500 hover:bg-brand-400'
+                        ? 'bg-mt-text-nav hover:opacity-95'
+                        : 'bg-mt-primary hover:bg-mt-logo-blue'
                     } disabled:cursor-not-allowed disabled:opacity-70`}
                   >
                     {isStatusUpdating ? '변경 중' : statusCopy.label}
@@ -252,13 +254,13 @@ export default function ProjectManageShell({
                 )}
 
                 {isStatusMenuOpen && !isHeaderLoading ? (
-                  <div className="absolute right-0 top-[calc(100%+8px)] z-30 min-w-32 rounded-2xl border border-border-gray bg-white p-2 shadow-[0_20px_25px_-5px_rgba(15,23,42,0.12),0_8px_10px_-6px_rgba(15,23,42,0.12)]">
+                  <div className="absolute right-0 top-[calc(100%+8px)] z-30 min-w-32 rounded-2xl border border-mt-border bg-mt-white p-2 shadow-xl">
                     <button
                       type="button"
                       onClick={handleToggleStatus}
                       disabled={!canToggleStatus || isStatusUpdating}
                       data-cy="project-manage-status-toggle"
-                      className="flex w-full items-center justify-between rounded-xl bg-brand-50 px-4 py-2.5 text-sm leading-5 font-bold text-brand-500 transition-colors hover:bg-brand-100 disabled:cursor-not-allowed disabled:bg-surface-soft disabled:text-text-gray"
+                      className="flex w-full items-center justify-between rounded-xl bg-mt-badge-bg px-4 py-2.5 text-sm leading-5 font-bold text-mt-primary transition-colors hover:bg-mt-border disabled:cursor-not-allowed disabled:bg-mt-bg-soft disabled:text-mt-text-secondary"
                     >
                       {statusCopy.actionLabel ?? '변경 불가'}
                     </button>
@@ -280,8 +282,8 @@ export default function ProjectManageShell({
                       href={`/projects/${projectId}/manage${tab.href}`}
                       className={`inline-flex items-center gap-2 border-b-2 px-6 py-3.5 text-sm leading-5 font-bold transition-colors ${
                         isActive
-                          ? 'border-brand-500 text-brand-500'
-                          : 'border-transparent text-text-gray hover:text-text-black'
+                          ? 'border-mt-primary text-mt-primary'
+                          : 'border-transparent text-mt-text-secondary hover:text-mt-text-primary'
                       }`}
                     >
                       <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
@@ -290,7 +292,7 @@ export default function ProjectManageShell({
                         isHeaderLoading ? (
                           <SkeletonBlock className="h-5 w-6 rounded-full" />
                         ) : (
-                          <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-brand-100 px-2 py-0.5 text-[10px] leading-5 font-bold text-brand-500">
+                          <span className="inline-flex min-w-6 items-center justify-center rounded-full bg-mt-border px-2 py-0.5 text-[10px] leading-5 font-bold text-mt-primary">
                             {pendingApplicants}
                           </span>
                         )

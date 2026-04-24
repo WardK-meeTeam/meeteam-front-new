@@ -9,11 +9,11 @@ export default function ProjectDetailDescriptionSection({ description }: { descr
         title="프로젝트 상세"
         icon={<FileText className="h-5 w-5" aria-hidden strokeWidth={1.8} />}
       />
-      <div className="rounded-2xl bg-surface-soft px-6 py-6">
+      <div className="rounded-2xl bg-mt-bg-soft px-6 py-6">
         <MarkdownContent
           value={description}
           emptyText="아직 프로젝트 소개가 준비되지 않았어요."
-          className="break-keep text-project-status-closed"
+          className="break-keep text-mt-text-nav"
         />
       </div>
     </section>

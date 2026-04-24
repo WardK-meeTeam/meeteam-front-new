@@ -23,15 +23,15 @@ type ProjectManageApplicantsProps = {
 
 function ProjectManageApplicantsSkeleton() {
   return (
-    <section className="overflow-hidden rounded-2xl border border-border-gray/40 bg-white shadow-sm">
-      <header className="border-b border-border-gray/40 bg-surface-soft/50 px-6 py-4">
+    <section className="overflow-hidden rounded-2xl border border-mt-border/40 bg-mt-white shadow-sm">
+      <header className="border-b border-mt-border/40 bg-mt-bg-soft/50 px-6 py-4">
         <SkeletonBlock className="h-6 w-28" />
       </header>
       <div className="space-y-6 px-6 py-6">
         {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={`project-applicant-skeleton-${index}`}
-            className={index === 0 ? '' : 'border-t border-border-gray/40 pt-6'}
+            className={index === 0 ? '' : 'border-t border-mt-border/40 pt-6'}
           >
             <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
               <div className="flex min-w-0 gap-4 lg:w-52">
@@ -209,17 +209,19 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
         {isLoading && pendingApplicants.length === 0 ? (
           <ProjectManageApplicantsSkeleton />
         ) : (
-          <section className="overflow-hidden rounded-2xl border border-border-gray/40 bg-white shadow-sm">
-            <header className="border-b border-border-gray/40 bg-surface-soft/50 px-6 py-4">
-              <h2 className="text-base leading-6 font-bold text-text-black">
-                지원자 목록 <span className="ml-1 text-brand-500">{pendingApplicants.length}</span>
+          <section className="overflow-hidden rounded-2xl border border-mt-border/40 bg-mt-white shadow-sm">
+            <header className="border-b border-mt-border/40 bg-mt-bg-soft/50 px-6 py-4">
+              <h2 className="text-base leading-6 font-bold text-mt-text-primary">
+                지원자 목록 <span className="ml-1 text-mt-primary">{pendingApplicants.length}</span>
               </h2>
             </header>
 
             {pendingApplicants.length === 0 ? (
               <div className="px-6 py-12 text-center">
-                <p className="text-base font-bold text-text-black">대기 중인 지원자가 없습니다.</p>
-                <p className="mt-2 text-sm text-text-gray">
+                <p className="text-base font-bold text-mt-text-primary">
+                  대기 중인 지원자가 없습니다.
+                </p>
+                <p className="mt-2 text-sm text-mt-text-secondary">
                   새로운 지원이 들어오면 이곳에서 검토할 수 있습니다.
                 </p>
               </div>
@@ -228,7 +230,7 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
                 {pendingApplicants.map((applicant, index) => (
                   <li
                     key={applicant.id}
-                    className={`${index === 0 ? '' : 'border-t border-border-gray/40'} px-6 py-6`}
+                    className={`${index === 0 ? '' : 'border-t border-mt-border/40'} px-6 py-6`}
                   >
                     <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
                       <div className="flex min-w-0 gap-4 lg:w-52">
@@ -238,22 +240,24 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
                           sizeClassName="h-14 w-14"
                           shape="rounded"
                           textClassName="text-base"
-                          className="bg-border-gray text-text-gray"
+                          className="bg-mt-border text-mt-text-secondary"
                         />
 
                         <div className="min-w-0 space-y-0.5">
-                          <p className="truncate text-xl leading-7 font-bold text-text-black">
+                          <p className="truncate text-xl leading-7 font-bold text-mt-text-primary">
                             {applicant.name}
                           </p>
-                          <p className="text-sm leading-5 font-bold text-brand-500">
+                          <p className="text-sm leading-5 font-bold text-mt-primary">
                             {applicant.position}
                           </p>
-                          <p className="text-xs leading-4 text-text-gray">{applicant.specialty}</p>
+                          <p className="text-xs leading-4 text-mt-text-secondary">
+                            {applicant.specialty}
+                          </p>
                         </div>
                       </div>
 
                       <div className="min-w-0 flex-1 space-y-3">
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs leading-4 text-text-gray">
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs leading-4 text-mt-text-secondary">
                           <span className="inline-flex items-center gap-1">
                             <CalendarDays className="h-3.5 w-3.5" aria-hidden strokeWidth={1.8} />
                             {applicant.appliedAt}
@@ -264,7 +268,7 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
                           </span>
                         </div>
 
-                        <div className="max-h-36 min-w-0 overflow-hidden rounded-xl bg-surface-soft px-3 py-3 text-sm leading-6 text-text-body">
+                        <div className="max-h-36 min-w-0 overflow-hidden rounded-xl bg-mt-bg-soft px-3 py-3 text-sm leading-6 text-mt-text-nav">
                           <MarkdownContent
                             value={applicant.introduction}
                             emptyText="아직 자기소개가 비어 있어요."
@@ -276,19 +280,19 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
                           <button
                             type="button"
                             onClick={() => void handleOpenDetail(applicant)}
-                            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-border-gray bg-white px-4 text-sm leading-5 font-bold text-project-status-closed transition-colors hover:bg-surface-soft"
+                            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-mt-border bg-mt-white px-4 text-sm leading-5 font-bold text-mt-text-nav transition-colors hover:bg-mt-bg-soft"
                           >
                             <ExternalLink className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                             상세 보기
                           </button>
 
-                          <div className="h-6 w-px bg-border-gray" aria-hidden />
+                          <div className="h-6 w-px bg-mt-border" aria-hidden />
 
                           <button
                             type="button"
                             onClick={() => void handleDecision(applicant, 'ACCEPTED')}
                             disabled={decisionLoadingId !== null}
-                            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-brand-500 px-4 text-sm leading-5 font-bold text-white shadow-sm transition-colors hover:bg-brand-400 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg bg-mt-primary px-4 text-sm leading-5 font-bold text-mt-white shadow-sm transition-colors hover:bg-mt-logo-blue disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <CheckCircle2 className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                             {decisionLoadingId === applicant.id ? '처리 중' : '승인'}
@@ -298,7 +302,7 @@ export default function ProjectManageApplicants({ projectId }: ProjectManageAppl
                             type="button"
                             onClick={() => void handleDecision(applicant, 'REJECTED')}
                             disabled={decisionLoadingId !== null}
-                            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-border-gray bg-white px-4 text-sm leading-5 font-bold text-danger-500 transition-colors hover:bg-surface-soft disabled:cursor-not-allowed disabled:opacity-50"
+                            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border border-mt-border bg-mt-white px-4 text-sm leading-5 font-bold text-mt-hero-blue transition-colors hover:bg-mt-bg-soft disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <XCircle className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                             {decisionLoadingId === applicant.id ? '처리 중' : '거절'}

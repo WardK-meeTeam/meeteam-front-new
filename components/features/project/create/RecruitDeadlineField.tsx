@@ -27,11 +27,11 @@ export default function RecruitDeadlineField({
   return (
     <div className="flex w-full flex-col gap-2">
       <div className="flex w-full items-center justify-between">
-        <p className="text-sm font-bold leading-5 text-text-black">모집 마감일</p>
+        <p className="text-sm font-bold leading-5 text-mt-text-primary">모집 마감일</p>
         {showUntilComplete ? (
           <label
             className={`inline-flex cursor-pointer select-none items-center gap-2 text-xs font-bold leading-4 ${
-              untilComplete ? 'text-brand-500' : 'text-text-gray'
+              untilComplete ? 'text-mt-primary' : 'text-mt-text-secondary'
             }`}
           >
             <input
@@ -42,12 +42,12 @@ export default function RecruitDeadlineField({
               className="peer sr-only"
             />
             <span
-              className={`flex size-4 items-center justify-center rounded-sm border p-px transition peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400/30 ${
-                untilComplete ? 'border-brand-500 bg-brand-500' : 'border-border-gray bg-white'
+              className={`flex size-4 items-center justify-center rounded-sm border p-px transition peer-focus-visible:ring-2 peer-focus-visible:ring-mt-logo-blue/30 ${
+                untilComplete ? 'border-mt-primary bg-mt-primary' : 'border-mt-border bg-mt-white'
               }`}
             >
               <Check
-                className={`size-3.5 text-white transition-opacity ${
+                className={`size-3.5 text-mt-white transition-opacity ${
                   untilComplete ? 'opacity-100' : 'opacity-0'
                 }`}
                 strokeWidth={3}
@@ -68,7 +68,7 @@ export default function RecruitDeadlineField({
         disabled={untilComplete}
       />
 
-      {errorText ? <p className="text-sm leading-5 text-error-red">{errorText}</p> : null}
+      {errorText ? <p className="text-sm leading-5 text-mt-hero-blue">{errorText}</p> : null}
     </div>
   );
 }

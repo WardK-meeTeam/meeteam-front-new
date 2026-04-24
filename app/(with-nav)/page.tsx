@@ -26,22 +26,22 @@ export default async function Page() {
 
   return (
     <div className="space-y-12 pb-8 md:space-y-16">
-      <section className="relative overflow-hidden bg-white px-2 py-8 md:px-4 md:py-12 xl:py-16">
-        <div className="pointer-events-none absolute right-0 top-14 h-96 w-96 rounded-full bg-home-blue-50 blur-3xl md:right-16 md:h-[32rem] md:w-[32rem]" />
+      <section className="relative overflow-hidden bg-mt-bg px-2 py-4 md:px-4 md:py-6 xl:py-8">
+        <div className="pointer-events-none absolute right-0 top-14 h-96 w-96 rounded-full bg-mt-bg-soft blur-3xl md:right-16 md:h-[32rem] md:w-[32rem]" />
 
         <div className="relative grid items-center gap-10 lg:grid-cols-[0.88fr_1.12fr]">
           <div className="space-y-8 px-2 hero-fade-up md:px-4">
-            <div className="inline-flex items-center gap-2 rounded-full bg-home-blue-50 px-5 py-2.5 text-sm font-bold text-home-blue-500 hero-fade-up hero-delay-1">
-              <GraduationCap className="h-4 w-4 text-home-blue-500" strokeWidth={1.8} />
+            <div className="inline-flex items-center gap-2 rounded-full bg-mt-badge-bg px-5 py-2.5 text-sm font-bold text-mt-primary hero-fade-up hero-delay-1">
+              <GraduationCap className="h-4 w-4 text-mt-primary" strokeWidth={1.8} />
               대학생 전용 프로젝트 플랫폼
             </div>
             <div className="space-y-6 hero-fade-up hero-delay-2">
-              <h1 className="font-brand-display text-4xl leading-tight text-text-black md:text-5xl xl:text-6xl">
+              <h1 className="font-brand-display text-4xl leading-tight text-mt-text-primary md:text-5xl xl:text-6xl">
                 캠퍼스 프로젝트,
                 <br />
-                <span className="text-home-blue-500">함께할 팀을 쉽게 찾아요</span>
+                <span className="text-mt-hero-blue">함께할 팀을 쉽게 찾아요</span>
               </h1>
-              <p className="max-w-md text-lg leading-8 text-text-gray">
+              <p className="max-w-md text-lg leading-8 text-mt-text-secondary">
                 팀원 모집부터 지원 관리까지
                 <br />
                 meeTeam에서 한 번에 연결해요.
@@ -51,7 +51,7 @@ export default async function Page() {
               <StartJourneyModalTrigger />
               <Link
                 href="/projects"
-                className="inline-flex items-center gap-2 rounded-full border border-home-blue-100 bg-white px-7 py-3.5 text-base font-bold text-home-blue-500 transition-colors hover:border-home-blue-200 hover:bg-home-blue-50 hover:text-text-black"
+                className="inline-flex items-center gap-2 rounded-full border border-mt-border bg-mt-white px-7 py-3.5 text-base font-bold text-mt-hero-blue transition-colors hover:border-mt-cheek-blue hover:bg-mt-badge-bg hover:text-mt-text-primary"
               >
                 프로젝트 둘러보기
                 <ArrowRight className="h-4 w-4" strokeWidth={2} />
@@ -60,8 +60,8 @@ export default async function Page() {
           </div>
 
           <div className="relative flex min-h-80 items-center justify-center hero-fade-up hero-delay-2">
-            <div className="absolute right-2 top-2 h-80 w-80 rounded-full bg-home-blue-50 md:h-[30rem] md:w-[30rem]" />
-            <div className="absolute bottom-8 right-10 h-20 w-64 rounded-full bg-home-blue-100/70 blur-xl" />
+            <div className="absolute right-2 top-2 h-80 w-80 rounded-full bg-mt-bg-soft md:h-[30rem] md:w-[30rem]" />
+            <div className="absolute bottom-8 right-10 h-20 w-64 rounded-full bg-mt-shadow-blue/70 blur-xl" />
             <div className="relative hero-image-settle">
               <Image
                 src="/brand/meeteam_character.png"
@@ -80,8 +80,8 @@ export default async function Page() {
 
       <section className="space-y-6">
         <div className="flex items-end justify-between">
-          <h2 className="font-brand-display text-2xl text-text-black">팀을 구해요!</h2>
-          <Link href="/teammates" className="text-sm font-semibold text-home-blue-500">
+          <h2 className="font-brand-display text-2xl text-mt-text-primary">팀을 구해요!</h2>
+          <Link href="/teammates" className="text-sm font-semibold text-mt-primary">
             더 많은 멤버 보기 &gt;
           </Link>
         </div>

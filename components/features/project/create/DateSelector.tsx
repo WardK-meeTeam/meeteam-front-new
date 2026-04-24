@@ -67,15 +67,15 @@ export default function DateSelector({
         type="button"
         onClick={handleOpenPicker}
         disabled={disabled}
-        className={`flex h-15 w-full items-center justify-between rounded-xl border border-border-gray bg-white px-5.25 py-4.25 text-left text-base leading-6 transition-all duration-200 ease-out
-          focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-400/20
-          disabled:cursor-not-allowed disabled:bg-slate-100
-          ${value ? 'text-text-black' : 'text-muted-gray'}`}
+        className={`flex h-15 w-full items-center justify-between rounded-xl border border-mt-border bg-mt-white px-5.25 py-4.25 text-left text-base leading-6 transition-all duration-200 ease-out
+          focus:border-mt-primary focus:outline-none focus:ring-2 focus:ring-mt-logo-blue/20
+          disabled:cursor-not-allowed disabled:bg-mt-bg-soft
+          ${value ? 'text-mt-text-primary' : 'text-mt-text-secondary'}`}
         aria-label="모집 마감일 선택"
       >
         <span className="truncate font-normal">{displayDate}</span>
         <Calendar
-          className={`h-4 w-4 shrink-0 ${disabled ? 'text-muted-gray' : 'text-black'}`}
+          className={`h-4 w-4 shrink-0 ${disabled ? 'text-mt-text-secondary' : 'text-mt-text-primary'}`}
           aria-hidden="true"
         />
       </button>

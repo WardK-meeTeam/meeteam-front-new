@@ -107,7 +107,7 @@ export default function InterestRow({
           className="ml-1 flex items-center"
           aria-label="관심 분야 삭제"
         >
-          <Trash2 className="h-5 w-5 text-danger-500" />
+          <Trash2 className="h-5 w-5 text-mt-hero-blue" />
         </button>
       )}
     </div>

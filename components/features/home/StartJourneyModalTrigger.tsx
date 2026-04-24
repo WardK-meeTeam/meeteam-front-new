@@ -15,10 +15,10 @@ interface OptionCardProps {
 
 function OptionIcon({ type }: { type: 'rocket' | 'search' }) {
   if (type === 'rocket') {
-    return <Rocket aria-hidden className="h-8 w-8 text-home-blue-500" strokeWidth={1.8} />;
+    return <Rocket aria-hidden className="h-8 w-8 text-mt-primary" strokeWidth={1.8} />;
   }
 
-  return <Search aria-hidden className="h-8 w-8 text-home-blue-500" strokeWidth={1.8} />;
+  return <Search aria-hidden className="h-8 w-8 text-mt-primary" strokeWidth={1.8} />;
 }
 
 function OptionCard({ title, description, icon, onClick }: OptionCardProps) {
@@ -26,14 +26,14 @@ function OptionCard({ title, description, icon, onClick }: OptionCardProps) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-3xl border border-border-gray bg-white p-6 text-left transition-colors hover:border-home-blue-100 hover:bg-home-blue-50"
+      className="w-full rounded-3xl border border-mt-border bg-mt-white p-6 text-left transition-colors hover:border-mt-border hover:bg-mt-badge-bg"
     >
-      <div className="mb-4 inline-flex rounded-2xl border border-home-blue-100 bg-home-blue-50 p-4 shadow-sm">
+      <div className="mb-4 inline-flex rounded-2xl border border-mt-border bg-mt-badge-bg p-4 shadow-sm">
         <OptionIcon type={icon} />
       </div>
 
-      <h3 className="text-xl font-bold text-text-black">{title}</h3>
-      <p className="mt-2 text-sm leading-6 text-text-gray">
+      <h3 className="text-xl font-bold text-mt-text-primary">{title}</h3>
+      <p className="mt-2 text-sm leading-6 text-mt-text-secondary">
         {description.map((line) => (
           <span key={line} className="block">
             {line}
@@ -61,18 +61,20 @@ export default function StartJourneyModalTrigger() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-full bg-home-blue-500 px-7 py-3.5 text-base font-bold text-white shadow-lg transition-colors hover:bg-home-blue-400"
+        className="inline-flex items-center gap-2 rounded-full bg-mt-hero-blue px-7 py-3.5 text-base font-bold text-mt-white shadow-lg transition-colors hover:bg-mt-primary"
       >
         ⚡ 프로젝트 시작하기
       </button>
 
       <BaseModal isOpen={open} onClose={() => setOpen(false)}>
-        <section className="overflow-hidden rounded-4xl border border-border-gray bg-white shadow-2xl">
-          <header className="border-b border-border-gray px-6 py-6">
-            <h2 className="font-brand-display text-2xl text-text-black">
+        <section className="overflow-hidden rounded-4xl border border-mt-border bg-mt-white shadow-2xl">
+          <header className="border-b border-mt-border px-6 py-6">
+            <h2 className="font-brand-display text-2xl text-mt-text-primary">
               어떤 여정을 시작하시겠어요?
             </h2>
-            <p className="mt-2 text-base text-text-gray">meeTeam과 함께할 방식을 선택해주세요.</p>
+            <p className="mt-2 text-base text-mt-text-secondary">
+              meeTeam과 함께할 방식을 선택해주세요.
+            </p>
           </header>
 
           <div className="grid gap-4 p-6 md:grid-cols-2">
@@ -93,11 +95,11 @@ export default function StartJourneyModalTrigger() {
             />
           </div>
 
-          <footer className="border-t border-border-gray bg-home-blue-50 px-6 py-4">
+          <footer className="border-t border-mt-border bg-mt-badge-bg px-6 py-4">
             <button
               type="button"
               onClick={() => handleMove('/profile')}
-              className="mx-auto flex items-center gap-2 text-sm font-medium text-text-gray"
+              className="mx-auto flex items-center gap-2 text-sm font-medium text-mt-text-secondary"
             >
               <UserPlus aria-hidden className="h-4 w-4" strokeWidth={1.8} />
               <span>

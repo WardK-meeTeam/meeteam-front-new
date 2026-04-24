@@ -61,8 +61,8 @@ export default function BasicInfoCard({
         <dl className="mt-4 space-y-4">
           {infoItems.map((item) => (
             <div key={item.label} className="flex items-start justify-between gap-4">
-              <dt className="text-sm leading-5 font-normal text-text-gray">{item.label}</dt>
-              <dd className="text-right text-sm leading-5 font-medium text-text-black">
+              <dt className="text-sm leading-5 font-normal text-mt-text-secondary">{item.label}</dt>
+              <dd className="text-right text-sm leading-5 font-medium text-mt-text-primary">
                 {item.value}
               </dd>
             </div>
@@ -72,9 +72,9 @@ export default function BasicInfoCard({
         <div className="mt-4 space-y-4">
           <a
             href={emailContact.href}
-            className="flex min-w-0 items-center gap-3 border-y border-border-soft py-4 text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black"
+            className="flex min-w-0 items-center gap-3 border-y border-mt-border py-4 text-sm leading-5 font-medium text-mt-text-nav transition-colors hover:text-mt-text-primary"
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-border-soft text-text-gray">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
               <EmailIcon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
             </span>
             <span className="min-w-0 truncate">{emailContact.value}</span>
@@ -85,10 +85,10 @@ export default function BasicInfoCard({
               const Icon = item.icon;
               const hasLink = item.href !== '#';
               const className =
-                'flex min-w-0 items-center gap-3 text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black';
+                'flex min-w-0 items-center gap-3 text-sm leading-5 font-medium text-mt-text-nav transition-colors hover:text-mt-text-primary';
               const content = (
                 <>
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-border-soft text-text-gray">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
                     <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                   </span>
                   <span className="min-w-0 truncate">{item.value}</span>
@@ -108,7 +108,7 @@ export default function BasicInfoCard({
               ) : (
                 <div
                   key={`${item.href}-${item.value}`}
-                  className="flex min-w-0 items-center gap-3 text-sm leading-5 font-medium text-muted-gray"
+                  className="flex min-w-0 items-center gap-3 text-sm leading-5 font-medium text-mt-text-secondary"
                 >
                   {content}
                 </div>
@@ -122,33 +122,33 @@ export default function BasicInfoCard({
 
   return (
     <ProfileCard className="min-h-122">
-      <h2 className="text-lg leading-7 font-bold text-text-black">기본 정보 수정</h2>
+      <h2 className="text-lg leading-7 font-bold text-mt-text-primary">기본 정보 수정</h2>
 
       <div className="mt-4 space-y-4">
         <dl className="space-y-4">
           <div className="flex items-start justify-between gap-4">
-            <dt className="text-sm leading-5 font-normal text-text-gray">이름</dt>
-            <dd className="text-right text-sm leading-5 font-medium text-text-black">
+            <dt className="text-sm leading-5 font-normal text-mt-text-secondary">이름</dt>
+            <dd className="text-right text-sm leading-5 font-medium text-mt-text-primary">
               {formData.name}
             </dd>
           </div>
 
           <div className="flex items-start justify-between gap-4">
-            <dt className="text-sm leading-5 font-normal text-text-gray">나이</dt>
-            <dd className="text-right text-sm leading-5 font-medium text-text-black">
+            <dt className="text-sm leading-5 font-normal text-mt-text-secondary">나이</dt>
+            <dd className="text-right text-sm leading-5 font-medium text-mt-text-primary">
               {formData.age}
             </dd>
           </div>
 
           <div className="flex items-start justify-between gap-4">
-            <dt className="text-sm leading-5 font-normal text-text-gray">성별</dt>
-            <dd className="text-right text-sm leading-5 font-medium text-text-black">
+            <dt className="text-sm leading-5 font-normal text-mt-text-secondary">성별</dt>
+            <dd className="text-right text-sm leading-5 font-medium text-mt-text-primary">
               {formData.gender}
             </dd>
           </div>
 
           <div className="space-y-2">
-            <dt className="text-sm leading-5 font-normal text-text-gray">직군</dt>
+            <dt className="text-sm leading-5 font-normal text-mt-text-secondary">직군</dt>
             <dd className="space-y-2">
               <BaseDropdown
                 value={formData.fieldCategory}
@@ -163,7 +163,7 @@ export default function BasicInfoCard({
                 }}
                 containerClassName="w-full"
                 buttonClassName="items-center justify-between px-3 py-2.5"
-                textClassName="text-sm leading-5 font-normal text-text-body"
+                textClassName="text-sm leading-5 font-normal text-mt-text-nav"
               />
 
               <BaseDropdown
@@ -179,22 +179,22 @@ export default function BasicInfoCard({
                 }}
                 containerClassName="w-full"
                 buttonClassName="items-center justify-between px-3 py-2.5"
-                textClassName="text-sm leading-5 font-normal text-text-body"
+                textClassName="text-sm leading-5 font-normal text-mt-text-nav"
               />
             </dd>
           </div>
 
           <div className="space-y-2">
-            <dt className="text-sm leading-5 font-normal text-text-gray">프로젝트 횟수</dt>
-            <dd className="rounded-lg border border-border-gray px-3 py-2.5 text-sm leading-5 font-medium text-text-body">
+            <dt className="text-sm leading-5 font-normal text-mt-text-secondary">프로젝트 횟수</dt>
+            <dd className="rounded-lg border border-mt-border px-3 py-2.5 text-sm leading-5 font-medium text-mt-text-nav">
               {formData.projectCount}
             </dd>
           </div>
         </dl>
 
-        <div className="space-y-4 border-t border-border-soft pt-4">
-          <div className="flex items-center gap-3 text-sm leading-5 font-medium text-project-status-closed">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-soft text-text-gray">
+        <div className="space-y-4 border-t border-mt-border pt-4">
+          <div className="flex items-center gap-3 text-sm leading-5 font-medium text-mt-text-nav">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
               <EmailIcon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
             </span>
             <span>{formData.email}</span>
@@ -206,7 +206,7 @@ export default function BasicInfoCard({
 
             return (
               <div key={`${field}-${item.href}-${item.value}`} className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-border-soft text-text-gray">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
                   <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                 </span>
 
@@ -215,7 +215,7 @@ export default function BasicInfoCard({
                   value={formData[field]}
                   data-cy={field === 'github' ? 'profile-github-input' : 'profile-blog-input'}
                   onChange={(event) => onFieldChange(field, event.target.value)}
-                  className="rounded-lg text-sm leading-5 font-medium text-text-body"
+                  className="rounded-lg text-sm leading-5 font-medium text-mt-text-nav"
                 />
               </div>
             );

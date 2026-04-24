@@ -31,7 +31,7 @@ export default function ProfileExtraSection({
   profileImagePreviewUrl,
   projectError,
 }: ProfileExtraSectionProps) {
-  const githubIcon = <Github className="h-5 w-5 text-muted-gray" />;
+  const githubIcon = <Github className="h-5 w-5 text-mt-text-secondary" />;
   const hasProfileImage = Boolean(profileImagePreviewUrl);
 
   return (
@@ -67,7 +67,7 @@ export default function ProfileExtraSection({
             type="text"
             value={blogLink}
             placeholder="URL 입력"
-            leftIcon={<Link className="h-5 w-5 text-muted-gray" />}
+            leftIcon={<Link className="h-5 w-5 text-mt-text-secondary" />}
             onChange={onChangeBlogLink}
             data-cy="signup-blog-url"
           />
@@ -84,41 +84,43 @@ export default function ProfileExtraSection({
           data-cy="signup-profile-upload"
         />
         {!hasProfileImage ? (
-          <div className="flex p-5 items-center border border-border-gray justify-between rounded-2xl bg-surface-soft">
+          <div className="flex p-5 items-center border border-mt-border justify-between rounded-2xl bg-mt-bg-soft">
             <div className="flex items-center gap-4">
-              <div className="bg-white border border-border-gray rounded-full w-12 h-12 flex items-center justify-center">
-                <Camera className="h-5 w-5 text-muted-gray" />
+              <div className="bg-mt-white border border-mt-border rounded-full w-12 h-12 flex items-center justify-center">
+                <Camera className="h-5 w-5 text-mt-text-secondary" />
               </div>
               <div className="flex flex-col gap-0.5">
-                <span className="text-text-black text-sm font-bold">
+                <span className="text-mt-text-primary text-sm font-bold">
                   나를 표현하는 사진을 올려주세요
                 </span>
-                <span className="text-text-gray text-[12px] font-normal leading-4">
+                <span className="text-mt-text-secondary text-[12px] font-normal leading-4">
                   JPG, PNG (최대 10MB)
                 </span>
               </div>
             </div>
             <label
               htmlFor="profile-upload"
-              className="cursor-pointer select-none rounded-lg px-4 py-2 border border-border-gray bg-white text-[12px] font-bold text-text-body hover:bg-slate-50 active:scale-[0.99]"
+              className="cursor-pointer select-none rounded-lg px-4 py-2 border border-mt-border bg-mt-white text-[12px] font-bold text-mt-text-nav hover:bg-mt-bg-soft active:scale-[0.99]"
             >
               업로드
             </label>
           </div>
         ) : (
-          <div className="flex p-5 items-center border border-border-gray justify-between rounded-2xl bg-white">
+          <div className="flex p-5 items-center border border-mt-border justify-between rounded-2xl bg-mt-white">
             <div className="flex items-center gap-4 min-w-0">
               <ProfileAvatar
                 name="프로필 미리보기"
                 imageUrl={profileImagePreviewUrl}
                 sizeClassName="h-13 w-13"
-                className="bg-white"
+                className="bg-mt-white"
               />
               <div className="flex flex-col min-w-0">
-                <span className="text-text-black text-[15px] font-bold">프로필 사진 등록 완료</span>
+                <span className="text-mt-text-primary text-[15px] font-bold">
+                  프로필 사진 등록 완료
+                </span>
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <CircleCheck className="h-3 w-3 text-brand-500" />
-                  <span className="text-brand-500 text-[12px] font-bold">{profileImageName}</span>
+                  <CircleCheck className="h-3 w-3 text-mt-primary" />
+                  <span className="text-mt-primary text-[12px] font-bold">{profileImageName}</span>
                 </div>
               </div>
             </div>
@@ -126,17 +128,17 @@ export default function ProfileExtraSection({
             <div className="flex items-center gap-3 shrink-0">
               <label
                 htmlFor="profile-upload"
-                className="cursor-pointer select-none rounded-xl px-5 py-2.5 border border-border-gray bg-surface-soft text-sm font-bold text-project-status-closed"
+                className="cursor-pointer select-none rounded-xl px-5 py-2.5 border border-mt-border bg-mt-bg-soft text-sm font-bold text-mt-text-nav"
               >
                 사진 변경
               </label>
               <button
                 type="button"
                 onClick={onRemoveProfileImage}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger-500 hover:opacity-90"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-mt-hero-blue hover:opacity-90"
                 aria-label="프로필 사진 삭제"
               >
-                <Trash2 className="h-5 w-5 text-white" />
+                <Trash2 className="h-5 w-5 text-mt-white" />
               </button>
             </div>
           </div>

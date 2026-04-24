@@ -39,9 +39,9 @@ export function TeammateListSection({
       <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
         <p
           data-cy="teammate-total-count"
-          className="text-base leading-6 font-semibold text-text-body"
+          className="text-base leading-6 font-semibold text-mt-text-nav"
         >
-          총 <span className="text-brand-500">{totalCount}</span>명의 메이커
+          총 <span className="text-mt-primary">{totalCount}</span>명의 메이커
         </p>
 
         <SortSelect
@@ -76,9 +76,9 @@ export function TeammateListSection({
       {!isInitialLoading && !errorMessage && teammates.length === 0 ? (
         <div
           data-cy="teammate-empty-state"
-          className="rounded-2xl border border-border-gray bg-white px-6 py-12 text-center text-sm leading-6 text-text-gray shadow-sm"
+          className="rounded-2xl border border-mt-border bg-mt-white px-6 py-12 text-center text-sm leading-6 text-mt-text-secondary shadow-sm"
         >
-          <p className="font-bold text-text-black">{TEAMMATE_PAGE_COPY.emptyTitle}</p>
+          <p className="font-bold text-mt-text-primary">{TEAMMATE_PAGE_COPY.emptyTitle}</p>
           <p className="mt-2">{TEAMMATE_PAGE_COPY.emptyDescription}</p>
         </div>
       ) : null}

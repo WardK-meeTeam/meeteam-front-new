@@ -115,7 +115,7 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
       <ToastMessage message={fieldErrors.form} />
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="studentId" className="font-bold text-text-black">
+        <label htmlFor="studentId" className="font-bold text-mt-text-primary">
           학번
         </label>
         <BaseInput
@@ -130,14 +130,14 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
           data-cy="login-student-id"
         />
         {fieldErrors.studentId ? (
-          <p className="text-sm text-danger-500" role="alert">
+          <p className="text-sm text-mt-hero-blue" role="alert">
             {fieldErrors.studentId}
           </p>
         ) : null}
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="password" className="font-bold text-text-black">
+        <label htmlFor="password" className="font-bold text-mt-text-primary">
           비밀번호
         </label>
         <BaseInput
@@ -152,13 +152,13 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
           data-cy="login-password"
         />
         {fieldErrors.password ? (
-          <p className="text-sm text-danger-500" role="alert">
+          <p className="text-sm text-mt-hero-blue" role="alert">
             {fieldErrors.password}
           </p>
         ) : null}
       </div>
 
-      <div className="rounded-2xl border border-border-gray bg-surface-soft px-4 py-3">
+      <div className="rounded-2xl border border-mt-border bg-mt-bg-soft px-4 py-3">
         <label className="flex cursor-pointer items-start gap-3" htmlFor="login-consent">
           <span className="relative mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center">
             <input
@@ -169,18 +169,18 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
               className="peer sr-only"
               data-cy="login-consent"
             />
-            <span className="flex h-5 w-5 items-center justify-center rounded-md border border-border-gray bg-white text-white transition-colors peer-checked:border-brand-500 peer-checked:bg-brand-500 peer-focus-visible:ring-2 peer-focus-visible:ring-brand-400/20">
+            <span className="flex h-5 w-5 items-center justify-center rounded-md border border-mt-border bg-mt-white text-mt-white transition-colors peer-checked:border-mt-primary peer-checked:bg-mt-primary peer-focus-visible:ring-2 peer-focus-visible:ring-mt-logo-blue/20">
               <Check className="h-3.5 w-3.5" strokeWidth={2.4} />
             </span>
           </span>
           <span className="flex flex-col gap-1">
-            <span className="text-sm leading-5 font-semibold text-text-black">
+            <span className="text-sm leading-5 font-semibold text-mt-text-primary">
               비밀번호는 저장하지 않으며, 로그인 후 세종대 포털에서 로그아웃됩니다.
             </span>
           </span>
         </label>
         {fieldErrors.agreement ? (
-          <p className="mt-2 text-sm text-danger-500" role="alert">
+          <p className="mt-2 text-sm text-mt-hero-blue" role="alert">
             {fieldErrors.agreement}
           </p>
         ) : null}

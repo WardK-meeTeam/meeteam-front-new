@@ -120,7 +120,7 @@ function BirthSelect({
         value={value}
         data-cy={dataCy}
         onChange={(event) => onChange(event.target.value)}
-        className="h-12 w-full appearance-none rounded-xl border border-border-gray bg-white px-3 pr-8 text-sm leading-5 font-bold text-text-black outline-none transition-all focus:border-brand-500 focus:ring-2 focus:ring-brand-400/20"
+        className="h-12 w-full appearance-none rounded-xl border border-mt-border bg-mt-white px-3 pr-8 text-sm leading-5 font-bold text-mt-text-primary outline-none transition-all focus:border-mt-primary focus:ring-2 focus:ring-mt-logo-blue/20"
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
@@ -131,7 +131,7 @@ function BirthSelect({
         ))}
       </select>
       <ChevronDown
-        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-gray"
+        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-mt-text-secondary"
         aria-hidden
         strokeWidth={1.8}
       />

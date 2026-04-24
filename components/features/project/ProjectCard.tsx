@@ -45,7 +45,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
     <Link
       data-cy="project-card"
       data-project-id={project.id}
-      className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-text-black shadow-[0_25px_50px_-12px_rgba(79,155,232,0.28)] transition-all duration-300 hover:ring-1 hover:ring-home-blue-400/50`}
+      className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-mt-text-primary shadow-2xl transition-all duration-300 hover:ring-1 hover:ring-mt-logo-blue/50`}
       href={`/projects/${project.id}`}
     >
       <div className="absolute inset-0 h-full w-full">
@@ -58,10 +58,10 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
             src={project.imageUrl}
           />
         ) : (
-          <div className="h-full w-full bg-text-black/80" />
+          <div className="h-full w-full bg-mt-text-primary/80" />
         )}
-        <div className="absolute inset-0 bg-linear-to-t from-black/95 via-black/50 to-transparent transition-opacity duration-500" />
-        <div className="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-linear-to-t from-mt-text-primary/95 via-mt-text-primary/50 to-transparent transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-mt-text-primary/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </div>
 
       <div
@@ -78,7 +78,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
           <div className="shrink-0 transition-transform duration-500 ease-out group-hover:-translate-y-1">
             <h3
               data-cy="project-card-title"
-              className={`${titleClass} line-clamp-2 leading-tight font-bold text-white drop-shadow-md`}
+              className={`${titleClass} line-clamp-2 leading-tight font-bold text-mt-white drop-shadow-md`}
             >
               {project.title}
             </h3>
@@ -90,22 +90,25 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                   imageUrl={project.leader.avatar}
                   sizeClassName="h-8 w-8"
                   textClassName="text-xs"
-                  className="border border-white/30 bg-white/20 text-white"
+                  className="border border-mt-white/30 bg-mt-white/20 text-mt-white"
                   imageClassName="scale-100"
                 />
-                <span data-cy="project-card-leader" className="text-xs font-medium text-muted-gray">
+                <span
+                  data-cy="project-card-leader"
+                  className="text-xs font-medium text-mt-text-secondary"
+                >
                   {project.leader.name}
                 </span>
               </div>
 
               <div className="flex flex-col items-end gap-1">
-                <div className="flex items-center gap-1 text-[10px] font-bold text-white/90">
+                <div className="flex items-center gap-1 text-[10px] font-bold text-mt-white/90">
                   <Users className="h-3 w-3" aria-hidden strokeWidth={2} />
                   {project.currentMembers}/{project.maxMembers}명
                 </div>
-                <div className="h-1.5 w-20 overflow-hidden rounded-full bg-white/20">
+                <div className="h-1.5 w-20 overflow-hidden rounded-full bg-mt-white/20">
                   <div
-                    className="h-full bg-home-blue-400"
+                    className="h-full bg-mt-logo-blue"
                     style={{ width: `${Math.min(100, Math.max(0, percentage))}%` }}
                   />
                 </div>
@@ -121,9 +124,9 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
             }
           >
             <div className="min-h-0 overflow-hidden">
-              <div className="border-t border-white/20 pt-4">
+              <div className="border-t border-mt-white/20 pt-4">
                 <div className="mb-3 flex items-center">
-                  <h4 className="flex items-center gap-2 text-sm font-bold text-white">
+                  <h4 className="flex items-center gap-2 text-sm font-bold text-mt-white">
                     모집 현황
                   </h4>
                 </div>
@@ -132,12 +135,12 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                   {recruitInfo.length > 0 ? (
                     recruitInfo.map((info) => (
                       <div
-                        className="flex items-center justify-between rounded-lg border border-white/10 bg-white/10 p-2.5 transition-colors hover:bg-white/20"
+                        className="flex items-center justify-between rounded-lg border border-mt-white/10 bg-mt-white/10 p-2.5 transition-colors hover:bg-mt-white/20"
                         key={info.id}
                       >
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-white">{info.role}</span>
-                          <span className="text-[10px] text-white/70">
+                          <span className="text-xs font-bold text-mt-white">{info.role}</span>
+                          <span className="text-[10px] text-mt-white/70">
                             {info.subRoles?.join(', ') || '전체'}
                           </span>
                         </div>
@@ -152,12 +155,14 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                       </div>
                     ))
                   ) : (
-                    <div className="py-2 text-center text-xs text-text-gray">모집 포지션 없음</div>
+                    <div className="py-2 text-center text-xs text-mt-text-secondary">
+                      모집 포지션 없음
+                    </div>
                   )}
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">
-                  <span className="cursor-pointer text-xs font-bold text-home-blue-400 transition-colors hover:text-home-blue-500">
+                  <span className="cursor-pointer text-xs font-bold text-mt-logo-blue transition-colors hover:text-mt-primary">
                     자세히 보기 →
                   </span>
                 </div>

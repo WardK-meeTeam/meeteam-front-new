@@ -15,11 +15,11 @@ export default function TechStackList({ sections, onRemove }: TechStackListProps
   if (sections.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-border-soft bg-surface-soft p-6">
+    <div className="rounded-2xl border border-mt-border bg-mt-bg-soft p-6">
       <div className="flex flex-col gap-4">
         {sections.map((section) => (
           <div key={section.key} className="flex flex-col gap-2">
-            <div className="flex items-center gap-1.5 text-muted-gray font-bold text-[12px]">
+            <div className="flex items-center gap-1.5 text-mt-text-secondary font-bold text-[12px]">
               <ChevronsLeftRight className="h-4 w-4" />
               <span>{section.label}</span>
             </div>
@@ -28,11 +28,11 @@ export default function TechStackList({ sections, onRemove }: TechStackListProps
                 <button
                   key={tech}
                   type="button"
-                  className="flex items-center gap-1.5 rounded-xl border border-border-gray bg-white px-3 py-1.5 text-text-body shadow-sm"
+                  className="flex items-center gap-1.5 rounded-xl border border-mt-border bg-mt-white px-3 py-1.5 text-mt-text-nav shadow-sm"
                 >
                   <span className="font-bold text-[12px]">{tech}</span>
                   <X
-                    className="h-3 w-3 text-muted-gray"
+                    className="h-3 w-3 text-mt-text-secondary"
                     onClick={() => onRemove(section.key, tech)}
                   />
                 </button>

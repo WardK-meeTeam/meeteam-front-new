@@ -63,8 +63,8 @@ export default function CoverImageUploader({
       htmlFor={id}
       className={`group relative flex w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl text-center transition-colors aspect-[1200/630] min-h-[220px] ${
         previewUrl
-          ? 'border border-border-gray bg-black/5'
-          : 'border-2 border-dashed border-border-gray bg-slate-50 px-6 py-20 hover:bg-brand-500/5 hover:shadow-sm'
+          ? 'border border-mt-border bg-mt-text-primary/5'
+          : 'border-2 border-dashed border-mt-border bg-mt-bg-soft px-6 py-20 hover:bg-mt-primary/5 hover:shadow-sm'
       }`}
     >
       <input
@@ -86,14 +86,14 @@ export default function CoverImageUploader({
 
       {!previewUrl && (
         <div className="relative z-10 flex flex-col items-center transition-transform duration-300 ease-out group-hover:scale-[1.01]">
-          <span className="mb-5 inline-flex h-20 w-20 items-center justify-center rounded-full border border-border-gray bg-white text-muted-gray transition-all duration-300 ease-out group-hover:scale-105 group-hover:border-brand-400 group-hover:text-brand-500">
+          <span className="mb-5 inline-flex h-20 w-20 items-center justify-center rounded-full border border-mt-border bg-mt-white text-mt-text-secondary transition-all duration-300 ease-out group-hover:scale-105 group-hover:border-mt-logo-blue group-hover:text-mt-primary">
             <Camera className="h-8 w-8" strokeWidth={1.8} aria-hidden="true" />
           </span>
 
-          <p className="text-lg font-semibold leading-7 text-text-gray transition-colors duration-300 group-hover:text-brand-500">
+          <p className="text-lg font-semibold leading-7 text-mt-text-secondary transition-colors duration-300 group-hover:text-mt-primary">
             클릭하여 이미지를 업로드하세요
           </p>
-          <p className="mt-1.5 text-sm font-medium leading-6 text-muted-gray transition-colors duration-300 group-hover:text-text-gray">
+          <p className="mt-1.5 text-sm font-medium leading-6 text-mt-text-secondary transition-colors duration-300 group-hover:text-mt-text-secondary">
             권장 사이즈: 1200 x 630px (JPG, PNG)
           </p>
         </div>
@@ -101,16 +101,16 @@ export default function CoverImageUploader({
 
       {previewUrl && (
         <>
-          <div className="pointer-events-none absolute inset-0 z-10 bg-text-black/45 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100" />
+          <div className="pointer-events-none absolute inset-0 z-10 bg-mt-text-primary/45 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100" />
 
           <div className="absolute inset-0 z-20 flex items-center justify-center gap-4 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100 translate-y-3">
             <button
               type="button"
               onClick={handleOpenFileDialog}
-              className="group/change inline-flex h-12 items-center gap-1.5 rounded-xl bg-white px-6 text-base font-bold text-text-black shadow-lg transition-transform duration-300 ease-out group-hover:scale-100 scale-95 hover:-translate-y-0.5 hover:shadow-xl"
+              className="group/change inline-flex h-12 items-center gap-1.5 rounded-xl bg-mt-white px-6 text-base font-bold text-mt-text-primary shadow-lg transition-transform duration-300 ease-out group-hover:scale-100 scale-95 hover:-translate-y-0.5 hover:shadow-xl"
             >
               <RefreshCcw
-                className="h-4 w-4 text-brand-500 transition-transform duration-300 ease-out group-hover/change:rotate-45"
+                className="h-4 w-4 text-mt-primary transition-transform duration-300 ease-out group-hover/change:rotate-45"
                 aria-hidden="true"
               />
               이미지 변경하기
@@ -119,7 +119,7 @@ export default function CoverImageUploader({
             <button
               type="button"
               onClick={handleRemove}
-              className="group/delete inline-flex h-12 w-12 items-center justify-center rounded-xl bg-red-500 text-white shadow-lg transition-transform duration-300 ease-out delay-75 group-hover:scale-100 scale-95 hover:-translate-y-0.5 hover:shadow-xl"
+              className="group/delete inline-flex h-12 w-12 items-center justify-center rounded-xl bg-mt-hero-blue text-mt-white shadow-lg transition-transform duration-300 ease-out delay-75 group-hover:scale-100 scale-95 hover:-translate-y-0.5 hover:shadow-xl"
               aria-label="이미지 삭제"
             >
               <Trash2

@@ -20,8 +20,6 @@ type TechStackPickerProps = {
   className?: string;
 };
 
-const MAX_VISIBLE_OPTIONS = 8;
-
 export default function TechStackPicker({
   options,
   value,
@@ -60,8 +58,7 @@ export default function TechStackPicker({
       .filter((option) => !value.includes(option))
       .filter((option) =>
         normalizedQuery.length === 0 ? true : option.toLowerCase().includes(normalizedQuery),
-      )
-      .slice(0, MAX_VISIBLE_OPTIONS);
+      );
   }, [options, query, value]);
 
   const handleSelect = (techStack: string) => {
@@ -107,11 +104,13 @@ export default function TechStackPicker({
               handleSelect(filteredOptions[0]);
             }
           }}
-          rightIcon={<Search className="h-5 w-5 text-muted-gray" aria-hidden strokeWidth={1.8} />}
+          rightIcon={
+            <Search className="h-5 w-5 text-mt-text-secondary" aria-hidden strokeWidth={1.8} />
+          }
         />
 
         {showDropdown ? (
-          <div className="absolute top-full z-10 mt-2 w-full rounded-2xl border border-border-gray bg-white p-2 shadow-sm">
+          <div className="absolute top-full z-10 mt-2 max-h-64 w-full overflow-y-auto overscroll-contain rounded-2xl border border-mt-border bg-mt-white p-2 shadow-sm">
             {filteredOptions.length > 0 ? (
               <ul className="flex flex-col gap-1">
                 {filteredOptions.map((option) => (
@@ -119,7 +118,7 @@ export default function TechStackPicker({
                     <button
                       type="button"
                       onClick={() => handleSelect(option)}
-                      className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm leading-5 text-text-body transition-colors hover:bg-surface-soft hover:text-text-black"
+                      className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm leading-5 text-mt-text-nav transition-colors hover:bg-mt-bg-soft hover:text-mt-text-primary"
                     >
                       <span>{option}</span>
                     </button>
@@ -127,7 +126,7 @@ export default function TechStackPicker({
                 ))}
               </ul>
             ) : (
-              <p className="px-3 py-2 text-sm leading-5 text-text-gray">
+              <p className="px-3 py-2 text-sm leading-5 text-mt-text-secondary">
                 {hasOptions ? emptyMessage : noOptionsMessage}
               </p>
             )}
@@ -144,7 +143,7 @@ export default function TechStackPicker({
               variant="outline"
               size="md"
               onRemove={() => handleRemove(techStack)}
-              className="shadow-sm transition-colors hover:border-brand-400 hover:text-brand-500"
+              className="shadow-sm transition-colors hover:border-mt-logo-blue hover:text-mt-primary"
             />
           ))}
         </div>

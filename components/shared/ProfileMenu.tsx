@@ -130,7 +130,7 @@ export default function ProfileMenu() {
       >
         <ProfileAvatar name={userName} imageUrl={profileImageUrl} sizeClassName="h-9 w-9" />
         <ChevronDown
-          className={`h-4 w-4 text-text-gray transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`h-4 w-4 text-mt-text-secondary transition-transform ${open ? 'rotate-180' : ''}`}
           aria-hidden
           strokeWidth={1.8}
         />
@@ -138,13 +138,13 @@ export default function ProfileMenu() {
 
       {open ? (
         <div
-          className="absolute right-0 top-full z-50 mt-3 w-56 overflow-hidden rounded-2xl bg-white shadow-[0_0_0_1px_rgba(0,0,0,0.05),0_20px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)]"
+          className="absolute right-0 top-full z-50 mt-3 w-56 overflow-hidden rounded-2xl border border-mt-border bg-mt-white shadow-xl"
           role="menu"
           aria-label="프로필 메뉴 목록"
         >
-          <div className="border-b border-surface-soft bg-surface-soft/50 px-5 pb-[17px] pt-4">
-            <p className="text-sm leading-5 font-bold text-text-black">{userName}</p>
-            <p className="mt-0.5 text-xs leading-4 text-text-gray">{userEmail}</p>
+          <div className="border-b border-mt-bg-soft bg-mt-bg-soft/50 px-5 pb-[17px] pt-4">
+            <p className="text-sm leading-5 font-bold text-mt-text-primary">{userName}</p>
+            <p className="mt-0.5 text-xs leading-4 text-mt-text-secondary">{userEmail}</p>
           </div>
 
           <div className="flex flex-col gap-0.5 p-2">
@@ -153,24 +153,24 @@ export default function ProfileMenu() {
                 key={href}
                 href={href}
                 onClick={() => setOpen(false)}
-                className="flex h-10 items-center gap-2.5 rounded-xl px-3 transition-colors hover:bg-surface-soft"
+                className="flex h-10 items-center gap-2.5 rounded-xl px-3 transition-colors hover:bg-mt-bg-soft"
                 role="menuitem"
               >
-                <Icon className="h-4 w-4 text-text-body" aria-hidden strokeWidth={1.8} />
-                <span className="text-sm leading-5 font-medium text-text-body">{label}</span>
+                <Icon className="h-4 w-4 text-mt-text-nav" aria-hidden strokeWidth={1.8} />
+                <span className="text-sm leading-5 font-medium text-mt-text-nav">{label}</span>
               </Link>
             ))}
           </div>
 
-          <div className="border-t border-surface-soft px-2 pb-2 pt-[9px]">
+          <div className="border-t border-mt-bg-soft px-2 pb-2 pt-[9px]">
             <button
               type="button"
               onClick={handleLogout}
-              className="flex h-10 w-full items-center gap-2.5 rounded-xl px-3 text-left transition-colors hover:bg-surface-soft"
+              className="flex h-10 w-full items-center gap-2.5 rounded-xl px-3 text-left transition-colors hover:bg-mt-bg-soft"
               role="menuitem"
             >
-              <LogOut className="h-4 w-4 text-danger-400" aria-hidden strokeWidth={1.8} />
-              <span className="text-sm leading-5 font-bold text-danger-400">로그아웃</span>
+              <LogOut className="h-4 w-4 text-mt-hero-blue" aria-hidden strokeWidth={1.8} />
+              <span className="text-sm leading-5 font-bold text-mt-hero-blue">로그아웃</span>
             </button>
           </div>
         </div>

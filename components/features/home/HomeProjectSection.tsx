@@ -78,8 +78,8 @@ export default function HomeProjectSection() {
 
       <div className="space-y-4">
         <div className="flex items-end justify-between">
-          <h2 className="font-brand-display text-2xl text-text-black">프로젝트</h2>
-          <Link href="/projects" className="text-sm font-semibold text-home-blue-500">
+          <h2 className="font-brand-display text-2xl text-mt-text-primary">프로젝트</h2>
+          <Link href="/projects" className="text-sm font-semibold text-mt-primary">
             전체보기 &gt;
           </Link>
         </div>
@@ -98,8 +98,8 @@ export default function HomeProjectSection() {
                   role="tab"
                   className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm leading-5 transition-all ${
                     selected
-                      ? 'bg-home-blue-300 font-medium text-text-black shadow-sm'
-                      : 'font-normal text-text-gray hover:bg-home-blue-50 hover:text-text-black'
+                      ? 'bg-mt-primary font-medium text-mt-white shadow-sm'
+                      : 'font-normal text-mt-text-secondary hover:bg-mt-badge-bg hover:text-mt-text-primary'
                   }`}
                 >
                   <span aria-hidden>{chip.emoji}</span>
@@ -132,9 +132,9 @@ export default function HomeProjectSection() {
           ))}
         </ul>
       ) : (
-        <div className="rounded-2xl border border-border-gray bg-white px-6 py-16 text-center shadow-sm">
-          <p className="text-lg font-bold text-text-black">아직 프로젝트가 없어요.</p>
-          <p className="mt-2 text-sm leading-5 text-text-gray">
+        <div className="rounded-2xl border border-mt-border bg-mt-white px-6 py-16 text-center shadow-sm">
+          <p className="text-lg font-bold text-mt-text-primary">아직 프로젝트가 없어요.</p>
+          <p className="mt-2 text-sm leading-5 text-mt-text-secondary">
             다른 카테고리를 선택해 프로젝트를 찾아보세요.
           </p>
         </div>

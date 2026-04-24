@@ -7,7 +7,7 @@ export function ProjectManageOverviewSkeleton() {
         {Array.from({ length: 3 }).map((_, index) => (
           <article
             key={`project-manage-summary-skeleton-${index}`}
-            className="rounded-2xl border border-border-gray/40 bg-white p-5 shadow-sm"
+            className="rounded-2xl border border-mt-border/40 bg-mt-white p-5 shadow-sm"
           >
             <SkeletonBlock className="h-5 w-24" />
             <SkeletonBlock className="mt-2 h-8 w-20" />
@@ -15,8 +15,8 @@ export function ProjectManageOverviewSkeleton() {
         ))}
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border-gray/40 bg-white shadow-sm">
-        <div className="flex flex-col gap-2 border-b border-border-gray/40 bg-surface-soft/50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="overflow-hidden rounded-2xl border border-mt-border/40 bg-mt-white shadow-sm">
+        <div className="flex flex-col gap-2 border-b border-mt-border/40 bg-mt-bg-soft/50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <SkeletonBlock className="h-6 w-24" />
           <SkeletonBlock className="h-4 w-32" />
         </div>
@@ -25,7 +25,7 @@ export function ProjectManageOverviewSkeleton() {
           {Array.from({ length: 4 }).map((_, index) => (
             <li
               key={`project-member-row-skeleton-${index}`}
-              className={`${index === 0 ? '' : 'border-t border-border-gray/40'} px-6 py-6`}
+              className={`${index === 0 ? '' : 'border-t border-mt-border/40'} px-6 py-6`}
             >
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
@@ -47,7 +47,7 @@ export function ProjectManageOverviewSkeleton() {
 
 export function ProjectManageEditSkeleton() {
   return (
-    <section className="mx-auto w-full max-w-5xl rounded-4xl bg-white px-6 py-8 shadow-sm md:px-10 md:py-12">
+    <section className="mx-auto w-full max-w-5xl rounded-4xl bg-mt-white px-6 py-8 shadow-sm md:px-10 md:py-12">
       <div className="mb-8 space-y-3 text-center">
         <SkeletonBlock className="mx-auto h-8 w-56" />
         <SkeletonBlock className="mx-auto h-5 w-80 max-w-full" />

@@ -9,9 +9,9 @@ type CategoryBadgeProps = {
 };
 
 const TONE_CLASS: Record<CategoryBadgeTone, string> = {
-  default: 'border-brand-100 bg-brand-50 text-brand-700',
-  onDark: 'border-white/10 bg-white/20 text-white backdrop-blur-sm',
-  accent: 'border-brand-400/30 bg-brand-400/30 text-chip-bg backdrop-blur-sm',
+  default: 'border-mt-border bg-mt-badge-bg text-mt-primary',
+  onDark: 'border-mt-white/10 bg-mt-white/20 text-mt-white backdrop-blur-sm',
+  accent: 'border-mt-logo-blue/30 bg-mt-logo-blue/30 text-mt-badge-bg backdrop-blur-sm',
 };
 
 const SIZE_CLASS: Record<CategoryBadgeSize, string> = {

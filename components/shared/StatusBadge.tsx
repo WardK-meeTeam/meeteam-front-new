@@ -19,13 +19,13 @@ type StatusBadgeProps = {
 };
 
 const STATUS_CLASS: Record<StatusBadgeStatus, string> = {
-  open: 'border-transparent bg-project-recruiting-bg text-project-status-progress',
-  closed: 'border-transparent bg-surface-soft text-muted-gray',
-  deadline: 'border-white/20 bg-white/20 text-white shadow-sm backdrop-blur-md',
-  suspended: 'border-transparent bg-surface-soft text-project-status-closed',
-  completed: 'border-transparent bg-project-status-closed text-white',
-  pending: 'border-transparent bg-brand-100 text-brand-500',
-  leader: 'border-transparent bg-role-leader-bg text-role-leader-text',
+  open: 'border-transparent bg-mt-badge-bg text-mt-mint',
+  closed: 'border-transparent bg-mt-bg-soft text-mt-text-secondary',
+  deadline: 'border-mt-white/20 bg-mt-white/20 text-mt-white shadow-sm backdrop-blur-md',
+  suspended: 'border-transparent bg-mt-bg-soft text-mt-text-nav',
+  completed: 'border-transparent bg-mt-text-nav text-mt-white',
+  pending: 'border-transparent bg-mt-border text-mt-primary',
+  leader: 'border-transparent bg-mt-badge-bg text-mt-primary',
 };
 
 const DEFAULT_LABEL: Record<StatusBadgeStatus, string> = {
