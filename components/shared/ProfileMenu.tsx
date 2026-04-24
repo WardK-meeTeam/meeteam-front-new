@@ -118,7 +118,6 @@ export default function ProfileMenu() {
       clearSession();
       setProfileImageUrl(null);
       setOpen(false);
-      router.push('/auth/login');
       router.refresh();
     }
   };

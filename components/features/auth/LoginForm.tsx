@@ -192,7 +192,7 @@ export default function LoginForm({
           </span>
           <span className="flex flex-col gap-1">
             <span className="text-sm leading-5 font-semibold text-mt-text-primary">
-              비밀번호는 저장하지 않으며, 로그인 후 세종대 포털에서 로그아웃됩니다.
+              비밀번호는 저장하지 않으며, 로그인 후 학교 포털에서 로그아웃됩니다.
             </span>
           </span>
         </label>
