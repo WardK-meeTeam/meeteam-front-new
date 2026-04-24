@@ -123,9 +123,16 @@ function mapTeammateCard(member: MemberCardResponse): Teammate {
     name: member.name,
     role: mapJobFieldToRole(member.jobFieldName),
     experienceCount: member.projectExperienceCount,
-    skills: member.techStacks.map((techStack) => techStack.name),
+    skills: mapTopTechStackNames(member.techStacks),
     imageUrl: member.profileImageUrl ?? '',
   };
+}
+
+function mapTopTechStackNames(techStacks: MemberTechStackResponse[]) {
+  return [...techStacks]
+    .sort((left, right) => left.displayOrder - right.displayOrder)
+    .slice(0, 3)
+    .map((techStack) => techStack.name);
 }
 
 function mapJobFieldToRole(jobFieldName: string | null): Teammate['role'] {

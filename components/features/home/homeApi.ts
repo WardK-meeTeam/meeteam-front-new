@@ -81,6 +81,8 @@ type BackendMemberCardResponse = {
   }>;
 };
 
+type BackendMemberTechStack = BackendMemberCardResponse['techStacks'][number];
+
 const CATEGORY_API_VALUES: Partial<Record<HomeProjectCategory, string>> = {
   캡스톤: 'CAPSTONE',
   창의학기제: 'CREATIVE_SEMESTER',
@@ -148,9 +150,16 @@ function mapHomeMember(member: BackendMemberCardResponse): HomeMemberCard {
     name: member.name,
     role: mapJobFieldToRole(member.jobFieldName),
     experience: `프로젝트 ${member.projectExperienceCount}회 경험`,
-    skills: member.techStacks.map((techStack) => techStack.name),
+    skills: mapTopTechStackNames(member.techStacks),
     imageUrl: member.profileImageUrl ?? '',
   };
+}
+
+function mapTopTechStackNames(techStacks: BackendMemberTechStack[]) {
+  return [...techStacks]
+    .sort((left, right) => left.displayOrder - right.displayOrder)
+    .slice(0, 3)
+    .map((techStack) => techStack.name);
 }
 
 export async function fetchHomeProjects(size = 4, category: HomeProjectCategory = '전체') {

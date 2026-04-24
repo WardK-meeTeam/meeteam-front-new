@@ -66,8 +66,12 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
       <div
         className={`absolute left-0 right-0 top-0 z-10 flex justify-between ${compact ? 'p-4' : 'p-6'}`}
       >
-        <CategoryBadge label={project.category} tone="onDark" />
-        <StatusBadge status="deadline" label={deadlineLabel} />
+        <CategoryBadge label={project.category} tone="accent" />
+        <StatusBadge
+          status="deadline"
+          label={deadlineLabel}
+          className="border-mt-logo-blue/30 bg-mt-logo-blue/30"
+        />
       </div>
 
       <div
@@ -94,7 +98,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                 />
                 <span
                   data-cy="project-card-leader"
-                  className="text-xs font-medium text-mt-text-secondary"
+                  className="text-xs font-medium text-mt-white/90 drop-shadow-sm"
                 >
                   {project.leader.name}
                 </span>
@@ -105,9 +109,9 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                   <Users className="h-3 w-3" aria-hidden strokeWidth={2} />
                   {project.currentMembers}/{project.maxMembers}명
                 </div>
-                <div className="h-1.5 w-20 overflow-hidden rounded-full bg-mt-white/20">
+                <div className="h-1.5 w-20 overflow-hidden rounded-full bg-mt-white/25">
                   <div
-                    className="h-full bg-mt-logo-blue"
+                    className="h-full bg-mt-mint"
                     style={{ width: `${Math.min(100, Math.max(0, percentage))}%` }}
                   />
                 </div>
@@ -125,7 +129,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
             <div className="min-h-0 overflow-hidden">
               <div className="border-t border-mt-white/20 pt-4">
                 <div className="mb-3 flex items-center">
-                  <h4 className="flex items-center gap-2 text-sm font-bold text-mt-white">
+                  <h4 className="border-l-2 border-mt-logo-blue pl-2 text-sm font-bold text-mt-white">
                     모집 현황
                   </h4>
                 </div>
@@ -134,7 +138,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                   {recruitInfo.length > 0 ? (
                     recruitInfo.map((info) => (
                       <div
-                        className="flex items-center justify-between rounded-lg border border-mt-white/10 bg-mt-white/10 p-2.5 transition-colors hover:bg-mt-white/20"
+                        className="flex items-center justify-between rounded-lg border border-mt-logo-blue/25 bg-mt-text-primary/40 p-2.5 transition-colors hover:border-mt-logo-blue/40 hover:bg-mt-text-primary/60"
                         key={info.id}
                       >
                         <div className="flex flex-col">

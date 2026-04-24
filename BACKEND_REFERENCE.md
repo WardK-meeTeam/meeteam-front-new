@@ -12,6 +12,8 @@ Synced `/tmp/meeteam-backend` from `origin/master` by fast-forwarding:
 - From: `0e7bcf5` (`feat: 프로젝트 카테고리 변경 (캡스톤, 창의학기제, 동아리)`)
 - To: `2fdad09` (`feat: 프로젝트 수정 시 모집 마감 방식 변경 기능 추가`)
 
+Rechecked on `2026-04-24`; `/tmp/meeteam-backend` is already up to date at `2fdad09`.
+
 Commits included:
 
 - `a57b723` `feat: 회원 탈퇴 기능 추가 (소프트 삭제)`
@@ -28,6 +30,7 @@ Commits included:
 ## Frontend-impacting changes
 
 - `ProjectCategory` values are now `CAPSTONE`, `CREATIVE_SEMESTER`, `CLUB`, and `ETC`.
+- `GET /api/v1/main/members` member cards now return `techStacks` sorted by `displayOrder` and limited to the top 3 items.
 - `POST /api/v1/projects/{projectId}/qna` request body now accepts:
   - `question: string`
   - `isSecret?: boolean` (defaults to `false` on the backend)
@@ -48,6 +51,7 @@ Commits included:
 ## Frontend reflection
 
 - Added `ETC`/`기타` project category support in project creation, detail mapping, project search filters, and home project filters.
+- User card rendering now shows up to 3 tech stacks, and member-card API mapping keeps only the top 3 by `displayOrder`.
 - Added Q&A `isSecret` mapping and a secret-question toggle in the project detail Q&A composer.
 - Added a frontend helper for soft withdrawal only.
 
@@ -59,5 +63,6 @@ Backend-only/ops notes:
 - Backend `CLAUDE.md` documents Sejong portal SSL compatibility details; no direct frontend contract change was found.
 
 Notes:
+
 - If `/tmp/meeteam-backend` no longer exists in a future session, re-clone from the remote repository above.
 - In a new chat session, mention this file and the agent can use it as the backend location reference.

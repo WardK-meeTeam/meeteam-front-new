@@ -9,23 +9,28 @@ import {
   toggleProjectLike,
 } from '@/components/features/project/projectApi';
 import ToastMessage from '@/components/shared/ToastMessage';
+import { useToastStore } from '@/stores/useToastStore';
 
 interface ProjectActionButtonsProps {
   projectId: string | number;
+  projectTitle?: string;
   initialLikeCount: number;
   initialLiked: boolean;
 }
 
 export default function ProjectActionButtons({
   projectId,
+  projectTitle,
   initialLikeCount,
   initialLiked,
 }: ProjectActionButtonsProps) {
   const openAuthRequiredModal = useAuthRequiredModal();
+  const showToast = useToastStore((state) => state.showToast);
   const [liked, setLiked] = useState(initialLiked);
   const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [isToggling, setIsToggling] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const formattedLikeCount = likeCount.toLocaleString('ko-KR');
 
   useEffect(() => {
     setLiked(initialLiked);
@@ -87,6 +92,22 @@ export default function ProjectActionButtons({
     }
   };
 
+  const handleShare = async () => {
+    const url = typeof window !== 'undefined' ? window.location.href : `/projects/${projectId}`;
+
+    try {
+      await navigator.clipboard.writeText(url);
+      showToast({
+        tone: 'success',
+        message: projectTitle
+          ? `'${projectTitle}' 프로젝트 링크를 복사했어요.`
+          : '프로젝트 링크를 복사했어요.',
+      });
+    } catch {
+      showToast({ message: '프로젝트 링크를 복사하지 못했습니다. 다시 시도해 주세요.' });
+    }
+  };
+
   return (
     <div className="space-y-2">
       <ToastMessage message={errorMessage} />
@@ -94,7 +115,7 @@ export default function ProjectActionButtons({
       <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
-          aria-label={liked ? '프로젝트 좋아요 취소' : '프로젝트 좋아요'}
+          aria-label={`${liked ? '프로젝트 좋아요 취소' : '프로젝트 좋아요'}, 현재 좋아요 ${formattedLikeCount}개`}
           aria-pressed={liked}
           disabled={isToggling}
           data-cy="project-like-button"
@@ -111,12 +132,14 @@ export default function ProjectActionButtons({
             aria-hidden
             strokeWidth={1.8}
           />
-          {likeCount > 0 ? likeCount : liked ? '관심 저장됨' : '관심 저장'}
+          좋아요 {formattedLikeCount}
         </button>
 
         <button
           className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-mt-border bg-mt-white px-4 text-sm leading-5 font-bold text-mt-text-nav shadow-sm transition-colors hover:bg-mt-badge-bg"
           type="button"
+          onClick={handleShare}
+          aria-label="프로젝트 링크 복사"
         >
           <Share2 className="h-5 w-5" aria-hidden strokeWidth={1.8} />
           공유

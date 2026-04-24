@@ -7,8 +7,8 @@ interface ProjectDetailTabsProps {
 }
 
 const TABS: Array<{ key: ProjectDetailTab; label: string }> = [
-  { key: 'intro', label: '소개' },
   { key: 'recruit', label: '모집 포지션' },
+  { key: 'intro', label: '소개' },
   { key: 'qna', label: 'Q&A' },
 ];
 

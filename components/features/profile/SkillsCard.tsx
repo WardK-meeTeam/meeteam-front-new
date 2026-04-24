@@ -28,6 +28,11 @@ export default function SkillsCard({
   return (
     <ProfileCard className={editable ? 'min-h-[297px]' : 'min-h-56'}>
       <h2 className="text-lg leading-7 font-bold text-mt-text-primary">기술 스택</h2>
+      {editable ? (
+        <p className="mt-1 text-sm leading-5 text-mt-text-secondary">
+          대표 기술은 앞의 3개가 먼저 표시돼요.
+        </p>
+      ) : null}
 
       <div className="mt-4 space-y-5">
         {skillGroups.map((group, groupIndex) => (

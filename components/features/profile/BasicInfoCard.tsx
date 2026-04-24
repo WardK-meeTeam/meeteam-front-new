@@ -13,7 +13,6 @@ interface EditableProfileFields {
   gender: string;
   fieldCategory: string;
   fieldRole: string;
-  projectCount: string;
   email: string;
   github: string;
   blog: string;
@@ -25,6 +24,7 @@ interface ProfileInfoItem {
 }
 
 interface ProfileContactItem {
+  label: string;
   icon: LucideIcon;
   value: string;
   href: string;
@@ -57,63 +57,29 @@ export default function BasicInfoCard({
 
   if (!editable || !formData || !onFieldChange) {
     return (
-      <ProfileCard title="기본 정보">
-        <dl className="mt-4 space-y-4">
-          {infoItems.map((item) => (
-            <div key={item.label} className="flex items-start justify-between gap-4">
-              <dt className="text-sm leading-5 font-normal text-mt-text-secondary">{item.label}</dt>
-              <dd className="text-right text-sm leading-5 font-medium text-mt-text-primary">
-                {item.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
-
-        <div className="mt-4 space-y-4">
-          <a
-            href={emailContact.href}
-            className="flex min-w-0 items-center gap-3 border-y border-mt-border py-4 text-sm leading-5 font-medium text-mt-text-nav transition-colors hover:text-mt-text-primary"
-          >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
-              <EmailIcon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-            </span>
-            <span className="min-w-0 truncate">{emailContact.value}</span>
-          </a>
-
-          <div className="space-y-3">
-            {socialContacts.map((item) => {
-              const Icon = item.icon;
-              const hasLink = item.href !== '#';
-              const className =
-                'flex min-w-0 items-center gap-3 text-sm leading-5 font-medium text-mt-text-nav transition-colors hover:text-mt-text-primary';
-              const content = (
-                <>
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
-                    <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-                  </span>
-                  <span className="min-w-0 truncate">{item.value}</span>
-                </>
-              );
-
-              return hasLink ? (
-                <a
-                  key={`${item.href}-${item.value}`}
-                  href={item.href}
-                  className={className}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {content}
-                </a>
-              ) : (
-                <div
-                  key={`${item.href}-${item.value}`}
-                  className="flex min-w-0 items-center gap-3 text-sm leading-5 font-medium text-mt-text-secondary"
-                >
-                  {content}
+      <ProfileCard title="활동 및 링크">
+        <div className="mt-4 space-y-5">
+          <div>
+            <h3 className="text-sm leading-5 font-bold text-mt-text-secondary">활동 정보</h3>
+            <dl className="mt-3 space-y-4">
+              {infoItems.map((item) => (
+                <div key={item.label} className="flex items-start justify-between gap-4">
+                  <dt className="text-sm leading-5 font-normal text-mt-text-secondary">
+                    {item.label}
+                  </dt>
+                  <dd className="text-right text-sm leading-5 font-medium text-mt-text-primary">
+                    {item.value}
+                  </dd>
                 </div>
-              );
-            })}
+              ))}
+            </dl>
+          </div>
+
+          <div className="space-y-3 border-t border-mt-border pt-4">
+            <h3 className="text-sm leading-5 font-bold text-mt-text-secondary">외부 링크</h3>
+            {socialContacts.map((item) => (
+              <ProfileContactLink key={item.label} item={item} />
+            ))}
           </div>
         </div>
       </ProfileCard>
@@ -123,6 +89,9 @@ export default function BasicInfoCard({
   return (
     <ProfileCard className="min-h-122">
       <h2 className="text-lg leading-7 font-bold text-mt-text-primary">기본 정보 수정</h2>
+      <p className="mt-1 text-sm leading-5 text-mt-text-secondary">
+        이름, 나이, 성별, 이메일은 계정 정보에서 관리돼요.
+      </p>
 
       <div className="mt-4 space-y-4">
         <dl className="space-y-4">
@@ -183,13 +152,6 @@ export default function BasicInfoCard({
               />
             </dd>
           </div>
-
-          <div className="space-y-2">
-            <dt className="text-sm leading-5 font-normal text-mt-text-secondary">프로젝트 횟수</dt>
-            <dd className="rounded-lg border border-mt-border px-3 py-2.5 text-sm leading-5 font-medium text-mt-text-nav">
-              {formData.projectCount}
-            </dd>
-          </div>
         </dl>
 
         <div className="space-y-4 border-t border-mt-border pt-4">
@@ -197,22 +159,29 @@ export default function BasicInfoCard({
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
               <EmailIcon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
             </span>
-            <span>{formData.email}</span>
+            <div className="min-w-0">
+              <p className="text-xs leading-4 font-bold text-mt-text-secondary">이메일</p>
+              <span className="block truncate">{formData.email}</span>
+            </div>
           </div>
 
           {socialContacts.map((item, index) => {
             const Icon = item.icon;
             const field = index === 0 ? 'github' : 'blog';
+            const label = field === 'github' ? 'GitHub 주소' : '블로그 주소';
+            const placeholder =
+              field === 'github' ? 'https://github.com/username' : 'https://your-blog.com';
 
             return (
-              <div key={`${field}-${item.href}-${item.value}`} className="flex items-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
+              <div key={`${field}-${item.href}-${item.value}`} className="space-y-2">
+                <label className="flex items-center gap-2 text-sm leading-5 font-bold text-mt-text-secondary">
                   <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-                </span>
-
+                  {label}
+                </label>
                 <BaseInput
                   inputSize="S"
                   value={formData[field]}
+                  placeholder={placeholder}
                   data-cy={field === 'github' ? 'profile-github-input' : 'profile-blog-input'}
                   onChange={(event) => onFieldChange(field, event.target.value)}
                   className="rounded-lg text-sm leading-5 font-medium text-mt-text-nav"
@@ -223,5 +192,38 @@ export default function BasicInfoCard({
         </div>
       </div>
     </ProfileCard>
+  );
+}
+
+function ProfileContactLink({ item }: { item: ProfileContactItem }) {
+  const Icon = item.icon;
+  const hasLink = item.href !== '#';
+  const className =
+    'flex min-w-0 items-center justify-between gap-3 text-sm leading-5 font-medium text-mt-text-nav';
+  const content = (
+    <>
+      <span className="flex min-w-0 items-center gap-3">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
+          <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+        </span>
+        <span className="shrink-0 text-mt-text-secondary">{item.label}</span>
+      </span>
+      <span className="min-w-0 truncate text-right text-mt-text-primary">{item.value}</span>
+    </>
+  );
+
+  if (!hasLink) {
+    return <div className={className}>{content}</div>;
+  }
+
+  return (
+    <a
+      href={item.href}
+      className={`${className} transition-colors hover:text-mt-text-primary`}
+      target="_blank"
+      rel="noreferrer"
+    >
+      {content}
+    </a>
   );
 }

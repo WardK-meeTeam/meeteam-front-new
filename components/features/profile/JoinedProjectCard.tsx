@@ -34,7 +34,7 @@ export default function JoinedProjectCard({
 
         <div
           className={`flex min-h-76 flex-col items-center justify-center rounded-2xl border border-dashed border-mt-shadow-blue bg-mt-bg-soft/50 px-6 py-16 text-center ${
-            disabled ? 'pointer-events-none opacity-70 blur-[1px]' : ''
+            disabled ? 'pointer-events-none opacity-70' : ''
           }`}
         >
           <span className="flex h-16 w-16 items-center justify-center rounded-full border border-mt-border bg-mt-white text-mt-shadow-blue shadow-sm">
@@ -86,7 +86,7 @@ function JoinedProjectItem({
       href={`/projects/${project.id}`}
       data-cy="profile-joined-project"
       className={`group relative block w-full overflow-hidden rounded-3xl bg-mt-text-primary shadow-2xl ${
-        disabled ? 'pointer-events-none opacity-70 blur-[1px]' : ''
+        disabled ? 'pointer-events-none opacity-70' : ''
       }`}
     >
       {disabled ? (

@@ -32,7 +32,7 @@ export default function UserCard({
   nameDataCy,
   experienceDataCy,
 }: UserCardProps) {
-  const [primarySkill, secondarySkill] = skills;
+  const visibleSkills = skills.slice(0, 3);
 
   return (
     <AuthLink
@@ -78,9 +78,13 @@ export default function UserCard({
           기술 스택
         </p>
         <div className="flex flex-wrap gap-2">
-          {primarySkill ? <SkillChip label={primarySkill} variant="primary" /> : null}
-
-          {secondarySkill ? <SkillChip label={secondarySkill} variant="outline" /> : null}
+          {visibleSkills.map((skill, index) => (
+            <SkillChip
+              key={`${skill}-${index}`}
+              label={skill}
+              variant={index === 0 ? 'primary' : 'outline'}
+            />
+          ))}
         </div>
       </div>
     </AuthLink>
