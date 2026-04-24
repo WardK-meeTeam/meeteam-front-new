@@ -94,10 +94,8 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
       await onSuccess?.();
 
       if (redirectPath !== pathname) {
-        router.push(redirectPath);
+        router.replace(redirectPath);
       }
-
-      router.refresh();
     } catch (error) {
       setFieldErrors({
         form: error instanceof Error ? error.message : '로그인에 실패했습니다.',
@@ -178,9 +176,6 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
           <span className="flex flex-col gap-1">
             <span className="text-sm font-semibold text-text-black">
               포털 인증 진행에 동의합니다.
-            </span>
-            <span className="text-sm leading-5 text-text-gray">
-              입력한 정보는 학교 인증 확인에만 사용돼요.
             </span>
           </span>
         </label>

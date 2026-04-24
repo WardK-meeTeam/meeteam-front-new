@@ -380,12 +380,7 @@ export default function ProfileOverview({
     '';
 
   if (isAuthBlocked) {
-    return (
-      <AuthRequiredFallback
-        title="프로필은 로그인 후 볼 수 있어요"
-        description="로그인하고 팀원의 상세 프로필과 프로젝트 경험을 확인해 보세요."
-      />
-    );
+    return <AuthRequiredFallback />;
   }
 
   if (isLoading) {

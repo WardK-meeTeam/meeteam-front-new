@@ -241,7 +241,6 @@ export default function SejongSignupForm() {
       });
 
       router.replace('/');
-      router.refresh();
     } catch (error) {
       const message =
         error instanceof Error ? error.message : '세종대 회원가입 중 오류가 발생했습니다.';
@@ -292,8 +291,8 @@ export default function SejongSignupForm() {
           updateField('name', event.target.value);
           setFieldErrors((prev) => ({ ...prev, name: undefined }));
         }}
-        onChangeBirth={(event) => {
-          updateField('birth', event.target.value);
+        onChangeBirth={(value) => {
+          updateField('birth', value);
           setFieldErrors((prev) => ({ ...prev, birth: undefined }));
         }}
         onChangeGender={(event) =>

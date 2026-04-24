@@ -1,12 +1,13 @@
 import BaseInput from '@/components/shared/BaseInput';
 import BaseField from '@/components/shared/BaseField';
+import BirthDateSelect from '@/components/features/auth/BirthDateSelect';
 
 type ProfileSectionProps = {
   name: string;
   birth: string;
   gender: string;
   onChangeName: React.ChangeEventHandler<HTMLInputElement>;
-  onChangeBirth: React.ChangeEventHandler<HTMLInputElement>;
+  onChangeBirth: (value: string) => void;
   onChangeGender: React.ChangeEventHandler<HTMLInputElement>;
   nameError?: string;
   birthError?: string;
@@ -24,7 +25,7 @@ export default function ProfileSection({
 }: ProfileSectionProps) {
   return (
     <>
-      <div className="flex gap-4">
+      <div className="grid gap-4 md:grid-cols-2">
         <BaseField label="이름" htmlFor="name" errorText={nameError}>
           <BaseInput
             id="name"
@@ -35,15 +36,8 @@ export default function ProfileSection({
             data-cy="signup-name"
           />
         </BaseField>
-        <BaseField label="생년월일" htmlFor="birth" errorText={birthError}>
-          <BaseInput
-            id="birth"
-            type="text"
-            value={birth}
-            placeholder="1998-03-15"
-            onChange={onChangeBirth}
-            data-cy="signup-birth"
-          />
+        <BaseField label="생년월일" errorText={birthError}>
+          <BirthDateSelect value={birth} onChange={onChangeBirth} />
         </BaseField>
       </div>
       <div>

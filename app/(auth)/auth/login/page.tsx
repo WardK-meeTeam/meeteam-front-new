@@ -18,9 +18,6 @@ export default function Page() {
           >
             <AppLogo className="h-14 w-60" priority />
           </Link>
-          <h2 className="text-center text-base font-medium text-text-gray">
-            학교 포털 계정으로 로그인해 주세요.
-          </h2>
         </div>
 
         <LoginForm />

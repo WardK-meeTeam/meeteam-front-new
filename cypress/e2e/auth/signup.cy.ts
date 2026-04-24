@@ -46,7 +46,9 @@ function fillRequiredSignupFields() {
   cy.get('[data-cy="signup-password"]').type('password123');
   cy.get('[data-cy="signup-password-confirm"]').type('password123');
   cy.get('[data-cy="signup-name"]').type('홍길동');
-  cy.get('[data-cy="signup-birth"]').type('1998-03-15');
+  cy.get('[data-cy="signup-birth-year"]').select('1998');
+  cy.get('[data-cy="signup-birth-month"]').select('03');
+  cy.get('[data-cy="signup-birth-day"]').select('15');
   cy.get('[data-cy="signup-gender-female"]').check({ force: true });
 
   cy.get('[data-cy="signup-interest-major-0"]').click();
@@ -107,7 +109,7 @@ describe('회원가입 흐름', () => {
     cy.contains('올바른 이메일 형식을 입력해 주세요.').should('be.visible');
     cy.contains('비밀번호는 8자 이상이어야 합니다.').should('be.visible');
     cy.contains('이름을 입력해 주세요.').should('be.visible');
-    cy.contains('생년월일은 YYYY-MM-DD 형식으로 입력해 주세요.').should('be.visible');
+    cy.contains('생년월일을 선택해 주세요.').should('be.visible');
     cy.contains('최소 1개의 관심 분야를 선택해 주세요.').should('be.visible');
     cy.contains('이메일 중복 확인을 완료해 주세요.').should('be.visible');
   });

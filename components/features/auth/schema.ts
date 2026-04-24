@@ -18,7 +18,7 @@ export const signupFormSchema = z
     password: z.string().min(8, '비밀번호는 8자 이상이어야 합니다.'),
     passwordConfirm: z.string().min(1, '비밀번호 확인을 입력해 주세요.'),
     name: z.string().trim().min(1, '이름을 입력해 주세요.'),
-    birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '생년월일은 YYYY-MM-DD 형식으로 입력해 주세요.'),
+    birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '생년월일을 선택해 주세요.'),
     gender: z.enum(['male', 'female']),
     projectExperienceCount: z
       .string()
@@ -38,7 +38,7 @@ export const signupFormSchema = z
 
 export const onboardingFormSchema = z.object({
   name: z.string().trim().min(1, '이름을 입력해 주세요.'),
-  birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '생년월일은 YYYY-MM-DD 형식으로 입력해 주세요.'),
+  birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '생년월일을 선택해 주세요.'),
   gender: z.enum(['male', 'female']),
   projectExperienceCount: z
     .string()
@@ -62,7 +62,9 @@ export type SignupFieldErrors = Partial<
   >
 >;
 
-export type LoginFieldErrors = Partial<Record<'studentId' | 'password' | 'agreement' | 'form', string>>;
+export type LoginFieldErrors = Partial<
+  Record<'studentId' | 'password' | 'agreement' | 'form', string>
+>;
 
 export type OnboardingFieldErrors = Partial<
   Record<'name' | 'birth' | 'projectExperienceCount' | 'interests' | 'form', string>

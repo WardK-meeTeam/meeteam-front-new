@@ -6,12 +6,10 @@ import AppLogo from '@/components/shared/AppLogo';
 
 type AuthRequiredFallbackProps = {
   title?: string;
-  description?: string;
 };
 
 export default function AuthRequiredFallback({
-  title = '로그인이 필요한 화면이에요',
-  description = '로그인 모달에서 이어서 진행하거나 홈으로 돌아갈 수 있어요.',
+  title = '로그인이 필요한 기능입니다',
 }: AuthRequiredFallbackProps) {
   return (
     <section className="mx-auto flex min-h-[420px] w-full max-w-3xl items-center justify-center px-4 py-16 text-center">
@@ -20,7 +18,6 @@ export default function AuthRequiredFallback({
           <AppLogo className="h-9 w-40" />
         </div>
         <h1 className="mt-2 text-2xl leading-8 font-extrabold text-text-black">{title}</h1>
-        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-text-gray">{description}</p>
         <Link
           href="/"
           className="mt-6 inline-flex h-11 items-center justify-center rounded-xl border border-border-gray bg-white px-5 text-sm leading-5 font-bold text-text-gray transition-colors hover:bg-surface-soft hover:text-text-black"

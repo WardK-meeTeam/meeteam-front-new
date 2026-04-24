@@ -7,13 +7,11 @@ import AppLogo from '@/components/shared/AppLogo';
 import { useLoginModalStore } from '@/stores/useLoginModalStore';
 
 import LoginForm from './LoginForm';
-import SocialLogin from './SocialLogin';
 
 export default function LoginPromptModal() {
   const isOpen = useLoginModalStore((state) => state.isOpen);
   const redirectPath = useLoginModalStore((state) => state.redirectPath);
   const title = useLoginModalStore((state) => state.title);
-  const description = useLoginModalStore((state) => state.description);
   const closeLoginModal = useLoginModalStore((state) => state.closeLoginModal);
 
   return (
@@ -24,7 +22,6 @@ export default function LoginPromptModal() {
             <AppLogo className="h-8 w-36" />
             <div className="space-y-1">
               <h2 className="text-xl font-extrabold text-text-black">{title}</h2>
-              <p className="text-sm leading-6 text-text-gray">{description}</p>
             </div>
           </div>
 
@@ -39,11 +36,6 @@ export default function LoginPromptModal() {
         </div>
 
         <LoginForm redirectPath={redirectPath ?? undefined} onSuccess={closeLoginModal} />
-        <SocialLogin />
-
-        <p className="text-center text-sm leading-5 text-text-gray">
-          신규 회원은 세종대 포털 로그인 후 가입 단계를 이어서 진행할 수 있어요.
-        </p>
       </section>
     </BaseModal>
   );

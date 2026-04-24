@@ -4,7 +4,6 @@ import type {
   JobFieldOption,
   OnboardingFormValues,
   OnboardingRequestPayload,
-  OAuth2RegisterRequestPayload,
   RegisterJobPositionPayload,
   RegisterRequestPayload,
   SejongRegisterRequestPayload,
@@ -116,14 +115,6 @@ function buildOnboardingRequestPayload(
     githubUrl: normalizeUrl(values.githubUrl),
     blogUrl: normalizeUrl(values.blogUrl),
   };
-}
-
-export function buildOAuthRegisterRequestPayload(
-  values: OnboardingFormValues,
-  jobFields: JobFieldOption[],
-  code: string,
-): OAuth2RegisterRequestPayload {
-  return buildOnboardingRequestPayload(values, jobFields, code);
 }
 
 export function buildSejongRegisterRequestPayload(

@@ -94,17 +94,11 @@ export type OnboardingRequestPayload = {
   blogUrl?: string;
 };
 
-export type OAuth2RegisterRequestPayload = OnboardingRequestPayload;
-
 export type SejongRegisterRequestPayload = OnboardingRequestPayload;
 
 export type SignupSuccessResponse = {
   memberId: number;
   username: string;
-};
-
-export type OAuth2RegisterSuccessResponse = SignupSuccessResponse & {
-  accessToken: string;
 };
 
 export type LoginRequestPayload = LoginFormValues;
@@ -118,10 +112,6 @@ export type SejongLoginApiResult = {
 export type SejongLoginResponse = {
   isNewMember: boolean;
   code: string | null;
-};
-
-export type OAuthTokenExchangeResponse = {
-  accessToken: string;
 };
 
 export type AuthSession = {

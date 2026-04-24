@@ -65,7 +65,7 @@ export default function AuthSection({
         </div>
       </BaseField>
 
-      {!emailError && emailFeedback && emailFeedbackTone !== 'default' ? (
+      {emailFeedback && emailFeedbackTone !== 'default' ? (
         <p className={`text-sm ${emailMessageClassName}`}>{emailFeedback}</p>
       ) : null}
 

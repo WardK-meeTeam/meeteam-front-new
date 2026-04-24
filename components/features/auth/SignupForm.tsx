@@ -155,8 +155,8 @@ export default function SignupForm() {
     setFieldErrors((prev) => ({ ...prev, name: undefined }));
   };
 
-  const onChangeBirth = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateField('birth', e.target.value);
+  const onChangeBirth = (value: string) => {
+    updateField('birth', value);
     setFieldErrors((prev) => ({ ...prev, birth: undefined }));
   };
 
