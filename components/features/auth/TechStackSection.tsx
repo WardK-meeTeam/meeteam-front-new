@@ -68,7 +68,7 @@ export default function TechStackSection({
       {sections.length > 0 ? (
         <div className="divide-y divide-mt-border">
           {sections.map((section, index) => (
-            <div key={section.key} className="py-4 first:pt-0 last:pb-0">
+            <div key={`${section.key}-${index}`} className="py-4 first:pt-0 last:pb-0">
               <p className="mb-3 text-sm leading-5 font-bold text-mt-text-primary">
                 {formatJobRole(section.major, section.minor)}
               </p>

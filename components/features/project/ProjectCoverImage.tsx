@@ -1,3 +1,9 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
+import { getProjectImageSrc, PROJECT_FALLBACK_IMAGE_SRC } from './projectImage';
+
 type ProjectCoverImageProps = {
   src?: string | null;
   alt: string;
@@ -15,22 +21,30 @@ export default function ProjectCoverImage({
   imageClassName = '',
   overlayClassName = '',
 }: ProjectCoverImageProps) {
+  const [resolvedSrc, setResolvedSrc] = useState(getProjectImageSrc(src));
+  const isFallbackImage = resolvedSrc === PROJECT_FALLBACK_IMAGE_SRC;
+
+  useEffect(() => {
+    setResolvedSrc(getProjectImageSrc(src));
+  }, [src]);
+
   return (
     <div
       className={`relative aspect-[1200/630] w-full overflow-hidden rounded-4xl bg-mt-bg-soft ${className}`}
     >
-      {src ? (
-        <img
-          src={src}
-          alt={alt}
-          loading={priority ? 'eager' : 'lazy'}
-          className={`absolute inset-0 h-full w-full object-cover ${imageClassName}`}
-        />
-      ) : (
-        <div className="absolute inset-0 bg-linear-to-br from-mt-bg-soft via-mt-badge-bg to-mt-shadow-blue" />
-      )}
+      <img
+        src={resolvedSrc}
+        alt={alt}
+        loading={priority ? 'eager' : 'lazy'}
+        className={`absolute inset-0 h-full w-full object-cover ${imageClassName}`}
+        onError={() => {
+          if (!isFallbackImage) {
+            setResolvedSrc(PROJECT_FALLBACK_IMAGE_SRC);
+          }
+        }}
+      />
 
-      {overlayClassName ? (
+      {overlayClassName && !isFallbackImage ? (
         <div className={`pointer-events-none absolute inset-0 ${overlayClassName}`} />
       ) : null}
     </div>

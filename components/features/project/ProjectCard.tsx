@@ -5,6 +5,7 @@ import CategoryBadge from '@/components/shared/CategoryBadge';
 import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import StatusBadge from '@/components/shared/StatusBadge';
+import { getProjectImageSrc } from './projectImage';
 
 interface ProjectCardProps {
   project: {
@@ -38,6 +39,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
 
   const recruitInfo = project.recruitInfo ?? [];
   const deadlineLabel = project.deadline?.trim() ? `${project.deadline} 마감` : '상시 모집';
+  const imageSrc = getProjectImageSrc(project.imageUrl);
 
   const heightClass = compact ? 'h-50' : 'h-[380px]';
   const titleClass = compact ? 'mb-3 text-2xl' : 'mb-3 text-2xl';
@@ -50,17 +52,13 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
       href={`/projects/${project.id}`}
     >
       <div className="absolute inset-0 h-full w-full">
-        {project.imageUrl ? (
-          <Image
-            alt={project.title}
-            className="object-cover opacity-70 transition-transform duration-700 group-hover:scale-110"
-            fill
-            sizes={compact ? '100vw' : '(max-width: 768px) 100vw, 50vw'}
-            src={project.imageUrl}
-          />
-        ) : (
-          <div className="h-full w-full bg-mt-text-primary/80" />
-        )}
+        <Image
+          alt={project.title}
+          className="object-cover opacity-70 transition-transform duration-700 group-hover:scale-110"
+          fill
+          sizes={compact ? '100vw' : '(max-width: 768px) 100vw, 50vw'}
+          src={imageSrc}
+        />
         <div className="absolute inset-0 bg-linear-to-t from-mt-text-primary/95 via-mt-text-primary/50 to-transparent transition-opacity duration-500" />
         <div className="absolute inset-0 bg-mt-text-primary/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </div>

@@ -65,7 +65,17 @@ export default function ProjectRecruitSection({
     });
 
   return (
-    <section className="flex w-full flex-col gap-8" data-node-id="97:800">
+    <section
+      className="flex w-full flex-col gap-5 rounded-3xl border border-mt-border bg-mt-white p-6 shadow-sm"
+      data-node-id="97:800"
+    >
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <h2 className="text-xl leading-7 font-extrabold text-mt-text-primary">팀원 모집</h2>
+        <p className="text-sm leading-5 font-bold text-mt-primary">
+          {recruitPositions.filter((position) => position.status === 'open').length}개 포지션 모집중
+        </p>
+      </div>
+
       {recruitPositions.map((position) => {
         const isOpen = position.status === 'open';
         const handleApplyClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -80,50 +90,52 @@ export default function ProjectRecruitSection({
         return (
           <article
             key={position.id}
-            className={`w-full rounded-2xl border border-mt-border bg-mt-white px-6 pb-6 pt-7 shadow-sm ${isOpen ? '' : 'opacity-60'}`}
+            className={`w-full border-t border-mt-border pt-5 first:border-t-0 first:pt-0 ${isOpen ? '' : 'opacity-70'}`}
           >
-            <div className="flex items-start justify-between gap-6">
-              <div className="flex min-w-0 flex-col gap-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-base leading-5 font-bold text-mt-text-primary">
-                    {formatJobRole(position.role, position.specialty)}
-                  </h3>
-                  <StatusBadge status={position.status} />
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <h3 className="break-keep text-lg leading-7 font-extrabold text-mt-text-primary">
+                      {formatJobRole(position.role, position.specialty)}
+                    </h3>
+                    <StatusBadge status={position.status} />
+                  </div>
+                  <span className="text-sm leading-5 font-bold text-mt-text-secondary">
+                    {position.joined} / {position.total}명 합류
+                  </span>
                 </div>
 
-                <p className="text-base leading-5 font-medium text-mt-text-primary">
-                  {position.joined} / {position.total}명 합류
-                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {position.techStack.length > 0 ? (
+                    position.techStack.map((tech) => <SkillChip key={tech} label={tech} />)
+                  ) : (
+                    <span className="text-sm leading-5 text-mt-text-secondary">
+                      등록된 기술 스택이 없습니다.
+                    </span>
+                  )}
+                </div>
               </div>
 
-              {isOpen ? (
-                <AuthLink
-                  href={buildApplyHref(project.id, position)}
-                  onClick={handleApplyClick}
-                  aria-disabled={!canApply}
-                >
-                  <BaseButton
-                    size="S"
-                    className={`h-10 min-w-24 rounded-xl px-5 text-xs leading-4 font-bold text-mt-white shadow-none ${
-                      canApply
-                        ? 'bg-mt-text-primary hover:bg-mt-text-primary'
-                        : 'cursor-not-allowed bg-mt-text-secondary'
-                    }`}
+              <div className="lg:w-32">
+                {isOpen ? (
+                  <AuthLink
+                    href={buildApplyHref(project.id, position)}
+                    onClick={handleApplyClick}
+                    aria-disabled={!canApply}
                   >
-                    지원하기
-                  </BaseButton>
-                </AuthLink>
-              ) : null}
-            </div>
-
-            <div className="my-6 h-px w-full bg-mt-bg-soft" />
-
-            <div className="flex flex-wrap items-center gap-6">
-              <span className="text-sm leading-5 font-medium text-mt-text-nav">기술 스택</span>
-              <div className="flex flex-wrap items-center gap-2">
-                {position.techStack.map((tech) => (
-                  <SkillChip key={tech} label={tech} />
-                ))}
+                    <BaseButton
+                      size="S"
+                      className={`h-11 w-full rounded-xl px-4 text-sm leading-5 font-bold text-mt-white shadow-none ${
+                        canApply
+                          ? 'bg-mt-text-primary hover:bg-mt-text-primary'
+                          : 'cursor-not-allowed bg-mt-text-secondary'
+                      }`}
+                    >
+                      지원하기
+                    </BaseButton>
+                  </AuthLink>
+                ) : null}
               </div>
             </div>
           </article>

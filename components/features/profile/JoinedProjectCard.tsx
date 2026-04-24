@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { BriefcaseBusiness, Users } from 'lucide-react';
+import { getProjectImageSrc } from '@/components/features/project/projectImage';
 import CategoryBadge from '@/components/shared/CategoryBadge';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 
@@ -78,6 +79,7 @@ function JoinedProjectItem({
   const memberRatio = `${project.currentMembers}/${project.maxMembers}명`;
   const progressWidth =
     project.maxMembers > 0 ? `${(project.currentMembers / project.maxMembers) * 100}%` : '0%';
+  const imageSrc = getProjectImageSrc(project.imageUrl);
 
   return (
     <Link
@@ -95,15 +97,11 @@ function JoinedProjectItem({
       ) : null}
 
       <div className="absolute inset-0">
-        {project.imageUrl ? (
-          <img
-            alt={project.title}
-            className="h-full w-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-105"
-            src={project.imageUrl}
-          />
-        ) : (
-          <div className="h-full w-full bg-mt-text-primary opacity-70" />
-        )}
+        <img
+          alt={project.title}
+          className="h-full w-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-105"
+          src={imageSrc}
+        />
         <div className="absolute inset-0 bg-linear-to-t from-mt-text-primary via-mt-text-primary/50 to-transparent" />
       </div>
 

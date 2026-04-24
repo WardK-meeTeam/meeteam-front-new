@@ -8,7 +8,7 @@ type StatusBadgeStatus =
   | 'completed'
   | 'pending'
   | 'leader';
-type StatusBadgeSize = 'xs' | 'sm';
+type StatusBadgeSize = 'xs' | 'sm' | 'md';
 
 type StatusBadgeProps = {
   status: StatusBadgeStatus;
@@ -19,10 +19,10 @@ type StatusBadgeProps = {
 };
 
 const STATUS_CLASS: Record<StatusBadgeStatus, string> = {
-  open: 'border-transparent bg-mt-badge-bg text-mt-mint',
-  closed: 'border-transparent bg-mt-bg-soft text-mt-text-secondary',
+  open: 'border-mt-mint bg-mt-mint text-mt-white',
+  closed: 'border-mt-text-secondary bg-mt-text-secondary text-mt-white',
   deadline: 'border-mt-white/20 bg-mt-white/20 text-mt-white shadow-sm backdrop-blur-md',
-  suspended: 'border-transparent bg-mt-bg-soft text-mt-text-nav',
+  suspended: 'border-mt-text-nav bg-mt-text-nav text-mt-white',
   completed: 'border-transparent bg-mt-text-nav text-mt-white',
   pending: 'border-transparent bg-mt-border text-mt-primary',
   leader: 'border-transparent bg-mt-badge-bg text-mt-primary',
@@ -41,6 +41,7 @@ const DEFAULT_LABEL: Record<StatusBadgeStatus, string> = {
 const SIZE_CLASS: Record<StatusBadgeSize, string> = {
   xs: 'px-1.5 py-0.5 text-[10px] leading-4',
   sm: 'px-2 py-0.5 text-xs leading-4',
+  md: 'px-3 py-1.5 text-sm leading-5',
 };
 
 export default function StatusBadge({

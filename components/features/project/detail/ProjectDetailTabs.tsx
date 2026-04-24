@@ -7,14 +7,14 @@ interface ProjectDetailTabsProps {
 }
 
 const TABS: Array<{ key: ProjectDetailTab; label: string }> = [
-  { key: 'intro', label: '프로젝트 소개' },
-  { key: 'recruit', label: '팀원 모집' },
+  { key: 'intro', label: '소개' },
+  { key: 'recruit', label: '모집 포지션' },
   { key: 'qna', label: 'Q&A' },
 ];
 
 export default function ProjectDetailTabs({ activeTab, onTabChange }: ProjectDetailTabsProps) {
   return (
-    <div className="w-full overflow-x-auto border-b border-mt-border bg-mt-white pt-2 pb-px">
+    <div className="w-full overflow-x-auto border-b border-mt-border bg-mt-white">
       <nav className="flex min-w-max items-start gap-6">
         {TABS.map((tab) => {
           const isActive = tab.key === activeTab;

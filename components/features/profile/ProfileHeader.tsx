@@ -33,6 +33,7 @@ export default function ProfileHeader({
 }: ProfileHeaderProps) {
   const inputId = useId();
   const university = findUniversityByEmail(email);
+  const showActionButton = Boolean(onAction);
 
   return (
     <section className="overflow-hidden rounded-3xl border border-mt-border bg-mt-white shadow-md">
@@ -91,16 +92,18 @@ export default function ProfileHeader({
           </div>
         </div>
 
-        <BaseButton
-          size="M"
-          variant="primary"
-          onClick={onAction}
-          disabled={actionDisabled}
-          data-cy="profile-action-button"
-          className="self-start px-5 shadow-[0_4px_6px_-1px_var(--color-mt-border),0_2px_4px_-2px_var(--color-mt-border)] sm:self-auto"
-        >
-          {actionLabel}
-        </BaseButton>
+        {showActionButton ? (
+          <BaseButton
+            size="M"
+            variant="primary"
+            onClick={onAction}
+            disabled={actionDisabled}
+            data-cy="profile-action-button"
+            className="self-start px-5 shadow-[0_4px_6px_-1px_var(--color-mt-border),0_2px_4px_-2px_var(--color-mt-border)] sm:self-auto"
+          >
+            {actionLabel}
+          </BaseButton>
+        ) : null}
       </div>
     </section>
   );

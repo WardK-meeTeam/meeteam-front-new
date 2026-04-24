@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import type { ProjectRecord } from '@/types/project';
 import ProjectDetailTabs from './ProjectDetailTabs';
 import ProjectIntroSection from './ProjectIntroSection';
@@ -11,20 +10,22 @@ export type ProjectDetailTab = 'intro' | 'recruit' | 'qna';
 
 type ProjectDetailContentProps = {
   project: ProjectRecord;
+  activeTab: ProjectDetailTab;
+  onTabChange: (tab: ProjectDetailTab) => void;
   canApply?: boolean;
   onCopyExternalUrl: (url: string, label: string) => void;
 };
 
 export default function ProjectDetailContent({
   project,
+  activeTab,
+  onTabChange,
   canApply = true,
   onCopyExternalUrl,
 }: ProjectDetailContentProps) {
-  const [activeTab, setActiveTab] = useState<ProjectDetailTab>('intro');
-
   return (
-    <div className="min-w-0 space-y-8">
-      <ProjectDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
+    <div className="min-w-0 space-y-6">
+      <ProjectDetailTabs activeTab={activeTab} onTabChange={onTabChange} />
 
       {activeTab === 'intro' && (
         <ProjectIntroSection project={project} onCopyExternalUrl={onCopyExternalUrl} />

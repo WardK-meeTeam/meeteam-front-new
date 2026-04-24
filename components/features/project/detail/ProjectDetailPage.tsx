@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CalendarDays, Settings, Users } from 'lucide-react';
+import { ArrowRight, CalendarDays, Monitor, Settings, Users } from 'lucide-react';
 import AuthLink from '@/components/features/auth/AuthLink';
 import { getProjectCategoryLabel } from '@/components/features/project/constants';
 import ProjectCoverImage from '@/components/features/project/ProjectCoverImage';
 import ProjectActionButtons from '@/components/features/project/detail/ProjectActionButtons';
-import ProjectDetailContent from '@/components/features/project/detail/ProjectDetailContent';
+import ProjectDetailContent, {
+  type ProjectDetailTab,
+} from '@/components/features/project/detail/ProjectDetailContent';
 import ProjectDetailSkeleton from '@/components/features/project/detail/ProjectDetailSkeleton';
 import {
   fetchProjectDetail,
@@ -14,12 +16,20 @@ import {
 } from '@/components/features/project/projectApi';
 import CategoryBadge from '@/components/shared/CategoryBadge';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
-import SkillChip from '@/components/shared/SkillChip';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
+import StatusBadge from '@/components/shared/StatusBadge';
 import ToastMessage from '@/components/shared/ToastMessage';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useToastStore } from '@/stores/useToastStore';
 import { useProjectStore } from '@/components/features/project/store';
 import type { ProjectMember, ProjectRecord } from '@/types/project';
+
+type RecruitSummary = {
+  role: string;
+  specialty: string;
+  total: number;
+  isOpen: boolean;
+};
 
 export default function ProjectDetailPage({ projectId }: { projectId: string }) {
   const memberId = useAuthStore((state) => state.memberId);
@@ -30,6 +40,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   const [teamMembers, setTeamMembers] = useState<ProjectMember[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<ProjectDetailTab>('intro');
 
   useEffect(() => {
     let active = true;
@@ -112,10 +123,30 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   const members = rawMembers.filter(
     (member, index, items) => items.findIndex((item) => item.id === member.id) === index,
   );
-  const leaderSkillKey = `${project.myInterest.major} - ${project.myInterest.minor}`;
-  const leaderSkills = project.leaderTechStacks ?? project.recruitTechStacks[leaderSkillKey] ?? [];
   const canManageProject =
     project.isLeader === true || (memberId !== null && memberId === project.leaderProfileId);
+  const recruitSummaries: RecruitSummary[] =
+    project.recruitmentDetails?.map((recruitment) => ({
+      role: recruitment.jobFieldName,
+      specialty: recruitment.jobPositionName,
+      total: recruitment.recruitmentCount,
+      isOpen: !recruitment.isClosed && project.status !== 'closed',
+    })) ??
+    project.recruitInterests.map((interest) => ({
+      role: interest.major,
+      specialty: interest.minor,
+      total: interest.count,
+      isOpen: project.status !== 'closed',
+    }));
+  const recruitCount = recruitSummaries.reduce((sum, position) => sum + position.total, 0);
+  const openRecruitmentCount = recruitSummaries.filter((position) => position.isOpen).length;
+  const recruitRoleNames = recruitSummaries
+    .slice(0, 3)
+    .map((position) => formatJobRole(position.role, position.specialty));
+  const deadlineText = project.isRecruitUntilComplete
+    ? '상시 모집'
+    : `${project.recruitDeadline} 마감`;
+  const platformText = project.releasePlatforms.join(', ');
 
   const handleCopyExternalUrl = async (url: string, label: string) => {
     if (!url) {
@@ -130,31 +161,123 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
     }
   };
 
-  return (
-    <section className="mx-auto w-full max-w-7xl space-y-8 pb-20">
-      <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(20rem,0.7fr)]">
-        <ProjectCoverImage
-          src={project.coverImageUrl}
-          alt={project.title}
-          priority
-          className="border border-mt-border shadow-sm"
-          overlayClassName="bg-mt-text-primary/10"
-        />
+  const handleMoveToRecruitTab = () => {
+    setActiveTab('recruit');
 
-        <article className="flex min-w-0 flex-col justify-between rounded-4xl border border-mt-border bg-mt-white p-6 shadow-sm md:p-8">
-          <div>
-            <div className="mb-5 flex flex-wrap items-center gap-2">
-              <CategoryBadge label={getProjectCategoryLabel(project.categoryId)} />
-              {project.releasePlatforms.map((releasePlatform) => (
-                <CategoryBadge key={releasePlatform} label={releasePlatform} tone="default" />
-              ))}
+    window.requestAnimationFrame(() => {
+      document.getElementById('project-detail-content')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    });
+  };
+
+  return (
+    <section className="mx-auto w-full max-w-6xl pb-20">
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <CategoryBadge label={getProjectCategoryLabel(project.categoryId)} size="md" />
+          <StatusBadge
+            status={project.status === 'closed' ? 'closed' : 'open'}
+            label={project.status === 'closed' ? '모집 마감' : '모집중'}
+            size="md"
+          />
+        </div>
+
+        <h1 className="mt-5 break-keep text-3xl leading-tight font-extrabold text-mt-text-primary md:text-4xl">
+          {project.title}
+        </h1>
+        <p className="mt-3 break-keep text-base leading-7 font-medium text-mt-text-secondary">
+          함께 프로젝트를 만들 팀원을 찾고 있어요.
+          {recruitRoleNames.length > 0 ? (
+            <>
+              {' '}
+              {recruitRoleNames.map((roleName, index) => (
+                <span key={roleName}>
+                  {index > 0 ? ', ' : ''}
+                  <strong className="font-extrabold text-mt-text-primary">{roleName}</strong>
+                </span>
+              ))}{' '}
+              포지션을 모집 중입니다.
+            </>
+          ) : null}
+        </p>
+
+        <div className="mt-6 overflow-hidden rounded-3xl border border-mt-border bg-mt-white p-3 shadow-sm">
+          <ProjectCoverImage
+            src={project.coverImageUrl}
+            alt={project.title}
+            priority
+            className="rounded-2xl"
+            imageClassName="object-center"
+            overlayClassName="bg-mt-text-primary/10"
+          />
+        </div>
+      </div>
+
+      <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+        <div id="project-detail-content" className="min-w-0 scroll-mt-24 pb-14">
+          <ProjectDetailContent
+            project={project}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            canApply={!canManageProject}
+            onCopyExternalUrl={handleCopyExternalUrl}
+          />
+        </div>
+
+        <aside className="min-w-0 lg:sticky lg:top-24 lg:flex">
+          <article className="flex w-full flex-col self-stretch rounded-3xl border border-mt-border bg-mt-white p-6 shadow-sm">
+            <div className="space-y-2">
+              <p className="text-2xl leading-8 font-extrabold text-mt-text-primary">
+                팀원 {members.length} / {recruitCount + 1}명
+              </p>
+              <div className="flex items-center gap-2 text-sm leading-5 text-mt-text-secondary">
+                <CalendarDays className="h-4 w-4 text-mt-primary" aria-hidden />
+                <span>{deadlineText}</span>
+              </div>
+              {platformText ? (
+                <div className="flex items-center gap-2 text-sm leading-5 text-mt-text-secondary">
+                  <Monitor className="h-4 w-4 text-mt-primary" aria-hidden />
+                  <span>{platformText}</span>
+                </div>
+              ) : null}
+              <div className="flex items-center gap-2 text-sm leading-5 text-mt-text-secondary">
+                <Users className="h-4 w-4 text-mt-primary" aria-hidden />
+                <span>
+                  {openRecruitmentCount}개 포지션 · {recruitCount}명 모집
+                </span>
+              </div>
             </div>
 
-            <h1 className="break-keep text-3xl leading-tight font-extrabold text-mt-text-primary md:text-4xl">
-              {project.title}
-            </h1>
+            {canManageProject ? (
+              <AuthLink
+                href={`/projects/${project.id}/manage`}
+                className="mt-6 inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-mt-primary px-4 text-sm font-bold text-mt-white shadow-sm transition-colors hover:bg-mt-logo-blue"
+              >
+                <Settings className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+                프로젝트 관리
+              </AuthLink>
+            ) : project.status === 'closed' ? (
+              <button
+                type="button"
+                disabled
+                className="mt-6 inline-flex h-14 w-full cursor-not-allowed items-center justify-center rounded-xl bg-mt-bg-soft px-4 text-sm font-bold text-mt-text-secondary"
+              >
+                모집이 마감됐어요
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleMoveToRecruitTab}
+                className="mt-6 inline-flex h-14 w-full items-center justify-center gap-2 rounded-xl bg-mt-primary px-4 text-sm font-bold text-mt-white shadow-sm transition-colors hover:bg-mt-logo-blue"
+              >
+                프로젝트 지원하기
+                <ArrowRight className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+              </button>
+            )}
 
-            <div className="mt-6 border-t border-mt-border pt-5">
+            <div className="mt-5 border-t border-mt-border pt-5">
               <p className="text-xs leading-4 font-bold text-mt-text-secondary">프로젝트 리더</p>
               <AuthLink
                 href={`/profile/${project.leaderProfileId ?? 1}`}
@@ -176,57 +299,17 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
                   </p>
                 </div>
               </AuthLink>
-
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {leaderSkills.length > 0 ? (
-                  leaderSkills
-                    .slice(0, 3)
-                    .map((tech) => <SkillChip key={tech} label={tech} variant="outline" />)
-                ) : (
-                  <SkillChip label={project.myInterest.major} variant="outline" />
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-mt-border bg-mt-badge-bg px-4 py-2 text-sm font-bold text-mt-primary">
-              <CalendarDays className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-              {project.isRecruitUntilComplete ? '상시 모집' : `${project.recruitDeadline} 마감`}
             </div>
 
-            {canManageProject ? (
-              <AuthLink
-                href={`/projects/${project.id}/manage`}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-mt-border bg-mt-white px-4 py-2 text-sm font-bold text-mt-primary shadow-sm transition-colors hover:bg-mt-badge-bg"
-              >
-                <Settings className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-                프로젝트 관리
-              </AuthLink>
-            ) : null}
-
-            <div className="inline-flex items-center gap-2 rounded-full border border-mt-border bg-mt-white px-4 py-2 text-sm font-bold text-mt-text-secondary">
-              <Users className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-              {members.length}명
+            <div className="mt-auto pt-5">
+              <ProjectActionButtons
+                projectId={project.id}
+                initialLikeCount={project.likeCount ?? 0}
+                initialLiked={project.isLiked ?? false}
+              />
             </div>
-          </div>
-
-          <div className="mt-4">
-            <ProjectActionButtons
-              projectId={project.id}
-              initialLikeCount={project.likeCount ?? 0}
-              initialLiked={project.isLiked ?? false}
-            />
-          </div>
-        </article>
-      </div>
-
-      <div className="mx-auto w-full max-w-4xl pb-14">
-        <ProjectDetailContent
-          project={project}
-          canApply={!canManageProject}
-          onCopyExternalUrl={handleCopyExternalUrl}
-        />
+          </article>
+        </aside>
       </div>
     </section>
   );

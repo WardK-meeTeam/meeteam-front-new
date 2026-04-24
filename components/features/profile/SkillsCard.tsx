@@ -31,16 +31,16 @@ export default function SkillsCard({
 
       <div className="mt-4 space-y-5">
         {skillGroups.map((group, groupIndex) => (
-          <div key={`${group.category}-${group.role}`} className="space-y-3">
+          <div key={`${group.category}-${group.role}-${groupIndex}`} className="space-y-3">
             <div className="flex items-center gap-1.5 text-sm leading-5 text-mt-text-secondary">
               <CodeXml className="h-3 w-3" aria-hidden strokeWidth={2} />
               <p>{formatJobRole(group.category, group.role)}</p>
             </div>
 
             <div className="flex flex-wrap gap-2">
-              {group.skills.map((skill) => (
+              {group.skills.map((skill, skillIndex) => (
                 <SkillChip
-                  key={`${group.category}-${skill}`}
+                  key={`${group.category}-${skill}-${skillIndex}`}
                   label={skill}
                   size="md"
                   onRemove={

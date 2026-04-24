@@ -91,7 +91,7 @@ export default function ProjectActionButtons({
     <div className="space-y-2">
       <ToastMessage message={errorMessage} />
 
-      <div className="flex items-center gap-3">
+      <div className="grid grid-cols-2 gap-3">
         <button
           type="button"
           aria-label={liked ? '프로젝트 좋아요 취소' : '프로젝트 좋아요'}
@@ -99,7 +99,7 @@ export default function ProjectActionButtons({
           disabled={isToggling}
           data-cy="project-like-button"
           onClick={handleLikeToggle}
-          className={`inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl border border-mt-border px-4 text-base leading-6 font-bold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-70
+          className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-mt-border px-4 text-sm leading-5 font-bold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-70
             ${
               liked
                 ? 'bg-mt-badge-bg text-mt-hero-blue'
@@ -111,14 +111,15 @@ export default function ProjectActionButtons({
             aria-hidden
             strokeWidth={1.8}
           />
-          {likeCount}
+          {likeCount > 0 ? likeCount : liked ? '관심 저장됨' : '관심 저장'}
         </button>
 
         <button
-          className="inline-flex h-14 w-14 items-center justify-center rounded-2xl border border-mt-border bg-mt-white text-mt-text-nav shadow-sm transition-colors hover:bg-mt-badge-bg"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-mt-border bg-mt-white px-4 text-sm leading-5 font-bold text-mt-text-nav shadow-sm transition-colors hover:bg-mt-badge-bg"
           type="button"
         >
           <Share2 className="h-5 w-5" aria-hidden strokeWidth={1.8} />
+          공유
         </button>
       </div>
     </div>

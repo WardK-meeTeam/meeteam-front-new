@@ -442,7 +442,7 @@ export default function ProfileOverview({
           profileImageUrl={imagePreviewUrl ?? profileForm.profileImageUrl}
           actionLabel={currentActionLabel}
           isEditing={isEditing}
-          onAction={handleAction}
+          onAction={canEdit ? handleAction : undefined}
           onImageChange={handleImageChange}
           actionDisabled={isSaving}
         />
