@@ -91,7 +91,7 @@ export default function ProfileHeader({
                     <UniversityLogo
                       universityId={university.id}
                       variant="icon"
-                      className="h-6 w-6 shrink-0"
+                      className="h-8 w-8 shrink-0"
                     />
                     <span className="text-base leading-6 font-semibold text-mt-text-primary">
                       {university.nameKo}

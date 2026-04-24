@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-import { getProjectImageSrc, PROJECT_FALLBACK_IMAGE_SRC } from './projectImage';
+import { getProjectDetailImageSrc, PROJECT_DETAIL_FALLBACK_IMAGE_SRC } from './projectImage';
 
 type ProjectCoverImageProps = {
   src?: string | null;
@@ -21,11 +21,11 @@ export default function ProjectCoverImage({
   imageClassName = '',
   overlayClassName = '',
 }: ProjectCoverImageProps) {
-  const [resolvedSrc, setResolvedSrc] = useState(getProjectImageSrc(src));
-  const isFallbackImage = resolvedSrc === PROJECT_FALLBACK_IMAGE_SRC;
+  const [resolvedSrc, setResolvedSrc] = useState(getProjectDetailImageSrc(src));
+  const isFallbackImage = resolvedSrc === PROJECT_DETAIL_FALLBACK_IMAGE_SRC;
 
   useEffect(() => {
-    setResolvedSrc(getProjectImageSrc(src));
+    setResolvedSrc(getProjectDetailImageSrc(src));
   }, [src]);
 
   return (
@@ -39,7 +39,7 @@ export default function ProjectCoverImage({
         className={`absolute inset-0 h-full w-full object-cover ${imageClassName}`}
         onError={() => {
           if (!isFallbackImage) {
-            setResolvedSrc(PROJECT_FALLBACK_IMAGE_SRC);
+            setResolvedSrc(PROJECT_DETAIL_FALLBACK_IMAGE_SRC);
           }
         }}
       />
