@@ -33,7 +33,6 @@ export interface MemberProfileResponse {
   email: string;
   githubUrl: string | null;
   blogUrl: string | null;
-  projectExperienceCount: number;
   representativePosition: string | null;
   representativePositionEn?: string | null;
   groupedSkills: GroupedSkill[];
@@ -54,7 +53,6 @@ interface MemberDetailResponse {
   gender: ProfileGender;
   representativePosition: string | null;
   jobPositions: string[];
-  projectExperienceCount: number;
   email: string;
   githubUrl: string | null;
   blogUrl: string | null;
@@ -74,7 +72,6 @@ export interface UpdateMemberProfilePayload {
     id: number;
     displayOrder: number;
   }>;
-  projectExperienceCount: number;
   isParticipating: boolean;
   introduction?: string;
   githubUrl?: string;
@@ -129,7 +126,6 @@ export async function updateMyProfile(payload: UpdateMemberProfilePayload) {
           gender: payload.gender,
           jobPositionIds: payload.jobPositionIds,
           techStacks: payload.techStacks,
-          projectExperienceCount: payload.projectExperienceCount,
           isParticipating: payload.isParticipating,
           introduction: payload.introduction?.trim() || '',
           githubUrl: normalizeUrl(payload.githubUrl ?? ''),
@@ -182,7 +178,6 @@ function mapMemberDetailToProfile(detail: MemberDetailResponse): MemberProfileRe
     email: detail.email,
     githubUrl: detail.githubUrl,
     blogUrl: detail.blogUrl,
-    projectExperienceCount: detail.projectExperienceCount,
     representativePosition: detail.representativePosition,
     representativePositionEn: detail.representativePosition,
     groupedSkills: detail.groupedSkills,

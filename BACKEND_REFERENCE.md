@@ -34,7 +34,6 @@ Commits included:
   - `gender: "MALE" | "FEMALE"`
   - `jobPositionIds: number[]`
   - `techStacks: Array<{ id: number; displayOrder: number }>`
-  - `projectExperienceCount: number`
   - `isParticipating?: boolean`
   - `introduction?: string`
   - `githubUrl?: string`
@@ -69,7 +68,8 @@ Commits included:
 ## Frontend reflection
 
 - Switched my-profile fetch/update calls to `/api/v1/members/me`.
-- Updated profile edit `memberInfo` payload to send `techStacks` with `displayOrder` and include `projectExperienceCount`.
+- Updated profile edit `memberInfo` payload to send `techStacks` with `displayOrder`.
+- Removed `projectExperienceCount` from the my-profile UI and profile-edit payload because the backend field is being removed from that API.
 - Switched notification list, unread count, and SSE subscription calls to `/api/v1/...`.
 - Kept notification rendering resilient to the removed backend `message` field by deriving copy from notification `type` and `payload`.
 - Updated Cypress API intercepts for the migrated profile and notification endpoints.

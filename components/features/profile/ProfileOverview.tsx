@@ -317,7 +317,6 @@ export default function ProfileOverview({
         gender: mapGenderLabelToValue(profileForm.gender),
         jobPositionIds: [position.id],
         techStacks,
-        projectExperienceCount: profile.projectExperienceCount,
         isParticipating: profileForm.isParticipating,
         introduction: profileForm.introduction,
         githubUrl: profileForm.github,
@@ -346,7 +345,6 @@ export default function ProfileOverview({
           label: '참여 중인 프로젝트',
           value: `${profile?.projectCards.length ?? 0}개`,
         },
-        { label: '프로젝트 경험', value: `${profile?.projectExperienceCount ?? 0}회` },
       ]
     : [];
 
