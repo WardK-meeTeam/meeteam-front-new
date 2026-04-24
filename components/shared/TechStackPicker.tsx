@@ -1,6 +1,6 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import BaseInput from '@/components/shared/BaseInput';
@@ -18,6 +18,9 @@ type TechStackPickerProps = {
   emptyMessage?: string;
   noOptionsMessage?: string;
   showSelectedChips?: boolean;
+  enableSelectedChipReorder?: boolean;
+  rankedChipCount?: number;
+  selectedChipsDataCy?: string;
   className?: string;
 };
 
@@ -32,11 +35,16 @@ export default function TechStackPicker({
   emptyMessage = '검색 결과가 없습니다.',
   noOptionsMessage = '선택 가능한 기술 스택이 없습니다.',
   showSelectedChips = true,
+  enableSelectedChipReorder = false,
+  rankedChipCount = 0,
+  selectedChipsDataCy,
   className = '',
 }: TechStackPickerProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const handlePointerDown = (event: MouseEvent) => {
@@ -74,6 +82,27 @@ export default function TechStackPicker({
 
   const handleRemove = (techStack: string) => {
     onChange(value.filter((item) => item !== techStack));
+  };
+
+  const handleDrop = (targetIndex: number) => {
+    if (draggingIndex === null || draggingIndex === targetIndex) {
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    const next = [...value];
+    const [draggedItem] = next.splice(draggingIndex, 1);
+    if (!draggedItem) {
+      setDraggingIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+
+    next.splice(targetIndex, 0, draggedItem);
+    onChange(next);
+    setDraggingIndex(null);
+    setDragOverIndex(null);
   };
 
   const showDropdown = isOpen && !disabled;
@@ -138,7 +167,46 @@ export default function TechStackPicker({
         ) : null}
       </div>
 
-      {showSelectedChips && value.length > 0 ? (
+      {showSelectedChips && value.length > 0 && enableSelectedChipReorder ? (
+        <div className="flex flex-wrap gap-2" data-cy={selectedChipsDataCy}>
+          {value.map((techStack, index) => {
+            const isRanked = index < rankedChipCount;
+            const isDragOver = dragOverIndex === index && draggingIndex !== index;
+
+            return (
+              <span key={techStack} className="inline-flex">
+                <span
+                  draggable={!disabled}
+                  onDragStart={() => setDraggingIndex(index)}
+                  onDragEnter={() => setDragOverIndex(index)}
+                  onDragOver={(event) => event.preventDefault()}
+                  onDragEnd={() => {
+                    setDraggingIndex(null);
+                    setDragOverIndex(null);
+                  }}
+                  onDrop={() => handleDrop(index)}
+                  className={`inline-flex cursor-grab items-center gap-1.5 rounded-lg border bg-mt-white px-3 py-1.5 text-sm leading-5 font-medium text-mt-text-nav shadow-sm transition-colors active:cursor-grabbing ${
+                    isDragOver || isRanked
+                      ? 'border-mt-logo-blue text-mt-primary'
+                      : 'border-mt-border hover:border-mt-logo-blue hover:text-mt-primary'
+                  }`}
+                >
+                  <TechStackIcon label={techStack} size={16} />
+                  <span>{techStack}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemove(techStack)}
+                    className="text-mt-text-secondary transition-colors hover:text-mt-hero-blue"
+                    aria-label={`${techStack} 삭제`}
+                  >
+                    <X className="h-3.5 w-3.5" aria-hidden strokeWidth={2} />
+                  </button>
+                </span>
+              </span>
+            );
+          })}
+        </div>
+      ) : showSelectedChips && value.length > 0 ? (
         <div className="flex flex-wrap gap-2">
           {value.map((techStack) => (
             <SkillChip

@@ -16,7 +16,8 @@ export type ProjectRecruitmentStatus = 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
 export type ProjectCategoryId =
   | 'capstone'
   | 'creative-semester'
-  | 'club';
+  | 'club'
+  | 'other';
 
 export type ReleasePlatform = '웹' | 'iOS' | '안드로이드';
 

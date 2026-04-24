@@ -74,3 +74,29 @@ export async function logoutMember() {
     throw new Error(payload?.message ?? '로그아웃 처리 중 오류가 발생했습니다.');
   }
 }
+
+export async function withdrawMember() {
+  const response = await fetch(`${API_BASE_URL}/api/v1/auth/withdraw`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  const payload = (await response.json().catch(() => null)) as ApiEnvelope<string> | null;
+
+  if (!response.ok) {
+    throw new Error(payload?.message ?? '회원 탈퇴 처리 중 오류가 발생했습니다.');
+  }
+}
+
+export async function deleteMemberPermanently() {
+  const response = await fetch(`${API_BASE_URL}/api/v1/auth/delete`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  const payload = (await response.json().catch(() => null)) as ApiEnvelope<string> | null;
+
+  if (!response.ok) {
+    throw new Error(payload?.message ?? '회원 삭제 처리 중 오류가 발생했습니다.');
+  }
+}

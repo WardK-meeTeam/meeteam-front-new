@@ -6,23 +6,11 @@ import { fetchHomeMembers } from '@/components/features/home/homeApi';
 import StartJourneyModalTrigger from '@/components/features/home/StartJourneyModalTrigger';
 import UserCard from '@/components/shared/UserCard';
 
-const fallbackTeammateCards = Array.from({ length: 5 }).map((_, index) => ({
-  userId: index + 1,
-  name: '정연준',
-  role: '프론트엔드',
-  experience: '프로젝트 0회 경험',
-  skills: ['React', 'Next.js'],
-  imageUrl: '/next.svg',
-}));
-
 export default async function Page() {
   const teammateCardsResult = await fetchHomeMembers(5)
     .then((cards) => ({ status: 'fulfilled' as const, value: cards }))
     .catch(() => ({ status: 'rejected' as const }));
-  const teammateCards =
-    teammateCardsResult.status === 'fulfilled' && teammateCardsResult.value.length > 0
-      ? teammateCardsResult.value
-      : fallbackTeammateCards;
+  const teammateCards = teammateCardsResult.status === 'fulfilled' ? teammateCardsResult.value : [];
 
   return (
     <div className="pb-8">
@@ -33,11 +21,11 @@ export default async function Page() {
           <div className="space-y-5 px-2 hero-fade-up md:px-4">
             <div className="inline-flex items-center gap-2 rounded-full bg-mt-badge-bg px-4 py-2 text-sm font-bold text-mt-primary hero-fade-up hero-delay-1">
               <GraduationCap className="h-4 w-4 text-mt-primary" strokeWidth={1.8} />
-              대학생 전용 프로젝트 플랫폼
+              대학생 전용 팀빌딩 플랫폼
             </div>
             <div className="hero-fade-up hero-delay-2">
               <h1 className="font-brand-display text-4xl leading-tight text-mt-text-primary md:text-5xl xl:text-[3.25rem]">
-                캠퍼스 프로젝트,
+                캠퍼스에서
                 <br />
                 <span className="whitespace-nowrap text-mt-hero-blue">함께할 팀을 쉽게 찾아요</span>
               </h1>
@@ -59,10 +47,10 @@ export default async function Page() {
             <div className="absolute bottom-4 right-14 h-10 w-40 rounded-full bg-mt-shadow-blue/70 blur-xl" />
             <div className="relative hero-character-float">
               <Image
-                src="/brand/meeteam_character.png"
-                alt="하트를 들고 있는 meeTeam 캐릭터"
-                width={1472}
-                height={1472}
+                src="/brand/meeteam_character_hat.png"
+                alt="모자를 쓴 meeTeam 캐릭터"
+                width={1536}
+                height={1024}
                 priority
                 className="w-full max-w-56 md:max-w-72"
               />
@@ -80,20 +68,29 @@ export default async function Page() {
             더 많은 멤버 보기 &gt;
           </Link>
         </div>
-        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {teammateCards.map((teammate) => (
-            <li key={teammate.userId}>
-              <UserCard
-                userId={teammate.userId}
-                name={teammate.name}
-                role={teammate.role}
-                experience={teammate.experience}
-                skills={teammate.skills}
-                imageUrl={teammate.imageUrl}
-              />
-            </li>
-          ))}
-        </ul>
+        {teammateCards.length > 0 ? (
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {teammateCards.map((teammate) => (
+              <li key={teammate.userId}>
+                <UserCard
+                  userId={teammate.userId}
+                  name={teammate.name}
+                  role={teammate.role}
+                  experience={teammate.experience}
+                  skills={teammate.skills}
+                  imageUrl={teammate.imageUrl}
+                />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="rounded-2xl border border-mt-border bg-mt-white px-6 py-16 text-center shadow-sm">
+            <p className="text-lg font-bold text-mt-text-primary">아직 팀원이 없어요.</p>
+            <p className="mt-2 text-sm leading-5 text-mt-text-secondary">
+              조금 뒤에 다시 확인해 주세요.
+            </p>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -9,7 +9,7 @@ export default function AppLogo({ className = 'h-8 w-36', priority = false }: Ap
   return (
     <span className={`relative block shrink-0 ${className}`}>
       <Image
-        src="/brand/meeteam-logo.png"
+        src="/brand/meeteam_logo_hat_wide.png"
         alt="meeTeam 로고"
         fill
         priority={priority}

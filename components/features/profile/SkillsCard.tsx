@@ -26,7 +26,7 @@ export default function SkillsCard({
 }: SkillsCardProps) {
   return (
     <ProfileCard className={editable ? 'min-h-[297px]' : 'min-h-56'}>
-      <h2 className="text-lg leading-7 font-bold text-mt-text-primary">보유 기술</h2>
+      <h2 className="text-lg leading-7 font-bold text-mt-text-primary">기술 스택</h2>
 
       <div className="mt-4 space-y-5">
         {skillGroups.map((group, groupIndex) => (

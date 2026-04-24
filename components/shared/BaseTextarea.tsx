@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import type { TextareaHTMLAttributes } from 'react';
 
 type BaseTextareaSize = 'L' | 'M' | 'S';
@@ -13,19 +14,16 @@ const SIZE_MAP: Record<BaseTextareaSize, string> = {
   S: 'px-3 py-2.5 text-sm leading-5',
 };
 
-export default function BaseTextarea({
-  textareaSize = 'M',
-  full = true,
-  disabled,
-  rows = 4,
-  className = '',
-  ...props
-}: BaseTextareaProps) {
+const BaseTextarea = forwardRef<HTMLTextAreaElement, BaseTextareaProps>(function BaseTextarea(
+  { textareaSize = 'M', full = true, disabled, rows = 4, className = '', ...props },
+  ref,
+) {
   const sizeClass = SIZE_MAP[textareaSize];
   const widthClass = full ? 'w-full' : 'w-fit';
 
   return (
     <textarea
+      ref={ref}
       disabled={disabled}
       rows={rows}
       className={`min-h-30 rounded-xl border border-mt-border bg-mt-white text-mt-text-primary outline-none transition-all duration-200 ease-out
@@ -40,4 +38,6 @@ export default function BaseTextarea({
       {...props}
     />
   );
-}
+});
+
+export default BaseTextarea;

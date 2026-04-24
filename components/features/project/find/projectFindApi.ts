@@ -143,6 +143,8 @@ function mapCategoryFilter(category: CategoryFilter) {
       return 'CREATIVE_SEMESTER';
     case '동아리':
       return 'CLUB';
+    case '기타':
+      return 'ETC';
     default:
       return null;
   }

@@ -1,9 +1,10 @@
+import { useMemo } from 'react';
+
 import BaseField from '@/components/shared/BaseField';
-import type { Interest, JobFieldOption } from '@/types/auth';
-import { useEffect, useMemo, useState } from 'react';
-import BaseDropdown from '@/components/shared/BaseDropdown';
-import TechStackList from '@/components/features/auth/TechStackList';
 import TechStackPicker from '@/components/shared/TechStackPicker';
+import type { Interest, JobFieldOption } from '@/types/auth';
+
+import { collectOrderedTechStackNames } from './jobOptionUtils';
 import { getInterestKey } from './signupTransform';
 
 type SignupTechStackSectionProps = {
@@ -25,118 +26,67 @@ export default function SignupTechStackSection({
   errorText,
   disabled = false,
 }: SignupTechStackSectionProps) {
-  const [open, setOpen] = useState(false);
-  const [selectedKey, setSelectedKey] = useState('');
+  const currentItem = useMemo(() => {
+    const interest = interests.find((item) => item.major && item.minor);
+    if (!interest) return null;
 
-  const interestItems = useMemo(
-    () =>
-      interests
-        .filter((it) => it.major && it.minor)
-        .map((it, index) => {
-          const field = jobFields.find((jobField) => jobField.code === it.major);
-          const position = field?.positions.find((jobPosition) => jobPosition.code === it.minor);
+    const field = jobFields.find((jobField) => jobField.code === interest.major);
+    const position = field?.positions.find((jobPosition) => jobPosition.code === interest.minor);
 
-          return {
-            key: getInterestKey(it),
-            label: `분야 ${index + 1} · ${field?.name ?? it.major} / ${position?.name ?? it.minor}`,
-            fieldCode: it.major,
-          };
-        }),
-    [interests, jobFields],
-  );
-
-  const currentItem =
-    interestItems.find((item) => item.key === selectedKey) ?? interestItems[0] ?? null;
-  const currentLabel = currentItem?.label ?? '관심 분야를 선택해 주세요';
-
-  useEffect(() => {
-    if (!currentItem && selectedKey) {
-      setSelectedKey('');
-    }
-
-    if (!selectedKey && interestItems[0]) {
-      setSelectedKey(interestItems[0].key);
-    }
-  }, [currentItem, interestItems, selectedKey]);
+    return {
+      key: getInterestKey(interest),
+      label: `${field?.name ?? interest.major} / ${position?.name ?? interest.minor}`,
+      fieldCode: interest.major,
+    };
+  }, [interests, jobFields]);
 
   const selectedJobField = useMemo(
     () => jobFields.find((item) => item.code === currentItem?.fieldCode) ?? null,
     [currentItem?.fieldCode, jobFields],
   );
+  const techStackOptions = useMemo(
+    () => collectOrderedTechStackNames(jobFields, selectedJobField),
+    [jobFields, selectedJobField],
+  );
+  const selectedTechStacks = useMemo(
+    () => (currentItem ? (value[currentItem.key] ?? []) : []),
+    [currentItem, value],
+  );
 
-  const handleSelectInterest = (item: string) => {
-    const selectedItem = interestItems.find((interestItem) => interestItem.label === item);
-    if (!selectedItem) return;
+  const handleChangeTechStacks = (nextSelectedTechStacks: string[]) => {
+    if (!currentItem) {
+      return;
+    }
 
-    setSelectedKey(selectedItem.key);
-    setOpen(false);
-  };
-
-  const handleRemoveTech = (key: string, tech: string) => {
-    const existing = value[key] ?? [];
-    const next = existing.filter((item) => item !== tech);
-    if (next.length === 0) {
-      const { [key]: _, ...rest } = value;
+    if (nextSelectedTechStacks.length === 0) {
+      const { [currentItem.key]: _, ...rest } = value;
       onChange(rest);
       return;
     }
-    onChange({ ...value, [key]: next });
+
+    onChange({ ...value, [currentItem.key]: nextSelectedTechStacks });
   };
 
-  const selectedSections = useMemo(
-    () =>
-      interestItems
-        .map((item) => ({
-          key: item.key,
-          label: item.label,
-          items: value[item.key] ?? [],
-        }))
-        .filter((item) => item.items.length > 0),
-    [interestItems, value],
-  );
-
   return (
-    <BaseField label={label} htmlFor="tech" required={false} errorText={errorText}>
-      <div className="flex gap-2">
-        <BaseDropdown
-          value={currentLabel}
-          placeholder="관심 분야를 선택해 주세요"
-          open={open}
-          items={interestItems.map((item) => item.label)}
-          onToggle={() => !disabled && setOpen((prev) => !prev)}
-          onSelect={handleSelectInterest}
-          disabled={interestItems.length === 0 || disabled}
-          containerClassName="w-full"
-          buttonClassName="flex-1 justify-between p-3.5"
-          textClassName="font-medium text-sm whitespace-nowrap"
-          dataCy="signup-tech-interest"
-        />
-
-        <TechStackPicker
-          inputId="tech"
-          inputDataCy="signup-tech-input"
-          options={selectedJobField?.techStacks.map((tech) => tech.name) ?? []}
-          value={currentItem ? (value[currentItem.key] ?? []) : []}
-          onChange={(nextSelectedTechStacks) => {
-            if (!currentItem) {
-              return;
-            }
-
-            if (nextSelectedTechStacks.length === 0) {
-              const { [currentItem.key]: _, ...rest } = value;
-              onChange(rest);
-              return;
-            }
-
-            onChange({ ...value, [currentItem.key]: nextSelectedTechStacks });
-          }}
-          disabled={!selectedJobField || disabled}
-          showSelectedChips={false}
-          className="w-full"
-        />
-      </div>
-
-      <TechStackList sections={selectedSections} onRemove={handleRemoveTech} />
+    <BaseField
+      label={label}
+      htmlFor="tech"
+      required={false}
+      hintText="상위 3개 기술 스택이 프로필에 먼저 보여요. 드래그해서 우선순위를 바꿀 수 있어요."
+      errorText={errorText}
+    >
+      <TechStackPicker
+        inputId="tech"
+        inputDataCy="signup-tech-input"
+        options={techStackOptions}
+        value={selectedTechStacks}
+        onChange={handleChangeTechStacks}
+        disabled={!selectedJobField || disabled}
+        enableSelectedChipReorder={true}
+        rankedChipCount={3}
+        selectedChipsDataCy="signup-tech-selected"
+        noOptionsMessage="분야를 선택하면 기술 스택을 검색할 수 있습니다."
+      />
     </BaseField>
   );
 }

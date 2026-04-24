@@ -23,6 +23,7 @@ type BackendProjectQnaResponse = {
   questionerProfileImageUrl: string | null;
   question: string;
   createdAt: string;
+  isSecret: boolean;
   answers: BackendQnaAnswerResponse[];
 };
 
@@ -50,6 +51,7 @@ export type ProjectQna = {
   questionerProfileImageUrl: string;
   question: string;
   createdAt: string;
+  isSecret: boolean;
   answers: ProjectQnaAnswer[];
 };
 
@@ -94,6 +96,7 @@ function mapQna(qna: BackendProjectQnaResponse): ProjectQna {
     questionerProfileImageUrl: qna.questionerProfileImageUrl ?? '',
     question: qna.question,
     createdAt: qna.createdAt,
+    isSecret: qna.isSecret,
     answers: qna.answers.map(mapQnaAnswer),
   };
 }
@@ -127,14 +130,18 @@ export async function fetchProjectQnas(
   };
 }
 
-export async function createProjectQnaQuestion(projectId: string | number, question: string) {
+export async function createProjectQnaQuestion(
+  projectId: string | number,
+  question: string,
+  isSecret = false,
+) {
   const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/qna`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     credentials: 'include',
-    body: JSON.stringify({ question }),
+    body: JSON.stringify({ question, isSecret }),
   });
 
   const qna = await readEnvelope<BackendProjectQnaResponse>(

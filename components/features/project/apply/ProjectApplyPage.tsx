@@ -383,11 +383,7 @@ export default function ProjectApplyPage({
               dataCy="project-application-motivation"
               onChange={setMotivation}
               disabled={isSubmitting || positionOptions.length === 0}
-              placeholder={`## 지원하게 된 이유
-
-- 이 프로젝트에서 끌렸던 점
-- 제가 잘 도울 수 있는 부분
-- 함께 일할 때 기대하는 방식`}
+              placeholder="지원 사유와 자기소개를 입력해 주세요."
               textareaClassName="min-h-40 bg-mt-bg-soft text-sm leading-6"
               previewEmptyText="지원 이유와 자기소개를 적으면, 리더가 이 모습으로 읽게 돼요."
             />

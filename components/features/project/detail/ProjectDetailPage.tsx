@@ -1,9 +1,10 @@
 'use client';
 
-import { type ReactNode, useEffect, useState } from 'react';
-import { CalendarDays, Copy, ExternalLink, Github, Globe, Link2, Settings } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { CalendarDays, Settings, Users } from 'lucide-react';
 import AuthLink from '@/components/features/auth/AuthLink';
 import { getProjectCategoryLabel } from '@/components/features/project/constants';
+import ProjectCoverImage from '@/components/features/project/ProjectCoverImage';
 import ProjectActionButtons from '@/components/features/project/detail/ProjectActionButtons';
 import ProjectDetailContent from '@/components/features/project/detail/ProjectDetailContent';
 import ProjectDetailSkeleton from '@/components/features/project/detail/ProjectDetailSkeleton';
@@ -19,65 +20,6 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useToastStore } from '@/stores/useToastStore';
 import { useProjectStore } from '@/components/features/project/store';
 import type { ProjectMember, ProjectRecord } from '@/types/project';
-
-type ExternalProjectLinkProps = {
-  label: string;
-  url: string;
-  icon: ReactNode;
-  onCopy: (url: string, label: string) => void;
-};
-
-function ExternalProjectLink({ label, url, icon, onCopy }: ExternalProjectLinkProps) {
-  const hasUrl = Boolean(url);
-  const content = (
-    <>
-      <span className="flex min-w-0 items-center gap-2">
-        {icon}
-        <span className="truncate">{hasUrl ? url : '등록된 링크가 없습니다.'}</span>
-      </span>
-      <ExternalLink
-        className={`h-3.5 w-3.5 shrink-0 ${hasUrl ? 'text-mt-text-secondary' : 'text-mt-shadow-blue'}`}
-        aria-hidden
-        strokeWidth={1.8}
-      />
-    </>
-  );
-
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between text-xs leading-4 font-bold text-mt-text-secondary">
-        <span>{label}</span>
-        <button
-          type="button"
-          onClick={() => onCopy(url, label)}
-          disabled={!hasUrl}
-          className="rounded-md p-1 text-mt-text-secondary transition-colors hover:bg-mt-bg-soft hover:text-mt-text-primary disabled:cursor-not-allowed disabled:text-mt-shadow-blue disabled:hover:bg-transparent"
-          aria-label={`${label} 복사`}
-        >
-          <Copy className="h-3.5 w-3.5" aria-hidden strokeWidth={1.8} />
-        </button>
-      </div>
-
-      {hasUrl ? (
-        <a
-          href={url}
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center justify-between rounded-xl border border-mt-badge-bg bg-mt-badge-bg px-4 py-3 text-xs leading-4 font-normal text-mt-text-secondary transition-colors hover:bg-mt-white"
-        >
-          {content}
-        </a>
-      ) : (
-        <div
-          className="flex items-center justify-between rounded-xl border border-mt-border bg-mt-bg-soft px-4 py-3 text-xs leading-4 font-normal text-mt-text-secondary"
-          aria-disabled
-        >
-          {content}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function ProjectDetailPage({ projectId }: { projectId: string }) {
   const memberId = useAuthStore((state) => state.memberId);
@@ -190,75 +132,58 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-8 pb-20">
-      <div className="relative h-96 overflow-hidden rounded-4xl bg-mt-text-primary px-12 py-8 text-mt-white">
-        {project.coverImageUrl ? (
-          <img
-            alt={project.title}
-            className="absolute inset-0 h-full w-full object-cover"
-            src={project.coverImageUrl}
-          />
-        ) : null}
-        <div className="pointer-events-none absolute inset-0 bg-mt-text-primary/45" />
+      <div className="grid items-stretch gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(20rem,0.7fr)]">
+        <ProjectCoverImage
+          src={project.coverImageUrl}
+          alt={project.title}
+          priority
+          className="border border-mt-border shadow-sm"
+          overlayClassName="bg-mt-text-primary/10"
+        />
 
-        <div className="relative z-10 flex h-full flex-col items-start justify-center">
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            <CategoryBadge label={getProjectCategoryLabel(project.categoryId)} tone="onDark" />
-            {project.releasePlatforms.map((releasePlatform) => (
-              <CategoryBadge key={releasePlatform} label={releasePlatform} tone="accent" />
-            ))}
-          </div>
+        <article className="flex min-w-0 flex-col justify-between rounded-4xl border border-mt-border bg-mt-white p-6 shadow-sm md:p-8">
+          <div>
+            <div className="mb-5 flex flex-wrap items-center gap-2">
+              <CategoryBadge label={getProjectCategoryLabel(project.categoryId)} />
+              {project.releasePlatforms.map((releasePlatform) => (
+                <CategoryBadge key={releasePlatform} label={releasePlatform} tone="default" />
+              ))}
+            </div>
 
-          <h1 className="max-w-3xl text-5xl leading-12 font-extrabold">{project.title}</h1>
-          <p className="mt-3 text-lg leading-7 font-medium text-mt-shadow-blue">
-            {project.summary}
-          </p>
+            <h1 className="break-keep text-3xl leading-tight font-extrabold text-mt-text-primary md:text-4xl">
+              {project.title}
+            </h1>
 
-          <div className="mt-8 inline-flex items-center gap-2 rounded-full border border-mt-white/10 bg-mt-white/5 px-4 py-2 text-sm font-bold text-mt-badge-bg backdrop-blur-sm">
-            <CalendarDays className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-            {project.isRecruitUntilComplete ? '상시 모집' : `${project.recruitDeadline} 마감`}
-          </div>
-        </div>
+            {project.summary ? (
+              <p className="mt-4 line-clamp-3 text-base leading-7 font-medium text-mt-text-secondary">
+                {project.summary}
+              </p>
+            ) : null}
 
-        {canManageProject ? (
-          <AuthLink
-            href={`/projects/${project.id}/manage`}
-            className="absolute right-10 top-8 z-20 inline-flex items-center gap-2 rounded-full border border-mt-white/10 bg-mt-white/10 px-5 py-2.5 text-sm font-bold text-mt-white backdrop-blur-sm transition-colors hover:bg-mt-white/20"
-          >
-            <Settings className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-            프로젝트 관리
-          </AuthLink>
-        ) : null}
-      </div>
+            <div className="mt-6 border-t border-mt-border pt-5">
+              <p className="text-xs leading-4 font-bold text-mt-text-secondary">프로젝트 리더</p>
+              <AuthLink
+                href={`/profile/${project.leaderProfileId ?? 1}`}
+                className="mt-3 flex items-center gap-3"
+              >
+                <ProfileAvatar
+                  name={leader?.name ?? '프로젝트 리더'}
+                  imageUrl={leader?.avatarUrl}
+                  sizeClassName="h-12 w-12"
+                  shape="rounded"
+                  textClassName="text-sm"
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-base leading-6 font-bold text-mt-text-primary">
+                    {leader?.name}
+                  </p>
+                  <p className="truncate text-sm leading-5 text-mt-text-secondary">
+                    {project.leaderRole}
+                  </p>
+                </div>
+              </AuthLink>
 
-      <div className="grid grid-cols-1 gap-8 pb-14 xl:grid-cols-[minmax(0,1fr)_24rem]">
-        <ProjectDetailContent project={project} canApply={!canManageProject} />
-
-        <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">
-          <article className="rounded-3xl border border-mt-border bg-mt-white p-6 shadow-sm">
-            <h2 className="text-sm font-bold text-mt-text-primary">프로젝트 리더</h2>
-
-            <AuthLink
-              href={`/profile/${project.leaderProfileId ?? 1}`}
-              className="mt-4 flex items-center gap-4"
-            >
-              <ProfileAvatar
-                name={leader?.name ?? '프로젝트 리더'}
-                imageUrl={leader?.avatarUrl}
-                sizeClassName="h-16 w-16"
-                shape="rounded"
-                textClassName="text-lg"
-              />
-              <div>
-                <p className="text-[18px] leading-7 font-bold text-mt-text-primary">
-                  {leader?.name}
-                </p>
-                <p className="text-sm text-mt-text-secondary">{project.leaderRole}</p>
-              </div>
-            </AuthLink>
-
-            <div className="mt-4 space-y-2">
-              <p className="text-xs leading-4 font-bold text-mt-text-secondary">리더의 주력 스킬</p>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="mt-4 flex flex-wrap gap-1.5">
                 {leaderSkills.length > 0 ? (
                   leaderSkills
                     .slice(0, 3)
@@ -268,82 +193,46 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
                 )}
               </div>
             </div>
+          </div>
 
-            <div className="mt-5 border-t border-mt-border pt-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs leading-4 font-bold text-mt-text-secondary">참여 팀원</p>
-                <span className="text-xs leading-4 font-bold text-mt-text-secondary">
-                  {members.length}명
-                </span>
-              </div>
-
-              <div className="mt-3 flex flex-wrap gap-2">
-                {members.map((member) => (
-                  <AuthLink
-                    key={member.id}
-                    href={`/profile/${member.id}`}
-                    className="group inline-flex rounded-full"
-                    aria-label={`${member.name} 프로필로 이동`}
-                    title={member.role ? `${member.name} · ${member.role}` : member.name}
-                  >
-                    <ProfileAvatar
-                      name={member.name}
-                      imageUrl={member.avatarUrl}
-                      sizeClassName="h-10 w-10"
-                      textClassName="text-sm"
-                      className="ring-2 ring-mt-white transition group-hover:ring-mt-border"
-                    />
-                  </AuthLink>
-                ))}
-              </div>
-            </div>
-          </article>
-
-          <article className="rounded-3xl border border-mt-border bg-mt-white p-6 shadow-sm">
-            <h2 className="flex items-center gap-2 text-sm font-bold text-mt-text-primary">
-              <Globe className="h-4 w-4 text-mt-primary" aria-hidden strokeWidth={1.8} />
-              외부 채널 및 저장소
-            </h2>
-
-            <div className="mt-4 space-y-4">
-              <ExternalProjectLink
-                label="깃허브 주소"
-                url={project.githubUrl}
-                onCopy={handleCopyExternalUrl}
-                icon={
-                  <Github
-                    className="h-4 w-4 shrink-0 text-mt-text-primary"
-                    aria-hidden
-                    strokeWidth={1.8}
-                  />
-                }
-              />
-
-              <ExternalProjectLink
-                label="소통 채널 주소"
-                url={project.communicationUrl}
-                onCopy={handleCopyExternalUrl}
-                icon={
-                  <Link2
-                    className="h-4 w-4 shrink-0 text-mt-primary"
-                    aria-hidden
-                    strokeWidth={1.8}
-                  />
-                }
-              />
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-mt-border bg-mt-badge-bg px-4 py-2 text-sm font-bold text-mt-primary">
+              <CalendarDays className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+              {project.isRecruitUntilComplete ? '상시 모집' : `${project.recruitDeadline} 마감`}
             </div>
 
-            <p className="mt-4 text-center text-[10px] leading-4 text-mt-text-secondary">
-              외부 링크 이동 시 보안에 유의하시기 바랍니다.
-            </p>
-          </article>
+            {canManageProject ? (
+              <AuthLink
+                href={`/projects/${project.id}/manage`}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-mt-border bg-mt-white px-4 py-2 text-sm font-bold text-mt-primary shadow-sm transition-colors hover:bg-mt-badge-bg"
+              >
+                <Settings className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+                프로젝트 관리
+              </AuthLink>
+            ) : null}
 
-          <ProjectActionButtons
-            projectId={project.id}
-            initialLikeCount={project.likeCount ?? 0}
-            initialLiked={project.isLiked ?? false}
-          />
-        </aside>
+            <div className="inline-flex items-center gap-2 rounded-full border border-mt-border bg-mt-white px-4 py-2 text-sm font-bold text-mt-text-secondary">
+              <Users className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+              {members.length}명
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <ProjectActionButtons
+              projectId={project.id}
+              initialLikeCount={project.likeCount ?? 0}
+              initialLiked={project.isLiked ?? false}
+            />
+          </div>
+        </article>
+      </div>
+
+      <div className="mx-auto w-full max-w-4xl pb-14">
+        <ProjectDetailContent
+          project={project}
+          canApply={!canManageProject}
+          onCopyExternalUrl={handleCopyExternalUrl}
+        />
       </div>
     </section>
   );

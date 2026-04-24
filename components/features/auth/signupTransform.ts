@@ -9,6 +9,7 @@ import type {
   SejongRegisterRequestPayload,
   SignupFormValues,
 } from '@/types/auth';
+import { findTechStackByName } from './jobOptionUtils';
 
 export function extractApiData<T>(payload: ApiEnvelope<T>): T {
   if (payload.data !== undefined) {
@@ -66,7 +67,7 @@ function buildJobPositionPayload(values: JobPositionValues, jobFields: JobFieldO
         jobFieldCode: interest.major,
         jobPositionCode: interest.minor,
         techStacks: selectedTechStacks.map((techName, index) => {
-          const techStack = jobField.techStacks.find((item) => item.name === techName);
+          const techStack = findTechStackByName(jobFields, techName);
 
           if (!techStack) {
             throw new Error('선택한 기술 스택을 찾을 수 없습니다.');

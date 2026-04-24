@@ -46,7 +46,7 @@ const SIGNUP_VALUES: SignupFormValues = {
     { major: 'FRONTEND', minor: 'WEB_FRONTEND' },
   ],
   techStacksByInterest: {
-    'BACKEND::JAVA_SPRING': ['Spring Boot', 'Java'],
+    'BACKEND::JAVA_SPRING': ['React', 'Java'],
     'FRONTEND::WEB_FRONTEND': ['TypeScript', 'React'],
   },
   projectExperienceCount: '3',
@@ -92,7 +92,7 @@ describe('buildRegisterRequestPayload', () => {
           jobFieldCode: 'BACKEND',
           jobPositionCode: 'JAVA_SPRING',
           techStacks: [
-            { id: 2, displayOrder: 1 },
+            { id: 10, displayOrder: 1 },
             { id: 1, displayOrder: 2 },
           ],
         },

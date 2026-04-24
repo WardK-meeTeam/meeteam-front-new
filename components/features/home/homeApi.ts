@@ -4,11 +4,7 @@ import { extractApiData } from '@/components/features/auth/signupTransform';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
-export type HomeProjectCategory =
-  | '전체'
-  | '캡스톤'
-  | '창의학기제'
-  | '동아리';
+export type HomeProjectCategory = '전체' | '캡스톤' | '창의학기제' | '동아리' | '기타';
 
 export type HomeProjectCard = {
   id: number;
@@ -89,6 +85,7 @@ const CATEGORY_API_VALUES: Partial<Record<HomeProjectCategory, string>> = {
   캡스톤: 'CAPSTONE',
   창의학기제: 'CREATIVE_SEMESTER',
   동아리: 'CLUB',
+  기타: 'ETC',
 };
 
 async function readPublicEnvelope<T>(response: Response, fallbackMessage: string) {

@@ -2,7 +2,7 @@ import BaseField from '@/components/shared/BaseField';
 import type { Interest, JobFieldOption } from '@/types/auth';
 import { useEffect, useMemo } from 'react';
 import TechStackPicker from '@/components/shared/TechStackPicker';
-import { findJobFieldByName } from './jobOptionUtils';
+import { collectOrderedTechStackNames, findJobFieldByName } from './jobOptionUtils';
 
 type TechStackSectionProps = {
   label?: string;
@@ -55,7 +55,7 @@ export default function TechStackSection({
           major,
           minor,
           field,
-          options: field?.techStacks.map((tech) => tech.name) ?? [],
+          options: collectOrderedTechStackNames(jobFields, field),
           selected: value[item] ?? [],
         };
       }),

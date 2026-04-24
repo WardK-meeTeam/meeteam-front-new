@@ -65,7 +65,7 @@ export default function SignupForm() {
         if (!isMounted) return;
 
         setJobOptionsError(
-          error instanceof Error ? error.message : '관심 분야 옵션을 불러오지 못했습니다.',
+          error instanceof Error ? error.message : '기술 스택 옵션을 불러오지 못했습니다.',
         );
       } finally {
         if (isMounted) {
@@ -100,7 +100,7 @@ export default function SignupForm() {
     setFieldErrors((prev) => ({ ...prev, form: undefined }));
   };
 
-  const validateForm = () => {
+  const buildValidationErrors = () => {
     const result = signupFormSchema.safeParse(formValues);
 
     const nextErrors: SignupFieldErrors = {};
@@ -120,16 +120,18 @@ export default function SignupForm() {
       (interest) => interest.major && interest.minor,
     );
     if (filledInterests.length === 0) {
-      nextErrors.interests = '최소 1개의 관심 분야를 선택해 주세요.';
+      nextErrors.interests = '분야를 선택해 주세요.';
     }
 
     if (!isEmailVerified) {
       nextErrors.emailCheck = '이메일 중복 확인을 완료해 주세요.';
     }
 
-    setFieldErrors(nextErrors);
+    if (!nextErrors.form) {
+      nextErrors.form = Object.values(nextErrors).find(Boolean);
+    }
 
-    return Object.values(nextErrors).every((value) => !value);
+    return nextErrors;
   };
 
   const onChangeEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -164,31 +166,9 @@ export default function SignupForm() {
     updateField('gender', e.target.value as SignupFormValues['gender']);
   };
 
-  const addInterest = () => {
-    setFormValues((prev) => ({ ...prev, interests: [...prev.interests, INITIAL_INTEREST] }));
-  };
-
   const updateInterest = (index: number, next: Interest) => {
-    if (
-      next.major &&
-      next.minor &&
-      formValues.interests.some(
-        (interest, interestIndex) =>
-          interestIndex !== index && interest.major === next.major && interest.minor === next.minor,
-      )
-    ) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        interests: '같은 관심 분야는 한 번만 선택할 수 있습니다.',
-      }));
-      return;
-    }
-
     setFormValues((prev) => {
       const currentInterest = prev.interests[index];
-      const nextInterests = prev.interests.map((interest, interestIndex) =>
-        interestIndex === index ? next : interest,
-      );
       const nextTechStacksByInterest = { ...prev.techStacksByInterest };
 
       if (currentInterest) {
@@ -201,30 +181,12 @@ export default function SignupForm() {
 
       return {
         ...prev,
-        interests: nextInterests,
+        interests: [next],
         techStacksByInterest: nextTechStacksByInterest,
       };
     });
 
     setFieldErrors((prev) => ({ ...prev, interests: undefined, form: undefined }));
-  };
-
-  const removeInterest = (index: number) => {
-    setFormValues((prev) => {
-      const currentInterest = prev.interests[index];
-      const nextInterests = prev.interests.filter((_, interestIndex) => interestIndex !== index);
-      const nextTechStacksByInterest = { ...prev.techStacksByInterest };
-
-      if (currentInterest) {
-        delete nextTechStacksByInterest[getInterestKey(currentInterest)];
-      }
-
-      return {
-        ...prev,
-        interests: nextInterests.length > 0 ? nextInterests : [INITIAL_INTEREST],
-        techStacksByInterest: nextTechStacksByInterest,
-      };
-    });
   };
 
   const onChangeProject = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -284,7 +246,18 @@ export default function SignupForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!validateForm()) {
+    const nextErrors = buildValidationErrors();
+
+    if (Object.values(nextErrors).some(Boolean)) {
+      setFieldErrors(nextErrors);
+      return;
+    }
+
+    if (!hasSelectedTechStacks) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        form: '기술 스택을 1개 이상 선택해 주세요.',
+      }));
       return;
     }
 
@@ -316,6 +289,13 @@ export default function SignupForm() {
 
   const emailFeedbackTone =
     emailCheckState === 'success' ? 'success' : emailCheckState === 'error' ? 'error' : 'default';
+  const selectedInterest = formValues.interests.find(
+    (interest) => interest.major && interest.minor,
+  );
+  const selectedInterestKey = selectedInterest ? getInterestKey(selectedInterest) : '';
+  const hasSelectedTechStacks = selectedInterestKey
+    ? (formValues.techStacksByInterest[selectedInterestKey]?.length ?? 0) > 0
+    : false;
 
   return (
     <form className="flex w-full flex-col gap-5" onSubmit={handleSubmit} data-cy="signup-form">
@@ -348,9 +328,7 @@ export default function SignupForm() {
       <InterestSection
         jobFields={jobFields}
         interests={formValues.interests}
-        onAdd={addInterest}
         onChange={updateInterest}
-        onRemove={removeInterest}
         errorText={fieldErrors.interests || jobOptionsError}
         disabled={isLoadingJobOptions}
       />

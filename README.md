@@ -64,7 +64,7 @@ npm run format        # 전체 파일 포맷
 
 ## 도메인에 따른 폴더 구조
 
-- `auth`: 로그인, 회원가입(이메일/소셜/기술스택 선택)
+- `auth`: 로그인, 회원가입(이메일/소셜/기술 스택 선택)
 - `project`: 메인, 상세, 등록, 수정, Q&A, 팀원 모집, 프로젝트 찾기, 프로젝트 관리
   - `project/apply`: 프로젝트 지원, 지원서 상세
   - `project/management/applicants`: 지원자 관리

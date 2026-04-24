@@ -22,6 +22,27 @@ const JOB_FIELDS = [
       },
     ],
   },
+  {
+    code: 'FRONTEND',
+    name: '프론트엔드',
+    positions: [
+      {
+        id: 21,
+        code: 'WEB_FRONTEND',
+        name: '웹 프론트엔드',
+      },
+    ],
+    techStacks: [
+      {
+        id: 10,
+        name: 'React',
+      },
+      {
+        id: 11,
+        name: 'TypeScript',
+      },
+    ],
+  },
 ];
 
 function installJobOptionsIntercept() {
@@ -45,19 +66,22 @@ function fillRequiredSignupFields() {
 
   cy.get('[data-cy="signup-password"]').type('password123');
   cy.get('[data-cy="signup-password-confirm"]').type('password123');
+
   cy.get('[data-cy="signup-name"]').type('홍길동');
-  cy.get('[data-cy="signup-birth-year"]').select('1998');
-  cy.get('[data-cy="signup-birth-month"]').select('03');
-  cy.get('[data-cy="signup-birth-day"]').select('15');
+  cy.get('[data-cy="signup-birth"]').type('1998-03-15');
   cy.get('[data-cy="signup-gender-female"]').check({ force: true });
 
+  cy.contains('label', '분야').should('be.visible');
+  cy.get('[data-cy="signup-interest-add"]').should('not.exist');
   cy.get('[data-cy="signup-interest-major-0"]').click();
   cy.contains('li', '백엔드').click();
   cy.get('[data-cy="signup-interest-minor-0"]').click();
   cy.contains('li', 'Java/Spring').click();
 
-  cy.get('[data-cy="signup-tech-input"]').type('Java{enter}');
-  cy.contains('button', 'Java').should('be.visible');
+  cy.contains('label', '기술 스택').should('be.visible');
+  cy.get('[data-cy="signup-tech-interest"]').should('not.exist');
+  cy.get('[data-cy="signup-tech-input"]').type('React{enter}');
+  cy.contains('React').should('be.visible');
 
   cy.get('[data-cy="signup-project-count"]').clear().type('3');
   cy.get('[data-cy="signup-github-url"]').type('github.com/wardk');
@@ -104,14 +128,36 @@ describe('회원가입 흐름', () => {
     cy.visit(SIGNUP_PATH);
     cy.wait('@jobOptionsRequest');
 
-    cy.get('[data-cy="signup-submit"]').click();
+    cy.get('[data-cy="signup-form"]').submit();
 
     cy.contains('올바른 이메일 형식을 입력해 주세요.').should('be.visible');
     cy.contains('비밀번호는 8자 이상이어야 합니다.').should('be.visible');
     cy.contains('이름을 입력해 주세요.').should('be.visible');
     cy.contains('생년월일을 선택해 주세요.').should('be.visible');
-    cy.contains('최소 1개의 관심 분야를 선택해 주세요.').should('be.visible');
+    cy.contains('분야를 선택해 주세요.').should('be.visible');
     cy.contains('이메일 중복 확인을 완료해 주세요.').should('be.visible');
+  });
+
+  it('회원가입 화면에 모든 입력 섹션을 처음부터 보여준다', () => {
+    cy.visit(SIGNUP_PATH);
+    cy.wait('@jobOptionsRequest');
+
+    cy.get('[data-cy="signup-email"]').should('be.visible');
+    cy.get('[data-cy="signup-name"]').should('be.visible');
+    cy.contains('label', '분야').should('be.visible');
+    cy.contains('label', '기술 스택').should('be.visible');
+    cy.contains('프로젝트 경험 횟수').should('be.visible');
+    cy.get('[data-cy="signup-submit"]').should('be.visible');
+
+    cy.get('[data-cy="signup-interest-major-0"]').click();
+    cy.contains('li', '백엔드').click();
+    cy.get('[data-cy="signup-interest-minor-0"]').click();
+    cy.contains('li', 'Java/Spring').click();
+
+    cy.get('[data-cy="signup-tech-interest"]').should('not.exist');
+    cy.get('[data-cy="signup-tech-input"]').type('React{enter}');
+
+    cy.contains('React').should('be.visible');
   });
 
   it('중복된 이메일이면 중복 안내 메시지를 보여준다', () => {

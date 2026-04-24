@@ -1,7 +1,7 @@
 'use client';
 
 import { Bold, Code2, Eye, Heading2, List, PencilLine, Quote } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import BaseTextarea from '@/components/shared/BaseTextarea';
 import MarkdownContent from '@/components/shared/MarkdownContent';
 
@@ -17,12 +17,14 @@ interface MarkdownEditorProps {
 }
 
 const FORMAT_ACTIONS = [
-  { label: '제목', icon: Heading2, snippet: '## 어떤 이야기를 들려줄까요?' },
-  { label: '굵게', icon: Bold, snippet: '**강조하고 싶은 문장**' },
-  { label: '목록', icon: List, snippet: '- 함께 해본 일\n- 좋아하는 방식' },
-  { label: '인용', icon: Quote, snippet: '> 이런 분위기로 함께하고 싶어요.' },
-  { label: '코드', icon: Code2, snippet: '`React`, `Spring`처럼 적어도 좋아요.' },
+  { label: '제목', icon: Heading2, kind: 'prefix', marker: '## ' },
+  { label: '굵게', icon: Bold, kind: 'wrap', before: '**', after: '**' },
+  { label: '목록', icon: List, kind: 'prefix', marker: '- ' },
+  { label: '인용', icon: Quote, kind: 'prefix', marker: '> ' },
+  { label: '코드', icon: Code2, kind: 'wrap', before: '`', after: '`' },
 ] as const;
+
+type FormatAction = (typeof FORMAT_ACTIONS)[number];
 
 export default function MarkdownEditor({
   value,
@@ -35,6 +37,7 @@ export default function MarkdownEditor({
   disabled = false,
 }: MarkdownEditorProps) {
   const [mode, setMode] = useState<'write' | 'preview'>('write');
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const characterCount = value.length;
   const helperText = useMemo(() => {
     if (mode === 'preview') {
@@ -46,10 +49,69 @@ export default function MarkdownEditor({
     return '제목, 목록, 굵은 글씨 정도만 써도 훨씬 읽기 좋아져요.';
   }, [mode, value]);
 
-  const insertSnippet = (snippet: string) => {
-    const nextValue = value.trimEnd() ? `${value.trimEnd()}\n\n${snippet}` : snippet;
+  const updateSelection = (start: number, end: number) => {
+    requestAnimationFrame(() => {
+      textareaRef.current?.focus();
+      textareaRef.current?.setSelectionRange(start, end);
+    });
+  };
+
+  const applyWrapFormat = (
+    action: Extract<FormatAction, { kind: 'wrap' }>,
+    start: number,
+    end: number,
+  ) => {
+    const selectedText = value.slice(start, end);
+    const formattedText = `${action.before}${selectedText}${action.after}`;
+    const nextValue = `${value.slice(0, start)}${formattedText}${value.slice(end)}`;
+    const nextSelectionStart = start + action.before.length;
+    const nextSelectionEnd = nextSelectionStart + selectedText.length;
+
     onChange(nextValue);
+    updateSelection(nextSelectionStart, nextSelectionEnd);
+  };
+
+  const applyPrefixFormat = (
+    action: Extract<FormatAction, { kind: 'prefix' }>,
+    start: number,
+    end: number,
+  ) => {
+    const hasSelection = start !== end;
+    const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+    const lineEnd = hasSelection ? end + value.slice(end).search(/\n|$/) : end;
+    const targetText = value.slice(lineStart, lineEnd);
+    const formattedText = targetText
+      .split('\n')
+      .map((line) => `${action.marker}${line}`)
+      .join('\n');
+    const nextValue = `${value.slice(0, lineStart)}${formattedText}${value.slice(lineEnd)}`;
+    const addedLength = formattedText.length - targetText.length;
+
+    onChange(nextValue);
+
+    if (hasSelection) {
+      updateSelection(start + action.marker.length, end + addedLength);
+      return;
+    }
+
+    updateSelection(start + action.marker.length, start + action.marker.length);
+  };
+
+  const applyFormat = (action: FormatAction) => {
     setMode('write');
+
+    requestAnimationFrame(() => {
+      const textarea = textareaRef.current;
+      const start = textarea?.selectionStart ?? value.length;
+      const end = textarea?.selectionEnd ?? value.length;
+
+      if (action.kind === 'wrap') {
+        applyWrapFormat(action, start, end);
+        return;
+      }
+
+      applyPrefixFormat(action, start, end);
+    });
   };
 
   return (
@@ -90,7 +152,7 @@ export default function MarkdownEditor({
               <button
                 key={action.label}
                 type="button"
-                onClick={() => insertSnippet(action.snippet)}
+                onClick={() => applyFormat(action)}
                 disabled={disabled}
                 aria-label={`${action.label} 넣기`}
                 title={`${action.label} 넣기`}
@@ -105,6 +167,7 @@ export default function MarkdownEditor({
 
       {mode === 'write' ? (
         <BaseTextarea
+          ref={textareaRef}
           textareaSize="L"
           rows={rows}
           value={value}

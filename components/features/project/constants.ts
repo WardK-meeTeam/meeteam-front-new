@@ -8,6 +8,7 @@ export const PROJECT_CATEGORIES: Array<{
   { id: 'capstone', label: '캡스톤', icon: '🎓' },
   { id: 'creative-semester', label: '창의학기제', icon: '💡' },
   { id: 'club', label: '동아리', icon: '🏛️' },
+  { id: 'other', label: '기타', icon: '✨' },
 ];
 
 export const RELEASE_PLATFORMS: ReleasePlatform[] = ['웹', 'iOS', '안드로이드'];

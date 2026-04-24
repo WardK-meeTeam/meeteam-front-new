@@ -75,7 +75,7 @@ export default function UserCard({
 
       <div className="mt-5">
         <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-mt-text-secondary">
-          Main Skills
+          기술 스택
         </p>
         <div className="flex flex-wrap gap-2">
           {primarySkill ? <SkillChip label={primarySkill} variant="primary" /> : null}

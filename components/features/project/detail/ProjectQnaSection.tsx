@@ -1,7 +1,7 @@
 'use client';
 
 import { type FormEvent, useEffect, useState } from 'react';
-import { MessageCircle } from 'lucide-react';
+import { Check, Lock, MessageCircle } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import BaseButton from '@/components/shared/BaseButton';
 import BaseTextarea from '@/components/shared/BaseTextarea';
@@ -155,13 +155,17 @@ function AnswerComposer({
 
 function QuestionComposer({
   value,
+  isSecret,
   isSubmitting,
   onChange,
+  onSecretChange,
   onSubmit,
 }: {
   value: string;
+  isSecret: boolean;
   isSubmitting: boolean;
   onChange: (value: string) => void;
+  onSecretChange: (value: boolean) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   return (
@@ -185,7 +189,37 @@ function QuestionComposer({
         disabled={isSubmitting}
       />
 
-      <div className="mt-3 flex justify-end border-t border-mt-bg-soft pt-3">
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-mt-bg-soft pt-3">
+        <label
+          className={`inline-flex cursor-pointer select-none items-center gap-2 text-xs leading-4 font-bold ${
+            isSecret ? 'text-mt-primary' : 'text-mt-text-secondary'
+          }`}
+        >
+          <input
+            type="checkbox"
+            checked={isSecret}
+            onChange={(event) => onSecretChange(event.target.checked)}
+            className="peer sr-only"
+            disabled={isSubmitting}
+          />
+          <span
+            className={`flex size-4 items-center justify-center rounded-sm border p-px transition peer-focus-visible:ring-2 peer-focus-visible:ring-mt-logo-blue/30 ${
+              isSecret ? 'border-mt-primary bg-mt-primary' : 'border-mt-border bg-mt-white'
+            }`}
+          >
+            <Check
+              className={`size-3.5 text-mt-white transition-opacity ${
+                isSecret ? 'opacity-100' : 'opacity-0'
+              }`}
+              strokeWidth={3}
+              aria-hidden="true"
+            />
+          </span>
+          <span className="inline-flex items-center gap-1">
+            <Lock className="size-3.5" aria-hidden strokeWidth={1.8} />
+            비밀글
+          </span>
+        </label>
         <BaseButton
           type="submit"
           size="XS"
@@ -216,6 +250,7 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [questionDraft, setQuestionDraft] = useState('');
+  const [isSecretQuestion, setIsSecretQuestion] = useState(false);
   const [answerDrafts, setAnswerDrafts] = useState<Record<number, string>>({});
   const [activeAnswerQnaId, setActiveAnswerQnaId] = useState<number | null>(null);
   const [isQuestionSubmitting, setIsQuestionSubmitting] = useState(false);
@@ -277,10 +312,11 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
       setIsQuestionSubmitting(true);
       setErrorMessage(null);
 
-      const nextQna = await createProjectQnaQuestion(project.id, question);
+      const nextQna = await createProjectQnaQuestion(project.id, question, isSecretQuestion);
 
       setQnas((current) => [nextQna, ...current]);
       setQuestionDraft('');
+      setIsSecretQuestion(false);
     } catch (error) {
       if (handleAuthRequired(error, { redirectPath: `/projects/${project.id}` })) {
         return;
@@ -390,6 +426,12 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
                           답변 {qna.answers.length}
                         </span>
                       ) : null}
+                      {qna.isSecret ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-mt-bg-soft px-2 py-0.5 text-[10px] leading-4 font-bold text-mt-text-secondary">
+                          <Lock className="size-3" aria-hidden strokeWidth={2} />
+                          비밀글
+                        </span>
+                      ) : null}
                     </div>
 
                     <p
@@ -467,8 +509,10 @@ export default function ProjectQnaSection({ project }: { project: ProjectRecord 
 
       <QuestionComposer
         value={questionDraft}
+        isSecret={isSecretQuestion}
         isSubmitting={isQuestionSubmitting}
         onChange={setQuestionDraft}
+        onSecretChange={setIsSecretQuestion}
         onSubmit={handleQuestionSubmit}
       />
     </section>

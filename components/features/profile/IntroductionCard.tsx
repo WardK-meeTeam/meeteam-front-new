@@ -22,11 +22,7 @@ export default function IntroductionCard({
           value={value}
           onChange={(nextValue) => onChange?.(nextValue)}
           dataCy="profile-introduction-input"
-          placeholder={`## 이런 사람입니다
-
-- 요즘 관심 있는 것
-- 함께 일할 때 좋아하는 방식
-- 해본 프로젝트나 맡았던 역할`}
+          placeholder="자기소개를 입력해 주세요."
           previewEmptyText="아직 자기소개가 비어 있어요. 편하게 한 줄부터 시작해도 좋아요."
         />
       </section>

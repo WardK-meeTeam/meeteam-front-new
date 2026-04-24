@@ -1,6 +1,5 @@
 import BaseInput from '@/components/shared/BaseInput';
 import BaseField from '@/components/shared/BaseField';
-import BirthDateSelect from '@/components/features/auth/BirthDateSelect';
 
 type ProfileSectionProps = {
   name: string;
@@ -12,6 +11,10 @@ type ProfileSectionProps = {
   nameError?: string;
   birthError?: string;
 };
+
+const CURRENT_YEAR = new Date().getFullYear();
+const MIN_BIRTH_DATE = `${CURRENT_YEAR - 90}-01-01`;
+const MAX_BIRTH_DATE = `${CURRENT_YEAR - 14}-12-31`;
 
 export default function ProfileSection({
   name,
@@ -36,8 +39,17 @@ export default function ProfileSection({
             data-cy="signup-name"
           />
         </BaseField>
-        <BaseField label="생년월일" errorText={birthError} className="gap-3">
-          <BirthDateSelect value={birth} onChange={onChangeBirth} />
+        <BaseField label="생년월일" htmlFor="birth" errorText={birthError}>
+          <BaseInput
+            id="birth"
+            type="date"
+            value={birth}
+            min={MIN_BIRTH_DATE}
+            max={MAX_BIRTH_DATE}
+            onChange={(event) => onChangeBirth(event.target.value)}
+            error={Boolean(birthError)}
+            data-cy="signup-birth"
+          />
         </BaseField>
       </div>
       <div>

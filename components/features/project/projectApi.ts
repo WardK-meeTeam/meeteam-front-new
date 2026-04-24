@@ -8,6 +8,7 @@ import type {
 } from '@/types/project';
 
 import { createApiError } from '@/components/features/auth/authError';
+import { findTechStackByName } from '@/components/features/auth/jobOptionUtils';
 import { extractApiData, normalizeUrl } from '@/components/features/auth/signupTransform';
 import {
   findProjectJobField,
@@ -26,7 +27,7 @@ type BackendProjectDetailResponse = {
   id: number;
   name: string;
   description: string;
-  projectCategory: 'CAPSTONE' | 'CREATIVE_SEMESTER' | 'CLUB';
+  projectCategory: 'CAPSTONE' | 'CREATIVE_SEMESTER' | 'CLUB' | 'ETC';
   platformCategory: 'IOS' | 'ANDROID' | 'WEB';
   imageUrl: string | null;
   recruitmentStatus: 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
@@ -439,6 +440,8 @@ function mapCategoryIdToApiValue(categoryId: ProjectFormValues['categoryId']) {
       return 'CREATIVE_SEMESTER';
     case 'club':
       return 'CLUB';
+    case 'other':
+      return 'ETC';
     default:
       throw new Error('프로젝트 카테고리를 다시 선택해 주세요.');
   }
@@ -452,6 +455,8 @@ function mapCategoryApiValueToId(category: BackendProjectDetailResponse['project
       return 'creative-semester';
     case 'CLUB':
       return 'club';
+    case 'ETC':
+      return 'other';
   }
 }
 
@@ -509,7 +514,7 @@ export function buildProjectCreatePayload(values: ProjectFormValues, jobFields: 
 
     const techStackNames = values.recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [];
     const techStackIds = techStackNames.map((techStackName) => {
-      const techStack = field.techStacks.find((item) => item.name === techStackName);
+      const techStack = findTechStackByName(jobFields, techStackName);
 
       if (!techStack) {
         throw new Error('선택한 기술 스택을 다시 확인해 주세요.');
@@ -556,7 +561,7 @@ function buildRecruitmentRequests(values: ProjectFormValues, jobFields: JobField
 
     const techStackNames = values.recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [];
     const techStackIds = techStackNames.map((techStackName) => {
-      const techStack = field.techStacks.find((item) => item.name === techStackName);
+      const techStack = findTechStackByName(jobFields, techStackName);
 
       if (!techStack) {
         throw new Error('선택한 기술 스택을 다시 확인해 주세요.');

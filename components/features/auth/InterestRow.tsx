@@ -10,7 +10,7 @@ type InterestRowProps = {
   jobFields: JobFieldOption[];
   value: Interest;
   onChange: (next: Interest) => void;
-  onRemove: () => void;
+  onRemove?: () => void;
   length: number;
   disabled?: boolean;
 };
@@ -99,17 +99,17 @@ export default function InterestRow({
         dataCy={`signup-interest-minor-${index}`}
       />
 
-      {length > 1 && value.major && value.minor && (
+      {length > 1 && value.major && value.minor && onRemove ? (
         <button
           type="button"
           onClick={onRemove}
           data-cy={`signup-interest-remove-${index}`}
           className="ml-1 flex items-center"
-          aria-label="관심 분야 삭제"
+          aria-label="분야 삭제"
         >
           <Trash2 className="h-5 w-5 text-mt-hero-blue" />
         </button>
-      )}
+      ) : null}
     </div>
   );
 }

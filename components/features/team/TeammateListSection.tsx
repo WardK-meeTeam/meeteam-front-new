@@ -41,7 +41,7 @@ export function TeammateListSection({
           data-cy="teammate-total-count"
           className="text-base leading-6 font-semibold text-mt-text-nav"
         >
-          총 <span className="text-mt-primary">{totalCount}</span>명의 메이커
+          총 <span className="text-mt-primary">{totalCount}</span>명의 팀원
         </p>
 
         <SortSelect

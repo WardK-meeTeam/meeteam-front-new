@@ -76,7 +76,7 @@ export default function SejongSignupForm() {
         }
 
         setJobOptionsError(
-          error instanceof Error ? error.message : '관심 분야 옵션을 불러오지 못했습니다.',
+          error instanceof Error ? error.message : '기술 스택 옵션을 불러오지 못했습니다.',
         );
       } finally {
         if (isMounted) {
@@ -114,7 +114,7 @@ export default function SejongSignupForm() {
     setFieldErrors((prev) => ({ ...prev, form: undefined }));
   };
 
-  const validateForm = () => {
+  const buildValidationErrors = () => {
     const result = onboardingFormSchema.safeParse(formValues);
 
     const nextErrors: OnboardingFieldErrors = {};
@@ -130,35 +130,19 @@ export default function SejongSignupForm() {
       (interest) => interest.major && interest.minor,
     );
     if (filledInterests.length === 0) {
-      nextErrors.interests = '최소 1개의 관심 분야를 선택해 주세요.';
+      nextErrors.interests = '분야를 선택해 주세요.';
     }
 
-    setFieldErrors(nextErrors);
+    if (!nextErrors.form) {
+      nextErrors.form = Object.values(nextErrors).find(Boolean);
+    }
 
-    return Object.values(nextErrors).every((value) => !value);
+    return nextErrors;
   };
 
   const updateInterest = (index: number, next: Interest) => {
-    if (
-      next.major &&
-      next.minor &&
-      formValues.interests.some(
-        (interest, interestIndex) =>
-          interestIndex !== index && interest.major === next.major && interest.minor === next.minor,
-      )
-    ) {
-      setFieldErrors((prev) => ({
-        ...prev,
-        interests: '같은 관심 분야는 한 번만 선택할 수 있습니다.',
-      }));
-      return;
-    }
-
     setFormValues((prev) => {
       const currentInterest = prev.interests[index];
-      const nextInterests = prev.interests.map((interest, interestIndex) =>
-        interestIndex === index ? next : interest,
-      );
       const nextTechStacksByInterest = { ...prev.techStacksByInterest };
 
       if (currentInterest) {
@@ -171,7 +155,7 @@ export default function SejongSignupForm() {
 
       return {
         ...prev,
-        interests: nextInterests,
+        interests: [next],
         techStacksByInterest: nextTechStacksByInterest,
       };
     });
@@ -179,32 +163,21 @@ export default function SejongSignupForm() {
     setFieldErrors((prev) => ({ ...prev, interests: undefined, form: undefined }));
   };
 
-  const addInterest = () => {
-    setFormValues((prev) => ({ ...prev, interests: [...prev.interests, INITIAL_INTEREST] }));
-  };
-
-  const removeInterest = (index: number) => {
-    setFormValues((prev) => {
-      const currentInterest = prev.interests[index];
-      const nextInterests = prev.interests.filter((_, interestIndex) => interestIndex !== index);
-      const nextTechStacksByInterest = { ...prev.techStacksByInterest };
-
-      if (currentInterest) {
-        delete nextTechStacksByInterest[getInterestKey(currentInterest)];
-      }
-
-      return {
-        ...prev,
-        interests: nextInterests.length > 0 ? nextInterests : [INITIAL_INTEREST],
-        techStacksByInterest: nextTechStacksByInterest,
-      };
-    });
-  };
-
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!validateForm()) {
+    const nextErrors = buildValidationErrors();
+
+    if (Object.values(nextErrors).some(Boolean)) {
+      setFieldErrors(nextErrors);
+      return;
+    }
+
+    if (!hasSelectedTechStacks) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        form: '기술 스택을 1개 이상 선택해 주세요.',
+      }));
       return;
     }
 
@@ -277,6 +250,14 @@ export default function SejongSignupForm() {
     );
   }
 
+  const selectedInterest = formValues.interests.find(
+    (interest) => interest.major && interest.minor,
+  );
+  const selectedInterestKey = selectedInterest ? getInterestKey(selectedInterest) : '';
+  const hasSelectedTechStacks = selectedInterestKey
+    ? (formValues.techStacksByInterest[selectedInterestKey]?.length ?? 0) > 0
+    : false;
+
   return (
     <form
       className="flex w-full flex-col gap-5"
@@ -305,9 +286,7 @@ export default function SejongSignupForm() {
       <InterestSection
         jobFields={jobFields}
         interests={formValues.interests}
-        onAdd={addInterest}
         onChange={updateInterest}
-        onRemove={removeInterest}
         errorText={fieldErrors.interests || jobOptionsError}
         disabled={isLoadingJobOptions}
       />

@@ -2,6 +2,7 @@
 
 import { Camera, RefreshCcw, Trash2 } from 'lucide-react';
 import { type ChangeEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
+import ProjectCoverImage from '@/components/features/project/ProjectCoverImage';
 
 interface CoverImageUploaderProps {
   id?: string;
@@ -77,10 +78,11 @@ export default function CoverImageUploader({
       />
 
       {previewUrl && (
-        <img
+        <ProjectCoverImage
           src={previewUrl}
           alt="프로젝트 커버 미리보기"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+          className="absolute inset-0 h-full rounded-none"
+          imageClassName="transition-transform duration-500 ease-out group-hover:scale-[1.03]"
         />
       )}
 

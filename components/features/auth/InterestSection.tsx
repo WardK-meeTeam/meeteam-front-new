@@ -5,9 +5,7 @@ import type { JobFieldOption } from '@/types/auth';
 type InterestSectionProps = {
   jobFields: JobFieldOption[];
   interests: Interest[];
-  onAdd: () => void;
   onChange: (index: number, next: Interest) => void;
-  onRemove: (index: number) => void;
   errorText?: string;
   disabled?: boolean;
 };
@@ -15,40 +13,25 @@ type InterestSectionProps = {
 export default function InterestSection({
   jobFields,
   interests,
-  onAdd,
   onChange,
-  onRemove,
   errorText,
   disabled = false,
 }: InterestSectionProps) {
+  const interest = interests[0] ?? { major: '', minor: '' };
+
   return (
     <div className="flex w-full flex-col gap-2">
-      <div className="flex justify-between items-center">
-        <label className="text-lg font-bold leading-7 text-mt-text-primary">관심 분야</label>
-        <button
-          type="button"
-          onClick={onAdd}
-          disabled={disabled}
-          data-cy="signup-interest-add"
-          className="cursor-pointer text-mt-primary text-xs font-bold leading-4 disabled:cursor-not-allowed disabled:text-mt-text-secondary"
-        >
-          + 분야 추가
-        </button>
-      </div>
+      <label className="text-lg font-bold leading-7 text-mt-text-primary">분야</label>
 
       <div className="flex flex-col gap-2">
-        {interests.map((it, i) => (
-          <InterestRow
-            key={`${i}-${it.major}-${it.minor}`}
-            index={i}
-            jobFields={jobFields}
-            value={it}
-            onChange={(next) => onChange(i, next)}
-            onRemove={() => onRemove(i)}
-            length={interests.length}
-            disabled={disabled}
-          />
-        ))}
+        <InterestRow
+          index={0}
+          jobFields={jobFields}
+          value={interest}
+          onChange={(next) => onChange(0, next)}
+          length={1}
+          disabled={disabled}
+        />
       </div>
 
       {errorText ? <p className="text-sm text-mt-hero-blue">{errorText}</p> : null}

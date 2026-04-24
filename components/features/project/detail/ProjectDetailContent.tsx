@@ -12,11 +12,13 @@ export type ProjectDetailTab = 'intro' | 'recruit' | 'qna';
 type ProjectDetailContentProps = {
   project: ProjectRecord;
   canApply?: boolean;
+  onCopyExternalUrl: (url: string, label: string) => void;
 };
 
 export default function ProjectDetailContent({
   project,
   canApply = true,
+  onCopyExternalUrl,
 }: ProjectDetailContentProps) {
   const [activeTab, setActiveTab] = useState<ProjectDetailTab>('intro');
 
@@ -24,7 +26,9 @@ export default function ProjectDetailContent({
     <div className="min-w-0 space-y-8">
       <ProjectDetailTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-      {activeTab === 'intro' && <ProjectIntroSection project={project} />}
+      {activeTab === 'intro' && (
+        <ProjectIntroSection project={project} onCopyExternalUrl={onCopyExternalUrl} />
+      )}
       {activeTab === 'recruit' && <ProjectRecruitSection project={project} canApply={canApply} />}
       {activeTab === 'qna' && <ProjectQnaSection project={project} />}
     </div>

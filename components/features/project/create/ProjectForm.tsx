@@ -474,9 +474,6 @@ export default function ProjectForm({
               <p className="text-sm leading-5 font-bold text-mt-text-primary">
                 {CREATE_STEPS[createStepIndex].title}
               </p>
-              <p className="mt-1 text-sm leading-5 text-mt-text-secondary">
-                {CREATE_STEPS[createStepIndex].description}
-              </p>
             </div>
           </div>
         </header>
@@ -596,11 +593,7 @@ export default function ProjectForm({
                       setDescription(nextDescription);
                       clearError('description');
                     }}
-                    placeholder={`## 우리가 만들고 있는 것
-
-- 해결하고 싶은 문제
-- 지금까지 준비된 것
-- 함께하면 좋을 사람`}
+                    placeholder="프로젝트 소개 글을 입력해 주세요."
                     rows={isEdit ? 8 : 7}
                     previewEmptyText="프로젝트 이야기를 적으면, 팀원들이 이 모습으로 읽게 돼요."
                   />
