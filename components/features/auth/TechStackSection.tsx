@@ -1,4 +1,5 @@
 import BaseField from '@/components/shared/BaseField';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import type { Interest, JobFieldOption } from '@/types/auth';
 import { useEffect, useMemo } from 'react';
 import TechStackPicker from '@/components/shared/TechStackPicker';
@@ -65,18 +66,12 @@ export default function TechStackSection({
   return (
     <BaseField label={label} htmlFor="tech" required={false} errorText={errorText}>
       {sections.length > 0 ? (
-        <div className="flex flex-col gap-3">
+        <div className="divide-y divide-mt-border">
           {sections.map((section, index) => (
-            <div
-              key={section.key}
-              className="rounded-2xl border border-mt-border bg-mt-white p-4 shadow-sm"
-            >
-              <div className="mb-3 flex flex-col gap-1">
-                <p className="text-sm leading-5 font-bold text-mt-text-primary">{section.key}</p>
-                <p className="text-xs leading-4 text-mt-text-secondary">
-                  {section.minor}에 필요한 기술 스택을 선택해 주세요.
-                </p>
-              </div>
+            <div key={section.key} className="py-4 first:pt-0 last:pb-0">
+              <p className="mb-3 text-sm leading-5 font-bold text-mt-text-primary">
+                {formatJobRole(section.major, section.minor)}
+              </p>
 
               <TechStackPicker
                 inputId={index === 0 ? 'tech' : `tech-${index}`}
@@ -99,8 +94,8 @@ export default function TechStackSection({
           ))}
         </div>
       ) : (
-        <div className="rounded-2xl border border-mt-border bg-mt-bg-soft px-4 py-5 text-sm leading-5 text-mt-text-secondary">
-          모집 분야를 선택하면 분야별 기술 스택 입력란이 자동으로 생성됩니다.
+        <div className="border-y border-mt-border py-4 text-sm leading-5 text-mt-text-secondary">
+          모집 분야를 먼저 선택해 주세요.
         </div>
       )}
     </BaseField>

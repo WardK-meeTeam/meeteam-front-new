@@ -154,12 +154,6 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
               {project.title}
             </h1>
 
-            {project.summary ? (
-              <p className="mt-4 line-clamp-3 text-base leading-7 font-medium text-mt-text-secondary">
-                {project.summary}
-              </p>
-            ) : null}
-
             <div className="mt-6 border-t border-mt-border pt-5">
               <p className="text-xs leading-4 font-bold text-mt-text-secondary">프로젝트 리더</p>
               <AuthLink

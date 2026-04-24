@@ -2,6 +2,7 @@
 
 import { ExternalLink, Mail, UserRound } from 'lucide-react';
 import BaseModal from '@/components/shared/BaseModal';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import MarkdownContent from '@/components/shared/MarkdownContent';
 import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectApplicant } from '@/types/project';
@@ -46,7 +47,7 @@ export default function ProjectApplicantDetailModal({
           <p className="text-sm font-bold text-mt-primary">지원서 상세</p>
           <h2 className="mt-1 text-2xl font-extrabold text-mt-text-primary">{applicant.name}</h2>
           <p className="mt-1 text-sm text-mt-text-secondary">
-            {applicant.position} / {applicant.specialty}
+            {formatJobRole(applicant.position, applicant.specialty)}
           </p>
         </div>
 

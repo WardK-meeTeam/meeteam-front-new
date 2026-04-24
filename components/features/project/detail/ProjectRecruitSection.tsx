@@ -2,6 +2,7 @@ import type { MouseEvent } from 'react';
 import type { ProjectRecord } from '@/types/project';
 import AuthLink from '@/components/features/auth/AuthLink';
 import BaseButton from '@/components/shared/BaseButton';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import SkillChip from '@/components/shared/SkillChip';
 import StatusBadge from '@/components/shared/StatusBadge';
 import { useToastStore } from '@/stores/useToastStore';
@@ -85,7 +86,7 @@ export default function ProjectRecruitSection({
               <div className="flex min-w-0 flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="text-base leading-5 font-bold text-mt-text-primary">
-                    {position.role} ({position.specialty})
+                    {formatJobRole(position.role, position.specialty)}
                   </h3>
                   <StatusBadge status={position.status} />
                 </div>

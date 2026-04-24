@@ -1,11 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Github, Link2, Mail } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import AuthRequiredFallback from '@/components/features/auth/AuthRequiredFallback';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
+import { withdrawMember } from '@/components/features/auth/loginApi';
 import BasicInfoCard from '@/components/features/profile/BasicInfoCard';
 import IntroductionCard from '@/components/features/profile/IntroductionCard';
 import JoinedProjectCard from '@/components/features/profile/JoinedProjectCard';
@@ -13,6 +15,7 @@ import ParticipationStatusCard from '@/components/features/profile/Participation
 import ProfileHeader from '@/components/features/profile/ProfileHeader';
 import ProfileOverviewSkeleton from '@/components/features/profile/ProfileOverviewSkeleton';
 import SkillsCard from '@/components/features/profile/SkillsCard';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import ToastMessage from '@/components/shared/ToastMessage';
 import {
   fetchMemberProfile,
@@ -52,11 +55,14 @@ export default function ProfileOverview({
   editable = true,
   actionLabel = '제안 보내기',
 }: ProfileOverviewProps) {
+  const router = useRouter();
   const handleAuthRequired = useAuthRequiredModal();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const clearSession = useAuthStore((state) => state.clearSession);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isAuthBlocked, setIsAuthBlocked] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [profile, setProfile] = useState<MemberProfileResponse | null>(null);
@@ -329,6 +335,31 @@ export default function ProfileOverview({
     }
   }
 
+  async function handleWithdraw() {
+    if (!canEdit || !isAuthenticated || isWithdrawing) {
+      return;
+    }
+
+    const confirmed = window.confirm('회원탈퇴를 진행할까요?');
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setIsWithdrawing(true);
+      setErrorMessage(null);
+      await withdrawMember();
+      clearSession();
+      router.push('/auth/login');
+      router.refresh();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : '회원 탈퇴 처리 중 오류가 발생했습니다.');
+    } finally {
+      setIsWithdrawing(false);
+    }
+  }
+
   const profileInfoItems = profileForm
     ? [
         { label: '이름', value: profileForm.name },
@@ -336,7 +367,7 @@ export default function ProfileOverview({
         { label: '성별', value: profileForm.gender },
         {
           label: '직군',
-          value: [profileForm.fieldCategory, profileForm.fieldRole].filter(Boolean).join(', '),
+          value: formatJobRole(profileForm.fieldCategory, profileForm.fieldRole),
         },
         { label: '프로젝트 횟수', value: profileForm.projectCount },
       ]
@@ -450,6 +481,19 @@ export default function ProfileOverview({
             <JoinedProjectCard projects={joinedProjects} disabled={isEditing} />
           </div>
         </div>
+
+        {canEdit ? (
+          <div className="flex justify-end border-t border-mt-bg-soft pt-4">
+            <button
+              type="button"
+              onClick={() => void handleWithdraw()}
+              disabled={isWithdrawing}
+              className="text-sm leading-5 font-medium text-mt-text-secondary underline-offset-4 hover:text-mt-hero-blue hover:underline disabled:cursor-not-allowed disabled:text-mt-text-secondary"
+            >
+              {isWithdrawing ? '회원탈퇴 처리 중' : '회원탈퇴'}
+            </button>
+          </div>
+        ) : null}
       </div>
     </section>
   );

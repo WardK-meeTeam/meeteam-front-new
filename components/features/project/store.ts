@@ -6,6 +6,7 @@ import {
   PROJECT_CATEGORIES,
   RELEASE_PLATFORMS,
 } from '@/components/features/project/constants';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import type {
   ProjectApplicant,
   ProjectFormValues,
@@ -29,7 +30,7 @@ type ProjectState = {
 const toMember = (applicant: ProjectApplicant): ProjectMember => ({
   id: applicant.id,
   name: applicant.name,
-  role: `${applicant.position} / ${applicant.specialty}`,
+  role: formatJobRole(applicant.position, applicant.specialty),
   avatarUrl: applicant.avatarUrl,
 });
 

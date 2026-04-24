@@ -14,6 +14,7 @@ import {
   findProjectJobField,
   findProjectJobPosition,
 } from '@/components/features/project/projectJobOptions';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
@@ -864,7 +865,7 @@ export async function fetchProjectTeamManagement(
     members: team.members.map((member) => ({
       id: member.memberId,
       name: member.name,
-      role: [member.jobFieldName, member.jobPositionName].filter(Boolean).join(' / '),
+      role: formatJobRole(member.jobFieldName, member.jobPositionName),
       avatarUrl: member.profileImageUrl ?? '',
       isLeader: member.isLeader ?? member.leader ?? false,
     })),
@@ -961,8 +962,7 @@ export async function fetchProjectEditPrefill(
     ]),
   );
 
-  const isRecruitUntilComplete =
-    project.recruitmentDeadlineType === 'RECRUITMENT_COMPLETED' || project.endDate === null;
+  const isRecruitUntilComplete = project.recruitmentDeadlineType === 'RECRUITMENT_COMPLETED';
 
   return {
     values: {
@@ -1016,7 +1016,7 @@ export async function fetchProjectDetail(projectId: string | number): Promise<Pr
     project.members?.map((member) => ({
       id: member.memberId ?? member.id ?? project.leader.id,
       name: member.name,
-      role: [member.jobFieldName, member.jobPositionName].filter(Boolean).join(' / '),
+      role: formatJobRole(member.jobFieldName, member.jobPositionName),
       avatarUrl: member.profileImageUrl ?? '',
       isLeader: member.isLeader ?? member.leader ?? member.memberId === project.leader.id,
     })) ?? [];

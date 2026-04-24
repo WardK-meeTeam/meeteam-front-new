@@ -76,10 +76,10 @@ const CREATE_STEP_FIELDS: ProjectFormStepField[][] = [
 ];
 
 const EDIT_SECTIONS = [
-  { title: '프로젝트 정보', description: '이름, 카테고리, 플랫폼, 커버 이미지를 수정해요.' },
-  { title: '소개와 링크', description: '소개 글과 외부 연결 정보를 수정해요.' },
-  { title: '역할과 모집', description: '리더 분야와 모집 포지션을 수정해요.' },
-  { title: '기술 스택과 마감', description: '분야별 기술 스택과 마감 방식을 수정해요.' },
+  { title: '프로젝트 정보', description: '이름, 카테고리, 플랫폼, 커버 이미지' },
+  { title: '소개와 링크', description: '소개글, 외부 연결 정보' },
+  { title: '역할과 모집', description: '리더 분야, 모집 포지션' },
+  { title: '기술 스택과 마감', description: '분야별 기술 스택, 마감 방식' },
 ] as const;
 
 function buildOptionalUrl(value: string) {
@@ -381,6 +381,7 @@ export default function ProjectForm({
       return;
     }
 
+    setFieldErrors({});
     setCreateStepIndex((prev) => Math.min(prev + 1, CREATE_STEPS.length - 1));
   };
 
@@ -469,11 +470,6 @@ export default function ProjectForm({
                   </div>
                 );
               })}
-            </div>
-            <div>
-              <p className="text-sm leading-5 font-bold text-mt-text-primary">
-                {CREATE_STEPS[createStepIndex].title}
-              </p>
             </div>
           </div>
         </header>

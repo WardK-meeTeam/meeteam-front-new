@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 
 import BaseField from '@/components/shared/BaseField';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import TechStackPicker from '@/components/shared/TechStackPicker';
 import type { Interest, JobFieldOption } from '@/types/auth';
 
@@ -35,7 +36,7 @@ export default function SignupTechStackSection({
 
     return {
       key: getInterestKey(interest),
-      label: `${field?.name ?? interest.major} / ${position?.name ?? interest.minor}`,
+      label: formatJobRole(field?.name ?? interest.major, position?.name ?? interest.minor),
       fieldCode: interest.major,
     };
   }, [interests, jobFields]);

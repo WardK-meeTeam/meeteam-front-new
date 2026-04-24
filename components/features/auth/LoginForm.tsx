@@ -23,9 +23,14 @@ const INITIAL_FORM_VALUES: LoginFormValues = {
 type LoginFormProps = {
   redirectPath?: string;
   onSuccess?: () => void | Promise<void>;
+  onSignupRequired?: (signupPath: string) => void | Promise<void>;
 };
 
-export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormProps) {
+export default function LoginForm({
+  redirectPath = '/',
+  onSuccess,
+  onSignupRequired,
+}: LoginFormProps) {
   const pathname = usePathname();
   const router = useRouter();
   const setSession = useAuthStore((state) => state.setSession);
@@ -80,8 +85,14 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
         }
 
         saveSejongOnboardingCode(result.code);
-        await onSuccess?.();
-        router.push('/auth/sign-up/sejong');
+        const signupPath = '/auth/sign-up/sejong';
+
+        if (onSignupRequired) {
+          await onSignupRequired(signupPath);
+        } else {
+          router.push(signupPath);
+        }
+
         return;
       }
 
@@ -166,6 +177,12 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
               type="checkbox"
               checked={isConsentChecked}
               onChange={(event) => updateConsent(event.target.checked)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  updateConsent(!isConsentChecked);
+                }
+              }}
               className="peer sr-only"
               data-cy="login-consent"
             />

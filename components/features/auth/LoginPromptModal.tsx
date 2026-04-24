@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 
 import BaseModal from '@/components/shared/BaseModal';
@@ -9,10 +10,16 @@ import { useLoginModalStore } from '@/stores/useLoginModalStore';
 import LoginForm from './LoginForm';
 
 export default function LoginPromptModal() {
+  const router = useRouter();
   const isOpen = useLoginModalStore((state) => state.isOpen);
   const redirectPath = useLoginModalStore((state) => state.redirectPath);
   const title = useLoginModalStore((state) => state.title);
   const closeLoginModal = useLoginModalStore((state) => state.closeLoginModal);
+
+  const handleSignupRequired = (signupPath: string) => {
+    router.push(signupPath);
+    closeLoginModal();
+  };
 
   return (
     <BaseModal isOpen={isOpen} onClose={closeLoginModal}>
@@ -35,7 +42,11 @@ export default function LoginPromptModal() {
           </button>
         </div>
 
-        <LoginForm redirectPath={redirectPath ?? undefined} onSuccess={closeLoginModal} />
+        <LoginForm
+          redirectPath={redirectPath ?? undefined}
+          onSuccess={closeLoginModal}
+          onSignupRequired={handleSignupRequired}
+        />
       </section>
     </BaseModal>
   );

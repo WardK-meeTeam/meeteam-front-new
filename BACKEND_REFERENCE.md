@@ -2,7 +2,7 @@
 
 - Remote repository: `https://github.com/WardK-meeTeam/meeteam-backend`
 - Local clone used for backend code inspection in this workspace: `/tmp/meeteam-backend`
-- Last synced commit: `bc23479`
+- Last synced commit: `2fdad09`
 - Last checked at: `2026-04-24`
 
 ## Latest backend sync
@@ -10,7 +10,7 @@
 Synced `/tmp/meeteam-backend` from `origin/master` by fast-forwarding:
 
 - From: `0e7bcf5` (`feat: 프로젝트 카테고리 변경 (캡스톤, 창의학기제, 동아리)`)
-- To: `bc23479` (`docs: CLAUDE.md에 세종대 포털 SSL 호환성 정보 추가`)
+- To: `2fdad09` (`feat: 프로젝트 수정 시 모집 마감 방식 변경 기능 추가`)
 
 Commits included:
 
@@ -21,6 +21,9 @@ Commits included:
 - `0f5303a` `feat: 회원 하드 삭제 API 추가`
 - `93ee940` `feat: 회원 하드 삭제 시 CASCADE 삭제 기능 추가`
 - `bc23479` `docs: CLAUDE.md에 세종대 포털 SSL 호환성 정보 추가`
+- `597ca47` `refactor: 회원 하드 삭제 API를 Admin용으로 변경`
+- `b472cb3` `fix: s3 url 경로 추가`
+- `2fdad09` `feat: 프로젝트 수정 시 모집 마감 방식 변경 기능 추가`
 
 ## Frontend-impacting changes
 
@@ -36,17 +39,22 @@ Commits included:
   - `answers: []`
 - Auth API additions:
   - `DELETE /api/v1/auth/withdraw`: soft-deletes the authenticated member, logs out, and clears auth cookies.
-  - `DELETE /api/v1/auth/delete`: hard-deletes the authenticated member after logging out, then clears auth cookies.
+  - `DELETE /api/v1/auth/delete/{memberId}`: hard-deletes a member. This is now an Admin-only backend API and should not be used by the regular frontend member withdrawal flow.
+- Project edit API note:
+  - `PUT /api/v1/projects/{projectId}` now accepts `recruitmentDeadlineType`.
+  - `endDate` is required only for `END_DATE`; `RECRUITMENT_COMPLETED` can omit `endDate`.
+  - Frontend no longer uses the old compatibility `2099-12-31` end date workaround.
 
 ## Frontend reflection
 
 - Added `ETC`/`기타` project category support in project creation, detail mapping, project search filters, and home project filters.
 - Added Q&A `isSecret` mapping and a secret-question toggle in the project detail Q&A composer.
-- Added auth API helpers for soft withdrawal and permanent member deletion.
+- Added a frontend helper for soft withdrawal only.
 
 Backend-only/ops notes:
 
 - Hard delete now explicitly removes related Q&A, applications, likes, notifications, project memberships, created projects, skills, and member job positions before deleting the member.
+- Hard delete was changed to an Admin-only path: `DELETE /api/v1/auth/delete/{memberId}`.
 - Production config was adjusted in backend commits; no direct frontend contract change was found.
 - Backend `CLAUDE.md` documents Sejong portal SSL compatibility details; no direct frontend contract change was found.
 

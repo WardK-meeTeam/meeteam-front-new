@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Users } from 'lucide-react';
 import CategoryBadge from '@/components/shared/CategoryBadge';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import StatusBadge from '@/components/shared/StatusBadge';
 
@@ -139,10 +140,10 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                         key={info.id}
                       >
                         <div className="flex flex-col">
-                          <span className="text-xs font-bold text-mt-white">{info.role}</span>
-                          <span className="text-[10px] text-mt-white/70">
-                            {info.subRoles?.join(', ') || '전체'}
+                          <span className="text-xs font-bold text-mt-white">
+                            {formatJobRole(info.role, info.subRoles?.filter(Boolean).join(', '))}
                           </span>
+                          <span className="text-[10px] text-mt-white/70">모집 포지션</span>
                         </div>
 
                         {info.status === 'open' ? (

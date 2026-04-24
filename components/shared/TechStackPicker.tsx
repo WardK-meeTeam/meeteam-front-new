@@ -129,9 +129,12 @@ export default function TechStackPicker({
               return;
             }
 
-            if (event.key === 'Enter' && filteredOptions[0]) {
+            if (event.key === 'Enter') {
               event.preventDefault();
-              handleSelect(filteredOptions[0]);
+
+              if (filteredOptions[0]) {
+                handleSelect(filteredOptions[0]);
+              }
             }
           }}
           rightIcon={

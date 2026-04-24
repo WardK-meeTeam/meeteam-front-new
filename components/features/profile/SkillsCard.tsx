@@ -2,6 +2,7 @@
 
 import { CodeXml } from 'lucide-react';
 import ProfileCard from '@/components/features/profile/ProfileCard';
+import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import SkillChip from '@/components/shared/SkillChip';
 import TechStackPicker from '@/components/shared/TechStackPicker';
 
@@ -33,9 +34,7 @@ export default function SkillsCard({
           <div key={`${group.category}-${group.role}`} className="space-y-3">
             <div className="flex items-center gap-1.5 text-sm leading-5 text-mt-text-secondary">
               <CodeXml className="h-3 w-3" aria-hidden strokeWidth={2} />
-              <p>
-                {group.category} - {group.role}
-              </p>
+              <p>{formatJobRole(group.category, group.role)}</p>
             </div>
 
             <div className="flex flex-wrap gap-2">
