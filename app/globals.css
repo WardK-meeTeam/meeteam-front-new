@@ -12,6 +12,18 @@
   --mt-mint: #67c5c2;
   --mt-danger: #e85d5d;
   --mt-danger-soft: #fff1f1;
+  --mt-category-capstone-bg: #eaf2ff;
+  --mt-category-capstone-border: #cfe0fa;
+  --mt-category-capstone-text: #3f7fd8;
+  --mt-category-creative-bg: #fff4d8;
+  --mt-category-creative-border: #f3d99a;
+  --mt-category-creative-text: #a05a00;
+  --mt-category-club-bg: #f1e9ff;
+  --mt-category-club-border: #d9c8ff;
+  --mt-category-club-text: #7a55c7;
+  --mt-category-other-bg: #e7f7f4;
+  --mt-category-other-border: #bce9e1;
+  --mt-category-other-text: #277a75;
   --mt-text-primary: #202730;
   --mt-text-secondary: #5f6d82;
   --mt-text-nav: #647185;
@@ -32,6 +44,18 @@
   --color-mt-mint: var(--mt-mint);
   --color-mt-danger: var(--mt-danger);
   --color-mt-danger-soft: var(--mt-danger-soft);
+  --color-mt-category-capstone-bg: var(--mt-category-capstone-bg);
+  --color-mt-category-capstone-border: var(--mt-category-capstone-border);
+  --color-mt-category-capstone-text: var(--mt-category-capstone-text);
+  --color-mt-category-creative-bg: var(--mt-category-creative-bg);
+  --color-mt-category-creative-border: var(--mt-category-creative-border);
+  --color-mt-category-creative-text: var(--mt-category-creative-text);
+  --color-mt-category-club-bg: var(--mt-category-club-bg);
+  --color-mt-category-club-border: var(--mt-category-club-border);
+  --color-mt-category-club-text: var(--mt-category-club-text);
+  --color-mt-category-other-bg: var(--mt-category-other-bg);
+  --color-mt-category-other-border: var(--mt-category-other-border);
+  --color-mt-category-other-text: var(--mt-category-other-text);
   --color-mt-text-primary: var(--mt-text-primary);
   --color-mt-text-secondary: var(--mt-text-secondary);
   --color-mt-text-nav: var(--mt-text-nav);
@@ -63,6 +87,30 @@ body {
   letter-spacing: 0;
 }
 
+.category-badge-capstone {
+  border-color: var(--mt-category-capstone-border);
+  background-color: var(--mt-category-capstone-bg);
+  color: var(--mt-category-capstone-text);
+}
+
+.category-badge-creative {
+  border-color: var(--mt-category-creative-border);
+  background-color: var(--mt-category-creative-bg);
+  color: var(--mt-category-creative-text);
+}
+
+.category-badge-club {
+  border-color: var(--mt-category-club-border);
+  background-color: var(--mt-category-club-bg);
+  color: var(--mt-category-club-text);
+}
+
+.category-badge-other {
+  border-color: var(--mt-category-other-border);
+  background-color: var(--mt-category-other-bg);
+  color: var(--mt-category-other-text);
+}
+
 :where(img, svg, video, canvas) {
   display: block;
   max-width: 100%;
@@ -90,6 +138,29 @@ body {
 
 .project-card-scrollbar::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--mt-border) 85%, transparent);
+}
+
+.profile-project-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--mt-primary) 45%, transparent) transparent;
+}
+
+.profile-project-scrollbar::-webkit-scrollbar {
+  width: 0.375rem;
+}
+
+.profile-project-scrollbar::-webkit-scrollbar-track {
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--mt-border) 30%, transparent);
+}
+
+.profile-project-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--mt-primary) 45%, transparent);
+}
+
+.profile-project-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--mt-primary) 65%, transparent);
 }
 
 input,

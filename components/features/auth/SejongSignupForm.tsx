@@ -309,11 +309,7 @@ export default function SejongSignupForm() {
         }}
         onChangeGithubLink={(event) => updateField('githubUrl', event.target.value)}
         onChangeBlogLink={(event) => updateField('blogUrl', event.target.value)}
-        onChangeProfileImage={(event) => {
-          const file = event.target.files?.[0] ?? null;
-          updateField('profileImage', file);
-          event.target.value = '';
-        }}
+        onChangeProfileImage={(file) => updateField('profileImage', file)}
         onRemoveProfileImage={() => updateField('profileImage', null)}
         profileImageName={formValues.profileImage?.name ?? ''}
         profileImagePreviewUrl={profileImagePreviewUrl}

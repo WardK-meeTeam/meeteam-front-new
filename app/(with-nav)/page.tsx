@@ -1,17 +1,11 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, GraduationCap } from 'lucide-react';
+import HomeMemberSection from '@/components/features/home/HomeMemberSection';
 import HomeProjectSection from '@/components/features/home/HomeProjectSection';
-import { fetchHomeMembers } from '@/components/features/home/homeApi';
 import StartJourneyModalTrigger from '@/components/features/home/StartJourneyModalTrigger';
-import UserCard from '@/components/shared/UserCard';
 
-export default async function Page() {
-  const teammateCardsResult = await fetchHomeMembers(5)
-    .then((cards) => ({ status: 'fulfilled' as const, value: cards }))
-    .catch(() => ({ status: 'rejected' as const }));
-  const teammateCards = teammateCardsResult.status === 'fulfilled' ? teammateCardsResult.value : [];
-
+export default function Page() {
   return (
     <div className="pb-8">
       <section className="relative overflow-hidden px-2 py-1 md:px-4 md:py-2">
@@ -61,37 +55,7 @@ export default async function Page() {
 
       <HomeProjectSection />
 
-      <section className="mt-12 space-y-6 md:mt-16">
-        <div className="flex items-end justify-between">
-          <h2 className="font-brand-display text-2xl text-mt-text-primary">팀을 구해요!</h2>
-          <Link href="/teammates" className="text-sm font-semibold text-mt-primary">
-            더 많은 멤버 보기 &gt;
-          </Link>
-        </div>
-        {teammateCards.length > 0 ? (
-          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {teammateCards.map((teammate) => (
-              <li key={teammate.userId}>
-                <UserCard
-                  userId={teammate.userId}
-                  name={teammate.name}
-                  role={teammate.role}
-                  experience={teammate.experience}
-                  skills={teammate.skills}
-                  imageUrl={teammate.imageUrl}
-                />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div className="rounded-2xl border border-mt-border bg-mt-white px-6 py-16 text-center shadow-sm">
-            <p className="text-lg font-bold text-mt-text-primary">아직 팀원이 없어요.</p>
-            <p className="mt-2 text-sm leading-5 text-mt-text-secondary">
-              조금 뒤에 다시 확인해 주세요.
-            </p>
-          </div>
-        )}
-      </section>
+      <HomeMemberSection />
     </div>
   );
 }

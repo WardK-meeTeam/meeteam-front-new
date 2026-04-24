@@ -1,17 +1,21 @@
+'use client';
+
 import { Link, Camera, Trash2, CircleCheck } from 'lucide-react';
+import { type ChangeEvent, type ChangeEventHandler, useRef, useState } from 'react';
 import Github from '@/assets/GithubLogin.svg';
 import BaseField from '@/components/shared/BaseField';
 import BaseInput from '@/components/shared/BaseInput';
+import ImageCropModal from '@/components/shared/ImageCropModal';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 
 type ProfileExtraSectionProps = {
   project: string;
   githubLink: string;
   blogLink: string;
-  onChangeProject: React.ChangeEventHandler<HTMLInputElement>;
-  onChangeGithubLink: React.ChangeEventHandler<HTMLInputElement>;
-  onChangeBlogLink: React.ChangeEventHandler<HTMLInputElement>;
-  onChangeProfileImage: React.ChangeEventHandler<HTMLInputElement>;
+  onChangeProject: ChangeEventHandler<HTMLInputElement>;
+  onChangeGithubLink: ChangeEventHandler<HTMLInputElement>;
+  onChangeBlogLink: ChangeEventHandler<HTMLInputElement>;
+  onChangeProfileImage: (file: File | null) => void;
   onRemoveProfileImage: () => void;
   profileImageName: string;
   profileImagePreviewUrl: string;
@@ -33,6 +37,24 @@ export default function ProfileExtraSection({
 }: ProfileExtraSectionProps) {
   const githubIcon = <Github className="h-5 w-5 text-mt-text-secondary" />;
   const hasProfileImage = Boolean(profileImagePreviewUrl);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
+
+  const handleProfileImageInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    if (!file) {
+      return;
+    }
+
+    setCropFile(file);
+  };
+
+  const handleCloseCrop = () => {
+    setCropFile(null);
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  };
 
   return (
     <>
@@ -76,11 +98,12 @@ export default function ProfileExtraSection({
 
       <BaseField label="프로필 사진" htmlFor="profile-upload">
         <input
+          ref={inputRef}
           id="profile-upload"
           type="file"
           accept="image/png, image/jpeg"
           className="hidden"
-          onChange={onChangeProfileImage}
+          onChange={handleProfileImageInputChange}
           data-cy="signup-profile-upload"
         />
         {!hasProfileImage ? (
@@ -144,6 +167,21 @@ export default function ProfileExtraSection({
           </div>
         )}
       </BaseField>
+
+      <ImageCropModal
+        file={cropFile}
+        isOpen={Boolean(cropFile)}
+        title="프로필 사진 조정"
+        aspectRatio={1}
+        outputWidth={512}
+        outputHeight={512}
+        cropShape="circle"
+        onClose={handleCloseCrop}
+        onConfirm={(file) => {
+          onChangeProfileImage(file);
+          setCropFile(null);
+        }}
+      />
     </>
   );
 }

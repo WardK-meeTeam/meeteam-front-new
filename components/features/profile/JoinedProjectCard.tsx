@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { BriefcaseBusiness, Users } from 'lucide-react';
 import { getProjectImageSrc } from '@/components/features/project/projectImage';
 import CategoryBadge from '@/components/shared/CategoryBadge';
@@ -24,6 +25,8 @@ export default function JoinedProjectCard({
   projects = [],
   disabled = false,
 }: JoinedProjectCardProps) {
+  const shouldScroll = projects.length > 4;
+
   if (projects.length === 0) {
     return (
       <section className="space-y-4">
@@ -58,13 +61,21 @@ export default function JoinedProjectCard({
         </span>
       </div>
 
-      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {projects.map((project) => (
-          <li key={project.id}>
-            <JoinedProjectItem project={project} disabled={disabled} />
-          </li>
-        ))}
-      </ul>
+      <div
+        className={
+          shouldScroll
+            ? 'profile-project-scrollbar max-h-[36rem] overflow-y-auto pr-2'
+            : undefined
+        }
+      >
+        <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {projects.map((project) => (
+            <li key={project.id}>
+              <JoinedProjectItem project={project} disabled={disabled} />
+            </li>
+          ))}
+        </ul>
+      </div>
     </section>
   );
 }
@@ -85,7 +96,7 @@ function JoinedProjectItem({
     <Link
       href={`/projects/${project.id}`}
       data-cy="profile-joined-project"
-      className={`group relative block w-full overflow-hidden rounded-3xl bg-mt-text-primary shadow-2xl ${
+      className={`group relative block w-full overflow-hidden rounded-3xl bg-mt-bg-soft shadow-2xl ${
         disabled ? 'pointer-events-none opacity-70' : ''
       }`}
     >
@@ -97,12 +108,15 @@ function JoinedProjectItem({
       ) : null}
 
       <div className="absolute inset-0">
-        <img
+        <Image
           alt={project.title}
-          className="h-full w-full object-cover opacity-70 transition-transform duration-500 group-hover:scale-105"
+          className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+          fill
+          sizes="(max-width: 640px) 100vw, 50vw"
           src={imageSrc}
         />
-        <div className="absolute inset-0 bg-linear-to-t from-mt-text-primary via-mt-text-primary/50 to-transparent" />
+        <div className="absolute inset-0 bg-mt-text-primary/28" />
+        <div className="absolute inset-0 bg-linear-to-t from-mt-text-primary/75 via-transparent to-transparent" />
       </div>
 
       <div className="relative flex min-h-70 flex-col justify-between p-6">

@@ -175,6 +175,7 @@ export default function ProjectForm({
   const [fieldErrors, setFieldErrors] = useState<ProjectFormFieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createStepIndex, setCreateStepIndex] = useState(0);
+  const [hasAttemptedFinalCreateSubmit, setHasAttemptedFinalCreateSubmit] = useState(false);
   const [editSectionIndex, setEditSectionIndex] = useState(0);
 
   useEffect(() => {
@@ -382,20 +383,20 @@ export default function ProjectForm({
     }
 
     setFieldErrors({});
+    setHasAttemptedFinalCreateSubmit(false);
     setCreateStepIndex((prev) => Math.min(prev + 1, CREATE_STEPS.length - 1));
   };
 
   const handlePreviousStep = () => {
     setCreateStepIndex((prev) => Math.max(prev - 1, 0));
+    setHasAttemptedFinalCreateSubmit(false);
     clearError('form');
   };
 
   const isVisibleSection = (sectionIndex: number) =>
     isEdit ? editSectionIndex === sectionIndex : createStepIndex === sectionIndex;
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const submitProject = async () => {
     if (!validateForm()) {
       return;
     }
@@ -436,7 +437,46 @@ export default function ProjectForm({
     }
   };
 
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (isCreate) {
+      return;
+    }
+
+    await submitProject();
+  };
+
+  const handleCreateSubmit = async () => {
+    setHasAttemptedFinalCreateSubmit(true);
+    await submitProject();
+  };
+
+  useEffect(() => {
+    if (
+      !isCreate ||
+      createStepIndex !== CREATE_STEPS.length - 1 ||
+      hasAttemptedFinalCreateSubmit
+    ) {
+      return;
+    }
+
+    setFieldErrors((prev) => {
+      if (!prev.recruitTechStacks && !prev.recruitDeadline) {
+        return prev;
+      }
+
+      const rest = { ...prev };
+      delete rest.recruitTechStacks;
+      delete rest.recruitDeadline;
+
+      return rest;
+    });
+  }, [createStepIndex, hasAttemptedFinalCreateSubmit, isCreate]);
+
   const minRecruitDeadline = new Date().toISOString().slice(0, 10);
+  const shouldShowFinalStepErrors =
+    isEdit || createStepIndex !== CREATE_STEPS.length - 1 || hasAttemptedFinalCreateSubmit;
 
   return (
     <section
@@ -803,7 +843,10 @@ export default function ProjectForm({
                     setRecruitTechStacks(nextValue);
                     clearError('recruitTechStacks');
                   }}
-                  errorText={fieldErrors.recruitTechStacks ?? jobOptionsError}
+                  errorText={
+                    (shouldShowFinalStepErrors ? fieldErrors.recruitTechStacks : undefined) ??
+                    jobOptionsError
+                  }
                   disabled={isLoadingJobOptions}
                 />
 
@@ -822,7 +865,9 @@ export default function ProjectForm({
                     clearError('recruitDeadline');
                   }}
                   minDate={minRecruitDeadline}
-                  errorText={fieldErrors.recruitDeadline}
+                  errorText={
+                    shouldShowFinalStepErrors ? fieldErrors.recruitDeadline : undefined
+                  }
                 />
               </>
             ) : null}
@@ -874,7 +919,8 @@ export default function ProjectForm({
                   <BaseButton
                     size="XL"
                     variant="primary"
-                    type="submit"
+                    type="button"
+                    onClick={() => void handleCreateSubmit()}
                     disabled={!editable || isSubmitting || isLoadingJobOptions}
                     data-cy="project-form-submit"
                     className="w-full shadow-xl shadow-mt-logo-blue/40 sm:max-w-md"

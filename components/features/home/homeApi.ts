@@ -38,6 +38,12 @@ export type HomeMemberCard = {
   imageUrl: string;
 };
 
+export type HomePagedResult<T> = {
+  items: T[];
+  page: number;
+  hasMore: boolean;
+};
+
 type BackendPage<T> = {
   content: T[];
   last: boolean;
@@ -162,9 +168,13 @@ function mapTopTechStackNames(techStacks: BackendMemberTechStack[]) {
     .map((techStack) => techStack.name);
 }
 
-export async function fetchHomeProjects(size = 4, category: HomeProjectCategory = '전체') {
+export async function fetchHomeProjectsPage(
+  size = 4,
+  category: HomeProjectCategory = '전체',
+  page = 0,
+): Promise<HomePagedResult<HomeProjectCard>> {
   const params = new URLSearchParams({
-    page: '0',
+    page: String(page),
     size: String(size),
     sort: 'createdAt,desc',
   });
@@ -185,12 +195,25 @@ export async function fetchHomeProjects(size = 4, category: HomeProjectCategory 
     '메인 프로젝트 목록을 불러오지 못했습니다.',
   );
 
-  return result.content.map(mapHomeProject);
+  return {
+    items: result.content.map(mapHomeProject),
+    page: result.number,
+    hasMore: !result.last,
+  };
 }
 
-export async function fetchHomeMembers(size = 5) {
+export async function fetchHomeProjects(size = 4, category: HomeProjectCategory = '전체') {
+  const result = await fetchHomeProjectsPage(size, category);
+
+  return result.items;
+}
+
+export async function fetchHomeMembersPage(
+  size = 5,
+  page = 0,
+): Promise<HomePagedResult<HomeMemberCard>> {
   const params = new URLSearchParams({
-    page: '0',
+    page: String(page),
     size: String(size),
     sort: 'createdAt,desc',
   });
@@ -205,5 +228,15 @@ export async function fetchHomeMembers(size = 5) {
     '메인 팀원 목록을 불러오지 못했습니다.',
   );
 
-  return result.content.map(mapHomeMember);
+  return {
+    items: result.content.map(mapHomeMember),
+    page: result.number,
+    hasMore: !result.last,
+  };
+}
+
+export async function fetchHomeMembers(size = 5) {
+  const result = await fetchHomeMembersPage(size);
+
+  return result.items;
 }

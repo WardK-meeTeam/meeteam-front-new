@@ -48,19 +48,20 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
     <Link
       data-cy="project-card"
       data-project-id={project.id}
-      className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-mt-text-primary shadow-2xl transition-all duration-300 hover:ring-1 hover:ring-mt-logo-blue/50`}
+      className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-mt-bg-soft shadow-2xl transition-all duration-300 hover:ring-1 hover:ring-mt-logo-blue/50`}
       href={`/projects/${project.id}`}
     >
       <div className="absolute inset-0 h-full w-full">
         <Image
           alt={project.title}
-          className="object-cover opacity-70 transition-transform duration-700 group-hover:scale-110"
+          className="object-cover object-center transition-transform duration-700 group-hover:scale-110"
           fill
           sizes={compact ? '100vw' : '(max-width: 768px) 100vw, 50vw'}
           src={imageSrc}
         />
-        <div className="absolute inset-0 bg-linear-to-t from-mt-text-primary/95 via-mt-text-primary/50 to-transparent transition-opacity duration-500" />
-        <div className="absolute inset-0 bg-mt-text-primary/40 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-linear-to-b from-mt-text-primary/35 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-mt-text-primary/95 via-mt-text-primary/55 to-transparent transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-mt-text-primary/20 opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </div>
 
       <div

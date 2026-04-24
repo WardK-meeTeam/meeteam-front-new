@@ -1,9 +1,10 @@
 'use client';
 
 import { Camera } from 'lucide-react';
-import { useId } from 'react';
+import { type ChangeEvent, useId, useRef, useState } from 'react';
 
 import BaseButton from '@/components/shared/BaseButton';
+import ImageCropModal from '@/components/shared/ImageCropModal';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import SkillChip from '@/components/shared/SkillChip';
 import UniversityLogo from '@/components/shared/UniversityLogo';
@@ -41,10 +42,28 @@ export default function ProfileHeader({
   actionDisabled = false,
 }: ProfileHeaderProps) {
   const inputId = useId();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [cropFile, setCropFile] = useState<File | null>(null);
   const university = findUniversityByEmail(email);
   const showActionButton = Boolean(onAction);
   const visibleSkills = skills.slice(0, 3);
   const hiddenSkillCount = Math.max(skills.length - visibleSkills.length, 0);
+
+  const handleImageInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    if (!file) {
+      return;
+    }
+
+    setCropFile(file);
+  };
+
+  const handleCloseCrop = () => {
+    setCropFile(null);
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
+  };
 
   return (
     <section className="overflow-hidden rounded-3xl border border-mt-border bg-mt-white shadow-md">
@@ -70,11 +89,12 @@ export default function ProfileHeader({
               </label>
             ) : null}
             <input
+              ref={inputRef}
               id={inputId}
               type="file"
               accept="image/*"
               className="hidden"
-              onChange={(event) => onImageChange?.(event.target.files?.[0] ?? null)}
+              onChange={handleImageInputChange}
             />
           </div>
 
@@ -151,6 +171,21 @@ export default function ProfileHeader({
           </div>
         ) : null}
       </div>
+
+      <ImageCropModal
+        file={cropFile}
+        isOpen={Boolean(cropFile)}
+        title="프로필 사진 조정"
+        aspectRatio={1}
+        outputWidth={512}
+        outputHeight={512}
+        cropShape="circle"
+        onClose={handleCloseCrop}
+        onConfirm={(file) => {
+          onImageChange?.(file);
+          setCropFile(null);
+        }}
+      />
     </section>
   );
 }

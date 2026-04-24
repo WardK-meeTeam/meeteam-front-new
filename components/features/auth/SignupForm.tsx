@@ -202,10 +202,8 @@ export default function SignupForm() {
     updateField('blogUrl', e.target.value);
   };
 
-  const onChangeProfileImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
+  const onChangeProfileImage = (file: File | null) => {
     updateField('profileImage', file);
-    e.target.value = '';
   };
 
   const onRemoveProfileImage = () => {
