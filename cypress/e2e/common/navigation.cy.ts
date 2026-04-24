@@ -137,8 +137,8 @@ describe('내비게이션과 공통 UI', () => {
     cy.contains('button', '로그아웃').click();
     cy.wait('@logoutRequest');
 
-    cy.location('pathname').should('eq', '/auth/login');
-    cy.contains('button', '로그인').should('be.visible');
+    cy.location('pathname').should('eq', '/projects');
+    cy.contains('a', '로그인').should('exist').and('have.attr', 'href', '/auth/login');
   });
 
   it('모바일 viewport에서도 주요 헤더 링크로 이동할 수 있다', () => {

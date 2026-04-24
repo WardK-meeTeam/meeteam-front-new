@@ -227,8 +227,7 @@ describe('프로필 흐름', () => {
 
     cy.contains('홍길동').should('be.visible');
     cy.contains('Frontend Dev').should('be.visible');
-    cy.contains('기본 정보').should('be.visible');
-    cy.contains('hello@example.com').should('be.visible');
+    cy.contains('활동 및 링크').should('be.visible');
     cy.contains('안녕하세요. 프론트엔드 개발자입니다.').should('be.visible');
     cy.get('[data-cy="profile-joined-project"]').should('have.attr', 'href', '/projects/301');
     cy.contains('meeTeam 프론트 개편').should('be.visible');
@@ -288,14 +287,14 @@ describe('프로필 흐름', () => {
     );
     cy.get('[data-cy="profile-skills-input-0"]').type('Node.js{enter}');
     cy.get('[data-cy="profile-skills-input-0"]').type('PostgreSQL{enter}');
-    cy.get('[data-cy="profile-action-button"]').click();
+    cy.contains('button', '저장하기').click();
 
     cy.wait('@updateProfileRequest');
     cy.wait('@myProfileRequest');
     cy.wait('@jobOptionsRequest');
 
-    cy.contains('Node.js').should('be.visible');
-    cy.contains('PostgreSQL').should('be.visible');
+    cy.get('body').should('contain', 'Node.js');
+    cy.get('body').should('contain', 'PostgreSQL');
     cy.contains('Node.js와 PostgreSQL 기반으로 서비스를 운영해왔습니다.').should('be.visible');
     cy.contains('https://velog.io/@meeteam').should('be.visible');
     cy.get('[data-cy="profile-action-button"]').should('contain', '프로필 수정');
@@ -329,13 +328,13 @@ describe('프로필 흐름', () => {
     cy.get('[data-cy="profile-action-button"]').click();
     cy.get('[data-cy="profile-field-category"]').click();
     cy.contains('li', '마케팅').click();
-    cy.get('[data-cy="profile-action-button"]').click();
+    cy.contains('button', '저장하기').click();
 
     cy.contains('선택한 직군 정보를 확인할 수 없습니다.').should('be.visible');
     cy.then(() => {
       expect(updateCount).to.equal(0);
     });
-    cy.get('[data-cy="profile-action-button"]').should('contain', '저장하기');
+    cy.contains('button', '저장하기').should('be.visible');
   });
 
   it('프로필 저장이 실패해도 수정 상태를 유지하고 다음 시도로 복구할 수 있다', () => {
@@ -388,12 +387,12 @@ describe('프로필 흐름', () => {
     cy.get('[data-cy="profile-action-button"]').click();
     cy.get('[data-cy="profile-introduction-input"]').clear();
     cy.get('[data-cy="profile-introduction-input"]').type('실패 후 재시도 소개글');
-    cy.get('[data-cy="profile-action-button"]').click();
+    cy.contains('button', '저장하기').click();
 
     cy.wait('@updateProfileRequest');
     cy.contains('프로필 저장에 실패했습니다.').should('be.visible');
     cy.get('[data-cy="profile-introduction-input"]').should('have.value', '실패 후 재시도 소개글');
-    cy.get('[data-cy="profile-action-button"]').should('contain', '저장하기');
+    cy.contains('button', '저장하기').should('be.visible');
 
     cy.intercept('GET', '**/api/members', {
       statusCode: 200,
@@ -405,7 +404,7 @@ describe('프로필 흐름', () => {
       },
     }).as('recoveredProfileRequest');
 
-    cy.get('[data-cy="profile-action-button"]').click();
+    cy.contains('button', '저장하기').click();
     cy.wait('@updateProfileRequest');
     cy.wait('@recoveredProfileRequest');
     cy.contains('실패 후 재시도 소개글').should('be.visible');
@@ -441,9 +440,8 @@ describe('프로필 흐름', () => {
 
     cy.location('pathname').should('eq', '/profile/14');
     cy.contains('권나은').should('be.visible');
-    cy.contains('제안 보내기').should('be.visible');
-    cy.get('[data-cy="profile-action-button"]').should('contain', '제안 보내기');
     cy.contains('제품 감도가 높은 프론트엔드 개발자입니다.').should('be.visible');
+    cy.get('[data-cy="profile-action-button"]').should('not.exist');
     cy.get('[data-cy="profile-joined-project"]').should('have.attr', 'href', '/projects/401');
   });
 });

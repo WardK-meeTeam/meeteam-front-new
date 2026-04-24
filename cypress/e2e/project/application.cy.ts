@@ -95,6 +95,28 @@ const PROJECT_DETAIL = {
   isLeader: false,
 };
 
+const APPLICATION_PAGE = {
+  applicant: {
+    profileImageUrl: null,
+    name: '홍길동',
+    jobFieldNames: ['프론트엔드'],
+    jobPositionNames: ['웹 프론트엔드'],
+    age: 28,
+    gender: 'MALE',
+    email: 'hello@example.com',
+    profileSummary: 'Frontend Dev',
+  },
+  recruitments: [
+    {
+      id: 1,
+      jobFieldName: '프론트엔드',
+      jobPositionName: '웹 프론트엔드',
+      techStacks: ['React', 'TypeScript'],
+      isClosed: false,
+    },
+  ],
+};
+
 function installApplicationIntercepts() {
   cy.intercept('GET', '**/api/members', {
     statusCode: 200,
@@ -109,6 +131,13 @@ function installApplicationIntercepts() {
       result: PROJECT_DETAIL,
     },
   }).as('projectDetailRequest');
+
+  cy.intercept('GET', `**/api/v1/projects/${PROJECT_ID}/application`, {
+    statusCode: 200,
+    body: {
+      result: APPLICATION_PAGE,
+    },
+  }).as('applicationPageRequest');
 
   cy.intercept('GET', '**/api/v1/jobs/options', {
     statusCode: 200,
@@ -140,11 +169,12 @@ describe('프로젝트 지원 흐름', () => {
     cy.visit(`/projects/${PROJECT_ID}`);
     cy.wait('@projectDetailRequest');
 
-    cy.contains('button', '팀원 모집').click();
+    cy.get('[data-cy="project-detail-tab-recruit"]').click();
     cy.contains('button', '지원하기').click();
     cy.wait('@myProfileRequest');
 
     cy.location('pathname').should('eq', `/projects/${PROJECT_ID}/apply`);
+    cy.wait('@applicationPageRequest');
     cy.contains('프로젝트 지원하기').should('be.visible');
     cy.contains('프로젝트 지원 전 로그인이 필요해요').should('not.exist');
 

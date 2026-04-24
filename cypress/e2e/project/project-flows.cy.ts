@@ -42,7 +42,7 @@ const JOB_OPTIONS = {
   fields: [
     {
       code: 'FRONTEND',
-      name: '프론트',
+      name: '프론트엔드',
       positions: [
         {
           id: 25,
@@ -225,8 +225,8 @@ const EDIT_PREFILL = {
   projectId: PROJECT_ID,
   name: '프로젝트 상세 테스트',
   description: '수정 전 프로젝트 설명입니다.',
-  projectCategory: 'AI_TECH',
-  projectCategoryName: 'AI/테크',
+  projectCategory: 'CAPSTONE',
+  projectCategoryName: '캡스톤',
   platformCategory: 'WEB',
   recruitmentDeadlineType: 'END_DATE',
   githubRepositoryUrl: 'https://github.com/meeteam/project',
@@ -316,15 +316,17 @@ function installTeamManagementIntercept() {
 function fillRequiredProjectForm() {
   cy.get('[data-cy="project-form-name"]').clear();
   cy.get('[data-cy="project-form-name"]').type('E2E 생성 프로젝트');
+  cy.get('[data-cy="project-form-category-capstone"]').click();
+  cy.contains('button', '다음').click();
   cy.get('[data-cy="project-form-github"]').clear();
   cy.get('[data-cy="project-form-github"]').type('https://github.com/meeteam/e2e-project');
   cy.get('[data-cy="project-form-communication"]').clear();
   cy.get('[data-cy="project-form-communication"]').type('https://discord.gg/meeteam');
-  cy.get('[data-cy="project-form-category-ai-tech"]').click();
   cy.get('[data-cy="project-form-description"]').clear();
   cy.get('[data-cy="project-form-description"]').type(
     'E2E 테스트에서 프로젝트 생성과 수정 요청을 검증하기 위한 충분한 길이의 설명입니다.',
   );
+  cy.contains('button', '다음').click();
   cy.get('[data-cy="project-form-my-major"]').click();
   cy.contains('li', '프론트엔드').click();
   cy.get('[data-cy="project-form-my-minor"]').click();
@@ -333,7 +335,8 @@ function fillRequiredProjectForm() {
   cy.contains('li', '프론트엔드').click();
   cy.get('[data-cy="project-form-recruit-minor-0"]').click();
   cy.contains('li', '웹 프론트엔드').click();
-  cy.get('[data-cy="project-form-tech-input"]').type('React{enter}');
+  cy.contains('button', '다음').click();
+  cy.get('[data-cy="project-form-tech-input-0"]').type('React{enter}');
   cy.get('[data-cy="project-form-until-complete"]').check({ force: true });
 }
 
@@ -368,6 +371,7 @@ describe('프로젝트 상세 흐름', () => {
     cy.wait('@likeStatusRequest');
 
     cy.contains('프로젝트 상세 테스트').should('be.visible');
+    cy.get('[data-cy="project-detail-tab-intro"]').click();
     cy.contains('상세 페이지 렌더링과 모집 흐름을 검증하는 테스트 프로젝트입니다.').should(
       'be.visible',
     );
@@ -557,6 +561,7 @@ describe('프로젝트 생성 및 관리 흐름', () => {
 
     cy.get('[data-cy="project-form-name"]').clear();
     cy.get('[data-cy="project-form-name"]').type('E2E 수정 프로젝트');
+    cy.contains('button', '소개와 링크').click();
     cy.get('[data-cy="project-form-description"]').clear();
     cy.get('[data-cy="project-form-description"]').type(
       'E2E 테스트에서 프로젝트 수정 요청을 검증하기 위한 충분한 길이의 설명입니다.',

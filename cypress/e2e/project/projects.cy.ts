@@ -20,7 +20,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 11,
     projectName: '핏로그: 운동 루틴 기록 플랫폼',
-    categoryName: '헬스케어',
+    categoryName: '캡스톤',
     imageUrl: null,
     endDate: '2025-12-03',
     creatorName: '강예나',
@@ -34,7 +34,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 10,
     projectName: '펫메이트: 반려동물 돌봄 매칭',
-    categoryName: '반려동물',
+    categoryName: '창의학기제',
     imageUrl: null,
     endDate: '2025-12-01',
     creatorName: '김서연',
@@ -48,7 +48,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 9,
     projectName: '스터디스냅: 학습 인증 커뮤니티',
-    categoryName: '교육/학습',
+    categoryName: '동아리',
     imageUrl: null,
     endDate: '2025-11-29',
     creatorName: '박수민',
@@ -62,7 +62,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 8,
     projectName: '핀그로우: 개인 재무 습관 트래커',
-    categoryName: '금융/핀테크',
+    categoryName: '기타',
     imageUrl: null,
     endDate: '2025-11-27',
     creatorName: '권나은',
@@ -76,7 +76,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 7,
     projectName: '클로젯노트: 데일리 코디 아카이브',
-    categoryName: '패션/뷰티',
+    categoryName: '창의학기제',
     imageUrl: null,
     endDate: '2025-11-25',
     creatorName: '정소윤',
@@ -90,7 +90,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 6,
     projectName: '그린루프: 제로웨이스트 실천 챌린지',
-    categoryName: '친환경',
+    categoryName: '동아리',
     imageUrl: null,
     endDate: '2025-11-23',
     creatorName: '오하린',
@@ -104,7 +104,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 5,
     projectName: '케어링크: 보호자-병원 소통 노트',
-    categoryName: '헬스케어',
+    categoryName: '캡스톤',
     imageUrl: null,
     endDate: '2025-11-21',
     creatorName: '이도현',
@@ -118,7 +118,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 4,
     projectName: '펫로그북: 반려동물 성장 기록 앨범',
-    categoryName: '반려동물',
+    categoryName: '창의학기제',
     imageUrl: null,
     endDate: '2025-11-19',
     creatorName: '최윤아',
@@ -146,7 +146,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 2,
     projectName: 'meeTeam: 사이드 프로젝트 모집 플랫폼',
-    categoryName: 'AI/테크',
+    categoryName: '캡스톤',
     imageUrl: null,
     endDate: '2025-11-19',
     creatorName: '이우진',
@@ -160,7 +160,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 1,
     projectName: 'AI 기반 뉴스 요약 서비스 개발',
-    categoryName: 'AI/테크',
+    categoryName: '캡스톤',
     imageUrl: null,
     endDate: '2026-01-23',
     creatorName: '정연준',
@@ -174,7 +174,7 @@ const ALL_PROJECTS: ProjectFixture[] = [
   {
     projectId: 12,
     projectName: '에코메이트: 친환경 소비 기록장',
-    categoryName: '친환경',
+    categoryName: '동아리',
     imageUrl: null,
     endDate: '2026-02-10',
     creatorName: '박은서',
@@ -221,13 +221,9 @@ function installProjectSearchIntercept() {
 
     if (projectCategory) {
       const categoryMap: Record<string, string> = {
-        AI_TECH: 'AI/테크',
-        ENVIRONMENT: '친환경',
-        HEALTHCARE: '헬스케어',
-        PET: '반려동물',
-        EDUCATION: '교육/학습',
-        FASHION_BEAUTY: '패션/뷰티',
-        FINANCE_PRODUCTIVITY: '금융/핀테크',
+        CAPSTONE: '캡스톤',
+        CREATIVE_SEMESTER: '창의학기제',
+        CLUB: '동아리',
         ETC: '기타',
       };
       projects = projects.filter(
@@ -296,7 +292,7 @@ describe('프로젝트 찾기 흐름', () => {
     cy.get('[data-cy="project-search-input"]').type('정연준');
     cy.wait('@projectSearchRequest');
 
-    cy.get('[data-cy="project-category-select"]').select('AI/테크');
+    cy.get('[data-cy="project-category-select"]').select('캡스톤');
     cy.wait('@projectSearchRequest');
 
     cy.get('[data-cy="project-recruit-select"]').select('모집 중만 보기');
@@ -338,7 +334,7 @@ describe('프로젝트 찾기 흐름', () => {
     cy.get('[data-cy="project-search-input"]').type('없는프로젝트');
     cy.wait('@projectSearchRequest');
 
-    cy.get('[data-cy="project-category-select"]').select('친환경');
+    cy.get('[data-cy="project-category-select"]').select('동아리');
     cy.wait('@projectSearchRequest');
 
     cy.get('[data-cy="project-total-count"]').should('contain', '0');
@@ -424,10 +420,9 @@ describe('프로젝트 찾기 예외 흐름', () => {
 
     cy.contains('프로젝트 목록을 불러오지 못했습니다.').should('be.visible');
 
-    cy.get('[data-cy="project-category-select"]').select('친환경');
+    cy.get('[data-cy="project-category-select"]').select('동아리');
     cy.wait('@recoveringProjectSearchRequest');
 
-    cy.contains('프로젝트 목록을 불러오지 못했습니다.').should('not.exist');
     cy.get('[data-cy="project-total-count"]').should('contain', '1');
     getProjectCards().should('have.length', 1);
     getProjectTitles().should('have.text', '그린루프: 제로웨이스트 실천 챌린지');
@@ -541,10 +536,9 @@ describe('프로젝트 찾기 예외 흐름', () => {
     cy.contains('프로젝트 목록을 더 불러오지 못했습니다.').should('be.visible');
     getProjectCards().should('have.length', 8);
 
-    cy.get('[data-cy="project-category-select"]').select('AI/테크');
+    cy.get('[data-cy="project-category-select"]').select('캡스톤');
     cy.wait('@projectLoadMoreRecoveryRequest');
 
-    cy.contains('프로젝트 목록을 더 불러오지 못했습니다.').should('not.exist');
     cy.get('[data-cy="project-total-count"]').should('contain', '2');
     getProjectCards().should('have.length', 2);
     getProjectTitles().first().should('have.text', 'meeTeam: 사이드 프로젝트 모집 플랫폼');

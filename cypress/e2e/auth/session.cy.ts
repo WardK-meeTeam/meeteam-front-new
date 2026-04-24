@@ -112,7 +112,7 @@ describe('인증 세션 흐름', () => {
     cy.contains('button', '로그아웃').click();
 
     cy.wait('@logoutRequest');
-    cy.location('pathname').should('eq', '/auth/login');
+    cy.location('pathname').should('eq', '/');
 
     cy.window().then((window) => {
       const storedSession = window.localStorage.getItem(AUTH_STORAGE_KEY);
@@ -143,8 +143,8 @@ describe('인증 세션 흐름', () => {
     cy.visit('/profile');
     cy.wait('@unauthorizedProfileRequest');
     cy.location('pathname').should('eq', '/profile');
-    cy.contains('내 프로필은 로그인 후 열 수 있어요').should('be.visible');
-    cy.contains('로그인하고 프로필을 등록해 스카웃 제안을 받아보세요.').should('be.visible');
+    cy.contains('로그인이 필요한 기능입니다').should('be.visible');
+    cy.contains('홈으로 돌아가기').should('be.visible');
   });
 
   it('저장된 로그인 상태는 새로고침 후에도 유지된다', () => {
@@ -191,7 +191,7 @@ describe('인증 세션 흐름', () => {
     });
 
     cy.location('pathname').should('eq', '/');
-    cy.contains('대학생 전용 프로젝트 플랫폼').should('be.visible');
+    cy.contains('대학생 전용 팀빌딩 플랫폼').should('be.visible');
     cy.get('[data-cy="login-form"]').should('not.exist');
   });
 
@@ -205,7 +205,7 @@ describe('인증 세션 흐름', () => {
     });
 
     cy.location('pathname').should('eq', '/');
-    cy.contains('대학생 전용 프로젝트 플랫폼').should('be.visible');
+    cy.contains('대학생 전용 팀빌딩 플랫폼').should('be.visible');
     cy.get('[data-cy="signup-form"]').should('not.exist');
   });
 
@@ -221,8 +221,8 @@ describe('인증 세션 흐름', () => {
 
     cy.wait('@unauthorizedProfileRequest');
     cy.location('pathname').should('eq', '/profile');
-    cy.contains('내 프로필은 로그인 후 열 수 있어요').should('be.visible');
-    cy.contains('로그인하고 프로필을 등록해 스카웃 제안을 받아보세요.').should('be.visible');
+    cy.contains('로그인이 필요한 기능입니다').should('be.visible');
+    cy.contains('홈으로 돌아가기').should('be.visible');
     cy.get('[data-cy="login-form"]').should('be.visible');
   });
 });

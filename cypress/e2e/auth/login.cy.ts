@@ -49,7 +49,7 @@ describe('로그인 흐름', () => {
 
     cy.wait('@myProfileRequest');
     cy.location('pathname').should('eq', '/');
-    cy.contains('대학생 전용 프로젝트 플랫폼').should('be.visible');
+    cy.contains('대학생 전용 팀빌딩 플랫폼').should('be.visible');
 
     cy.window().then((window) => {
       const storedSession = window.localStorage.getItem('meeteam-auth-storage');
@@ -69,10 +69,11 @@ describe('로그인 흐름', () => {
   it('필수 입력값이 비어 있으면 유효성 에러를 보여준다', () => {
     cy.visit('/auth/login');
 
-    cy.get('[data-cy="login-submit"]').click();
-
-    cy.contains('학번을 입력해 주세요.').should('be.visible');
-    cy.contains('비밀번호를 입력해 주세요.').should('be.visible');
+    cy.get('[data-cy="login-submit"]').should('be.disabled');
+    cy.get('[data-cy="login-student-id"]').type('21013220');
+    cy.get('[data-cy="login-submit"]').should('be.disabled');
+    cy.get('[data-cy="login-password"]').type('password123');
+    cy.get('[data-cy="login-submit"]').should('be.disabled');
   });
 
   it('학번에 숫자가 아닌 값이 들어가면 요청을 보내지 않고 유효성 에러를 보여준다', () => {
