@@ -163,12 +163,12 @@ export default function HomeMemberSection() {
         </Link>
       </div>
 
-      <div className="relative px-11 xl:px-14">
+      <div className="relative">
         {canGoPrev ? (
           <button
             type="button"
             onClick={handleGoPrev}
-            className="absolute left-0 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-mt-border bg-mt-white text-mt-primary shadow-lg transition-transform hover:-translate-x-1 hover:scale-105"
+            className="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-mt-border bg-mt-white text-mt-primary shadow-lg transition-transform hover:-translate-x-1 hover:scale-105 sm:-left-5 lg:-left-6 xl:-left-8 2xl:-left-14"
             aria-label="이전 팀원 보기"
           >
             <ChevronLeft className="h-5 w-5" aria-hidden strokeWidth={2.2} />
@@ -179,7 +179,7 @@ export default function HomeMemberSection() {
           <button
             type="button"
             onClick={() => void handleGoNext()}
-            className="absolute right-0 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-mt-border bg-mt-white text-mt-primary shadow-lg transition-transform hover:translate-x-1 hover:scale-105"
+            className="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-mt-border bg-mt-white text-mt-primary shadow-lg transition-transform hover:translate-x-1 hover:scale-105 sm:-right-5 lg:-right-6 xl:-right-8 2xl:-right-14"
             aria-label="다음 팀원 보기"
           >
             <ChevronRight className="h-5 w-5" aria-hidden strokeWidth={2.2} />
