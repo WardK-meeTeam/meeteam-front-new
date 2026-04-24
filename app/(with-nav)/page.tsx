@@ -21,7 +21,9 @@ export default function Page() {
               <h1 className="font-brand-display text-4xl leading-tight text-mt-text-primary md:text-5xl xl:text-[3.25rem]">
                 캠퍼스에서
                 <br />
-                <span className="whitespace-nowrap text-mt-hero-blue">함께할 팀을 쉽게 찾아요</span>
+                <span className="text-mt-hero-blue sm:whitespace-nowrap">
+                  함께할 팀을 쉽게 찾아요
+                </span>
               </h1>
             </div>
             <div className="flex flex-wrap gap-3 hero-fade-up hero-delay-3">

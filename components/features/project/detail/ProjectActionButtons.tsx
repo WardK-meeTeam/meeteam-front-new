@@ -112,7 +112,7 @@ export default function ProjectActionButtons({
     <div className="space-y-2">
       <ToastMessage message={errorMessage} />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
         <button
           type="button"
           aria-label={`${liked ? '프로젝트 좋아요 취소' : '프로젝트 좋아요'}, 현재 좋아요 ${formattedLikeCount}개`}
@@ -120,7 +120,7 @@ export default function ProjectActionButtons({
           disabled={isToggling}
           data-cy="project-like-button"
           onClick={handleLikeToggle}
-          className={`inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-mt-border px-4 text-sm leading-5 font-bold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-70
+          className={`inline-flex h-11 min-w-0 items-center justify-center gap-1.5 rounded-xl border border-mt-border px-3 text-sm leading-5 font-bold shadow-sm transition-colors disabled:cursor-not-allowed disabled:opacity-70 sm:gap-2 sm:px-4
             ${
               liked
                 ? 'bg-mt-badge-bg text-mt-hero-blue'
@@ -132,11 +132,11 @@ export default function ProjectActionButtons({
             aria-hidden
             strokeWidth={1.8}
           />
-          좋아요 {formattedLikeCount}
+          <span className="min-w-0 truncate">좋아요 {formattedLikeCount}</span>
         </button>
 
         <button
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-mt-border bg-mt-white px-4 text-sm leading-5 font-bold text-mt-text-nav shadow-sm transition-colors hover:bg-mt-badge-bg"
+          className="inline-flex h-11 min-w-0 items-center justify-center gap-1.5 rounded-xl border border-mt-border bg-mt-white px-3 text-sm leading-5 font-bold text-mt-text-nav shadow-sm transition-colors hover:bg-mt-badge-bg sm:gap-2 sm:px-4"
           type="button"
           onClick={handleShare}
           aria-label="프로젝트 링크 복사"

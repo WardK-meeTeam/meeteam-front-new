@@ -19,16 +19,16 @@ type ExternalProjectLinkProps = {
 
 function ExternalProjectLink({ label, url, icon, onCopy }: ExternalProjectLinkProps) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-mt-border bg-mt-bg-soft px-4 py-4">
-      <div className="flex min-w-0 items-center gap-2">
+    <div className="grid min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border border-mt-border bg-mt-bg-soft px-4 py-4">
+      <div className="flex min-w-0 items-center gap-2 overflow-hidden">
         {icon}
-        <div className="min-w-0">
+        <div className="min-w-0 overflow-hidden">
           <p className="text-xs leading-4 font-bold text-mt-text-secondary">{label}</p>
           <a
             href={url}
             target="_blank"
             rel="noreferrer"
-            className="mt-0.5 block truncate text-sm leading-5 font-medium text-mt-primary hover:underline"
+            className="mt-0.5 block max-w-full break-all text-sm leading-5 font-medium text-mt-primary hover:underline sm:truncate"
           >
             {url}
           </a>
@@ -53,13 +53,13 @@ export default function ProjectExternalLinksSection({
   onCopy,
 }: ProjectExternalLinksSectionProps) {
   return (
-    <section className="flex w-full flex-col gap-4 rounded-3xl border border-mt-border bg-mt-white p-6 shadow-sm">
+    <section className="flex w-full min-w-0 flex-col gap-4 rounded-3xl border border-mt-border bg-mt-white p-4 shadow-sm sm:p-6">
       <IntroSectionHeading
         title="외부 채널 및 저장소"
         icon={<Globe className="h-5 w-5" aria-hidden strokeWidth={1.8} />}
       />
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid min-w-0 gap-3 md:grid-cols-2">
         {githubUrl ? (
           <ExternalProjectLink
             label="GitHub 저장소"

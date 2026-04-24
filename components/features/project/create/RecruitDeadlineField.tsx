@@ -26,7 +26,7 @@ export default function RecruitDeadlineField({
 }: RecruitDeadlineFieldProps) {
   return (
     <div className="flex w-full flex-col gap-2">
-      <div className="flex w-full items-center justify-between">
+      <div className="flex w-full flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm font-bold leading-5 text-mt-text-primary">모집 마감일</p>
         {showUntilComplete ? (
           <label

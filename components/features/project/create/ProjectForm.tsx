@@ -453,11 +453,7 @@ export default function ProjectForm({
   };
 
   useEffect(() => {
-    if (
-      !isCreate ||
-      createStepIndex !== CREATE_STEPS.length - 1 ||
-      hasAttemptedFinalCreateSubmit
-    ) {
+    if (!isCreate || createStepIndex !== CREATE_STEPS.length - 1 || hasAttemptedFinalCreateSubmit) {
       return;
     }
 
@@ -481,7 +477,9 @@ export default function ProjectForm({
   return (
     <section
       className={`mx-auto w-full ${
-        isEdit ? 'max-w-6xl' : 'flex max-w-3xl flex-col rounded-3xl bg-mt-white p-10 shadow-xl'
+        isEdit
+          ? 'max-w-6xl'
+          : 'flex max-w-3xl flex-col rounded-3xl bg-mt-white p-5 shadow-xl sm:p-8 md:p-10'
       }`}
     >
       {!isEdit ? (
@@ -515,7 +513,13 @@ export default function ProjectForm({
         </header>
       ) : null}
 
-      <div className={isEdit ? 'grid gap-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start' : ''}>
+      <div
+        className={
+          isEdit
+            ? 'grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:items-start'
+            : ''
+        }
+      >
         {isEdit ? (
           <ProjectFormSectionNav
             sections={EDIT_SECTIONS}
@@ -530,7 +534,7 @@ export default function ProjectForm({
         <div
           className={
             isEdit
-              ? 'rounded-3xl border border-mt-border bg-mt-white px-8 py-10 shadow-sm md:px-12'
+              ? 'min-w-0 rounded-3xl border border-mt-border bg-mt-white px-4 py-6 shadow-sm sm:px-6 sm:py-8 md:px-12 md:py-10'
               : ''
           }
         >
@@ -681,7 +685,7 @@ export default function ProjectForm({
               <>
                 <div className="w-full">
                   <BaseField errorText={fieldErrors.myInterest} hintText="" label="나의 분야">
-                    <div className="flex w-full gap-2">
+                    <div className="flex w-full flex-col gap-2 sm:flex-row">
                       <BaseDropdown
                         value={myInterest.major}
                         placeholder="직군 선택"
@@ -694,9 +698,9 @@ export default function ProjectForm({
                           setMyOpenDropdown(null);
                           clearError('myInterest');
                         }}
-                        containerClassName="w-[30%]"
+                        containerClassName="w-full sm:basis-2/5 md:basis-1/3"
                         buttonClassName="justify-between px-4 py-3.5"
-                        textClassName="text-sm font-medium whitespace-nowrap"
+                        textClassName="min-w-0 truncate text-sm font-medium"
                       />
 
                       <BaseDropdown
@@ -712,9 +716,9 @@ export default function ProjectForm({
                           clearError('myInterest');
                         }}
                         disabled={!myInterest.major}
-                        containerClassName="flex-1"
+                        containerClassName="w-full min-w-0 sm:flex-1"
                         buttonClassName="justify-between px-4 py-3.5"
-                        textClassName="text-sm font-normal"
+                        textClassName="min-w-0 truncate text-sm font-normal"
                       />
                     </div>
                   </BaseField>
@@ -722,7 +726,7 @@ export default function ProjectForm({
 
                 <div className="flex w-full flex-col gap-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-lg leading-7 font-bold text-mt-text-primary">
+                    <label className="text-base leading-6 font-bold text-mt-text-primary sm:text-lg sm:leading-7">
                       모집 분야
                     </label>
                     <button
@@ -741,7 +745,7 @@ export default function ProjectForm({
                         key={`${index}-${interest.major}-${interest.minor}`}
                         className="flex flex-col gap-2 md:flex-row md:items-center"
                       >
-                        <div className="flex flex-1 gap-2">
+                        <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row">
                           <BaseDropdown
                             value={interest.major}
                             placeholder="직군 선택"
@@ -756,9 +760,9 @@ export default function ProjectForm({
                               updateRecruitInterest(index, { major: selectedMajor, minor: '' });
                               setOpenRecruitDropdown(null);
                             }}
-                            containerClassName="w-[30%]"
+                            containerClassName="w-full sm:basis-2/5 md:basis-1/3"
                             buttonClassName="justify-between px-4 py-3.5"
-                            textClassName="text-sm font-medium whitespace-nowrap"
+                            textClassName="min-w-0 truncate text-sm font-medium"
                           />
 
                           <BaseDropdown
@@ -779,13 +783,13 @@ export default function ProjectForm({
                               setOpenRecruitDropdown(null);
                             }}
                             disabled={!interest.major}
-                            containerClassName="flex-1"
+                            containerClassName="w-full min-w-0 sm:flex-1"
                             buttonClassName="justify-between px-4 py-3.5"
-                            textClassName="text-sm font-normal"
+                            textClassName="min-w-0 truncate text-sm font-normal"
                           />
                         </div>
 
-                        <div className="flex h-12 items-center self-start rounded-xl border border-mt-border bg-mt-white px-2 text-sm font-medium text-mt-text-secondary md:self-auto">
+                        <div className="flex h-12 w-full items-center justify-center self-start rounded-xl border border-mt-border bg-mt-white px-2 text-sm font-medium text-mt-text-secondary sm:w-auto md:self-auto">
                           <button
                             type="button"
                             onClick={() => updateRecruitCount(index, -1)}
@@ -865,9 +869,7 @@ export default function ProjectForm({
                     clearError('recruitDeadline');
                   }}
                   minDate={minRecruitDeadline}
-                  errorText={
-                    shouldShowFinalStepErrors ? fieldErrors.recruitDeadline : undefined
-                  }
+                  errorText={shouldShowFinalStepErrors ? fieldErrors.recruitDeadline : undefined}
                 />
               </>
             ) : null}

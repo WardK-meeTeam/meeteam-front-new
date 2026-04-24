@@ -162,7 +162,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
   };
 
   return (
-    <section className="mx-auto w-full max-w-6xl pb-20">
+    <section className="mx-auto w-full max-w-6xl min-w-0 pb-20">
       <header className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -210,7 +210,7 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
           </AuthLink>
         </div>
 
-        <div className="w-full md:w-72">
+        <div className="w-full min-w-0 md:w-72">
           <ProjectActionButtons
             projectId={project.id}
             projectTitle={project.title}
@@ -221,20 +221,20 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
       </header>
 
       <div className="mt-6 space-y-4">
-        <div className="overflow-hidden rounded-3xl border border-mt-border bg-mt-white p-3 shadow-sm">
+        <div className="overflow-hidden rounded-3xl border border-mt-border bg-mt-white p-2 shadow-sm sm:p-3">
           <ProjectCoverImage
             src={project.coverImageUrl}
             alt={project.title}
             priority
-            className="aspect-[16/6] rounded-2xl"
+            className="aspect-[4/3] rounded-2xl sm:aspect-[16/7] lg:aspect-[16/6]"
             imageClassName="object-center"
             overlayClassName="bg-mt-text-primary/10"
           />
         </div>
 
-        <div className="rounded-3xl border border-mt-border bg-mt-white p-5 shadow-sm">
+        <div className="rounded-3xl border border-mt-border bg-mt-white p-4 shadow-sm sm:p-5">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div className="grid gap-4 sm:grid-cols-3 lg:flex lg:items-center lg:gap-8">
+            <div className="grid min-w-0 gap-4 sm:grid-cols-3 lg:flex lg:items-center lg:gap-8">
               <div>
                 <p className="text-xs leading-4 font-bold text-mt-text-secondary">팀원</p>
                 <p className="mt-1 text-base leading-6 font-extrabold text-mt-text-primary">
@@ -267,9 +267,9 @@ export default function ProjectDetailPage({ projectId }: { projectId: string }) 
           </div>
 
           {platformText ? (
-            <div className="mt-4 flex items-center gap-2 border-t border-mt-border pt-4 text-sm leading-5 text-mt-text-secondary">
+            <div className="mt-4 flex min-w-0 items-center gap-2 border-t border-mt-border pt-4 text-sm leading-5 text-mt-text-secondary">
               <Monitor className="h-4 w-4 text-mt-primary" aria-hidden />
-              <span>{platformText}</span>
+              <span className="min-w-0 break-words">{platformText}</span>
             </div>
           ) : null}
         </div>

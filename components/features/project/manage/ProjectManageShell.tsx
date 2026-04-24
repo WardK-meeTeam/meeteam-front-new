@@ -217,19 +217,19 @@ export default function ProjectManageShell({
   };
 
   return (
-    <section className="mx-auto w-full max-w-7xl px-4 py-8 md:px-6 lg:px-8">
+    <section className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8 lg:px-8">
       <div className="space-y-6 md:space-y-8">
         <ToastMessage message={errorMessage} />
 
         <header className="flex flex-col gap-5 border-b border-mt-border pb-6 md:gap-6">
-          <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-            <div className="space-y-0.5">
+          <div className="flex min-w-0 flex-col gap-5 md:flex-row md:items-start md:justify-between">
+            <div className="min-w-0 space-y-0.5">
               {isHeaderLoading ? (
                 <SkeletonBlock className="h-10 w-72 max-w-full" />
               ) : (
                 <Link
                   href={`/projects/${projectId}`}
-                  className="inline-flex text-3xl leading-10 font-bold text-mt-text-primary transition-colors hover:text-mt-primary"
+                  className="inline-flex max-w-full break-words text-2xl leading-8 font-bold text-mt-text-primary transition-colors hover:text-mt-primary md:text-3xl md:leading-10"
                   data-cy="project-manage-title-link"
                 >
                   {projectTitle}
@@ -237,7 +237,7 @@ export default function ProjectManageShell({
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 self-end md:self-auto">
+            <div className="flex w-full flex-wrap items-center gap-3 self-start md:w-auto md:self-auto">
               <span className="text-sm leading-5 font-bold text-mt-text-nav">상태:</span>
               {isHeaderLoading ? (
                 <SkeletonBlock className="h-10 w-48 rounded-xl" />
@@ -247,7 +247,7 @@ export default function ProjectManageShell({
                 </span>
               ) : (
                 <fieldset
-                  className="inline-flex rounded-full border border-mt-border bg-mt-white p-1 shadow-sm"
+                  className="inline-flex max-w-full overflow-x-auto rounded-full border border-mt-border bg-mt-white p-1 shadow-sm"
                   disabled={isStatusUpdating}
                   data-cy="project-manage-status-radio-group"
                 >
@@ -288,7 +288,7 @@ export default function ProjectManageShell({
             </div>
           </div>
 
-          <nav className="-mb-6 overflow-x-auto">
+          <nav className="-mx-4 -mb-6 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0">
             <ul className="flex min-w-max items-center">
               {TABS.map((tab) => {
                 const Icon = tab.icon;
@@ -298,7 +298,7 @@ export default function ProjectManageShell({
                   <li key={tab.label}>
                     <Link
                       href={`/projects/${projectId}/manage${tab.href}`}
-                      className={`inline-flex items-center gap-2 border-b-2 px-6 py-3.5 text-sm leading-5 font-bold transition-colors ${
+                      className={`inline-flex items-center gap-2 border-b-2 px-4 py-3 text-sm leading-5 font-bold transition-colors md:px-6 md:py-3.5 ${
                         isActive
                           ? 'border-mt-primary text-mt-primary'
                           : 'border-transparent text-mt-text-secondary hover:text-mt-text-primary'

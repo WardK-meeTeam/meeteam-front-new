@@ -111,10 +111,10 @@ export default function CoverImageUploader({
     <>
       <label
         htmlFor={id}
-        className={`group relative flex w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl text-center transition-colors aspect-[1200/630] min-h-[220px] ${
+        className={`group relative flex aspect-[1200/630] min-h-48 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-3xl text-center transition-colors sm:min-h-56 ${
           previewUrl
             ? 'border border-mt-border bg-mt-text-primary/5'
-            : 'border-2 border-dashed border-mt-border bg-mt-bg-soft px-6 py-20 hover:bg-mt-primary/5 hover:shadow-sm'
+            : 'border-2 border-dashed border-mt-border bg-mt-bg-soft px-5 py-12 hover:bg-mt-primary/5 hover:shadow-sm sm:px-6 sm:py-20'
         }`}
       >
         <input
@@ -137,11 +137,11 @@ export default function CoverImageUploader({
 
         {!previewUrl && (
           <div className="relative z-10 flex flex-col items-center transition-transform duration-300 ease-out group-hover:scale-[1.01]">
-            <span className="mb-5 inline-flex h-20 w-20 items-center justify-center rounded-full border border-mt-border bg-mt-white text-mt-text-secondary transition-all duration-300 ease-out group-hover:scale-105 group-hover:border-mt-logo-blue group-hover:text-mt-primary">
-              <Camera className="h-8 w-8" strokeWidth={1.8} aria-hidden="true" />
+            <span className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full border border-mt-border bg-mt-white text-mt-text-secondary transition-all duration-300 ease-out group-hover:scale-105 group-hover:border-mt-logo-blue group-hover:text-mt-primary sm:mb-5 sm:h-20 sm:w-20">
+              <Camera className="h-6 w-6 sm:h-8 sm:w-8" strokeWidth={1.8} aria-hidden="true" />
             </span>
 
-            <p className="text-lg font-semibold leading-7 text-mt-text-secondary transition-colors duration-300 group-hover:text-mt-primary">
+            <p className="text-base leading-6 font-semibold text-mt-text-secondary transition-colors duration-300 group-hover:text-mt-primary sm:text-lg sm:leading-7">
               클릭하여 이미지를 업로드하세요
             </p>
             <p className="mt-1.5 text-sm font-medium leading-6 text-mt-text-secondary transition-colors duration-300 group-hover:text-mt-text-secondary">
@@ -154,12 +154,12 @@ export default function CoverImageUploader({
           <>
             <div className="pointer-events-none absolute inset-0 z-10 bg-mt-text-primary/45 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100" />
 
-            <div className="absolute inset-0 z-20 flex flex-wrap items-center justify-center gap-3 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100 translate-y-3">
+            <div className="absolute inset-0 z-20 flex translate-y-3 flex-wrap items-center justify-center gap-2 px-4 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100 sm:gap-3">
               {canEditCrop ? (
                 <button
                   type="button"
                   onClick={handleOpenCropEditor}
-                  className="group/crop inline-flex h-12 items-center gap-1.5 rounded-xl bg-mt-primary px-6 text-base font-bold text-mt-white shadow-lg transition-transform duration-300 ease-out group-hover:scale-100 scale-95 hover:-translate-y-0.5 hover:shadow-xl"
+                  className="group/crop inline-flex h-10 scale-95 items-center gap-1.5 rounded-xl bg-mt-primary px-4 text-sm font-bold text-mt-white shadow-lg transition-transform duration-300 ease-out group-hover:scale-100 hover:-translate-y-0.5 hover:shadow-xl sm:h-12 sm:px-6 sm:text-base"
                 >
                   <Crop
                     className="h-4 w-4 transition-transform duration-300 ease-out group-hover/crop:scale-110"
@@ -173,7 +173,7 @@ export default function CoverImageUploader({
               <button
                 type="button"
                 onClick={handleOpenFileDialog}
-                className="group/change inline-flex h-12 items-center gap-1.5 rounded-xl bg-mt-white px-6 text-base font-bold text-mt-text-primary shadow-lg transition-transform duration-300 ease-out group-hover:scale-100 scale-95 hover:-translate-y-0.5 hover:shadow-xl"
+                className="group/change inline-flex h-10 scale-95 items-center gap-1.5 rounded-xl bg-mt-white px-4 text-sm font-bold text-mt-text-primary shadow-lg transition-transform duration-300 ease-out group-hover:scale-100 hover:-translate-y-0.5 hover:shadow-xl sm:h-12 sm:px-6 sm:text-base"
               >
                 <RefreshCcw
                   className="h-4 w-4 text-mt-primary transition-transform duration-300 ease-out group-hover/change:rotate-45"
@@ -185,7 +185,7 @@ export default function CoverImageUploader({
               <button
                 type="button"
                 onClick={handleRemove}
-                className="group/delete inline-flex h-12 w-12 items-center justify-center rounded-xl bg-mt-hero-blue text-mt-white shadow-lg transition-transform duration-300 ease-out delay-75 group-hover:scale-100 scale-95 hover:-translate-y-0.5 hover:shadow-xl"
+                className="group/delete inline-flex h-10 w-10 scale-95 items-center justify-center rounded-xl bg-mt-hero-blue text-mt-white shadow-lg transition-transform delay-75 duration-300 ease-out group-hover:scale-100 hover:-translate-y-0.5 hover:shadow-xl sm:h-12 sm:w-12"
                 aria-label="이미지 삭제"
               >
                 <Trash2

@@ -47,18 +47,18 @@ export function NavBar() {
   return (
     <nav
       className={`sticky top-0 z-40 border-b border-mt-border bg-mt-white/95 backdrop-blur-md transition-transform duration-300 ease-out ${
-        isAtTop ? 'translate-y-0' : '-translate-y-full'
+        isAtTop ? 'translate-y-0' : 'translate-y-0 md:-translate-y-full'
       }`}
     >
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-8">
-        <div className="flex items-center gap-8">
+      <div className="relative mx-auto flex min-h-16 w-full max-w-7xl flex-col gap-2 px-4 py-3 sm:px-6 md:h-16 md:flex-row md:items-center md:justify-between md:gap-4 md:py-0 lg:px-8">
+        <div className="flex min-w-0 flex-1 flex-col gap-2 md:flex-row md:items-center md:gap-8">
           <Link href="/" className="inline-flex items-center" aria-label="meeTeam 홈">
-            <AppLogo className="h-9 w-40" priority />
+            <AppLogo className="h-8 w-36 sm:h-9 sm:w-40" priority />
           </Link>
 
-          <ul className="flex list-none items-center gap-6 p-0">
+          <ul className="flex list-none items-center gap-4 overflow-x-auto p-0 pb-1 md:gap-6 md:overflow-visible md:pb-0">
             {navItems.map((item) => (
-              <li key={item.href}>
+              <li key={item.href} className="shrink-0">
                 {item.authRequired ? (
                   <AuthLink
                     className={
@@ -87,34 +87,36 @@ export function NavBar() {
           </ul>
         </div>
 
-        {isAuthenticated ? (
-          <div className="flex items-center gap-4">
-            <Link href="/notifications">
-              <button
-                type="button"
-                className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-mt-text-secondary transition-colors hover:bg-mt-border hover:text-mt-primary"
-                aria-label="알림"
-              >
-                <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-                {unreadCount > 0 ? (
-                  <span
-                    className="absolute right-2.5 top-2.5 flex min-h-2 min-w-2 items-center justify-center rounded-full border-2 border-mt-white bg-mt-hero-blue"
-                    aria-hidden
-                  />
-                ) : null}
-              </button>
+        <div className="absolute right-4 top-3 sm:right-6 md:static">
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/notifications">
+                <button
+                  type="button"
+                  className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-mt-text-secondary transition-colors hover:bg-mt-border hover:text-mt-primary"
+                  aria-label="알림"
+                >
+                  <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
+                  {unreadCount > 0 ? (
+                    <span
+                      className="absolute right-2.5 top-2.5 flex min-h-2 min-w-2 items-center justify-center rounded-full border-2 border-mt-white bg-mt-hero-blue"
+                      aria-hidden
+                    />
+                  ) : null}
+                </button>
+              </Link>
+              <span className="hidden h-6 w-px bg-mt-border sm:block" aria-hidden />
+              <ProfileMenu />
+            </div>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="inline-flex h-9 items-center justify-center rounded-full border border-mt-border bg-mt-white px-4 text-sm leading-5 font-bold text-mt-primary shadow-sm transition-colors hover:bg-mt-border hover:text-mt-text-primary sm:h-10 sm:px-5"
+            >
+              로그인
             </Link>
-            <span className="h-6 w-px bg-mt-border" aria-hidden />
-            <ProfileMenu />
-          </div>
-        ) : (
-          <Link
-            href="/auth/login"
-            className="inline-flex h-10 items-center justify-center rounded-full border border-mt-border bg-mt-white px-5 text-sm leading-5 font-bold text-mt-primary shadow-sm transition-colors hover:bg-mt-border hover:text-mt-text-primary"
-          >
-            로그인
-          </Link>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   );
