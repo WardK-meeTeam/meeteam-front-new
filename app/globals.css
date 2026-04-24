@@ -10,6 +10,8 @@
   --mt-mascot-blue: #bed6f5;
   --mt-cheek-blue: #8cb9f1;
   --mt-mint: #67c5c2;
+  --mt-danger: #e85d5d;
+  --mt-danger-soft: #fff1f1;
   --mt-text-primary: #202730;
   --mt-text-secondary: #5f6d82;
   --mt-text-nav: #647185;
@@ -28,6 +30,8 @@
   --color-mt-mascot-blue: var(--mt-mascot-blue);
   --color-mt-cheek-blue: var(--mt-cheek-blue);
   --color-mt-mint: var(--mt-mint);
+  --color-mt-danger: var(--mt-danger);
+  --color-mt-danger-soft: var(--mt-danger-soft);
   --color-mt-text-primary: var(--mt-text-primary);
   --color-mt-text-secondary: var(--mt-text-secondary);
   --color-mt-text-nav: var(--mt-text-nav);

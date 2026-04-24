@@ -131,7 +131,7 @@ export default function ProfileHeader({
           </div>
         </div>
 
-        {showActionButton ? (
+        {showActionButton && !isEditing ? (
           <div className="flex items-center gap-2 self-start sm:self-auto">
             {isEditing && onCancel ? (
               <BaseButton size="M" variant="gray" onClick={onCancel} disabled={actionDisabled}>

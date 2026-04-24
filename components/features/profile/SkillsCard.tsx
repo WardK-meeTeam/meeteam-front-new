@@ -30,7 +30,7 @@ export default function SkillsCard({
       <h2 className="text-lg leading-7 font-bold text-mt-text-primary">기술 스택</h2>
       {editable ? (
         <p className="mt-1 text-sm leading-5 text-mt-text-secondary">
-          대표 기술은 앞의 3개가 먼저 표시돼요.
+          대표 기술은 앞의 3개가 먼저 표시돼요. 드래그해서 순서를 바꿀 수 있어요.
         </p>
       ) : null}
 
@@ -42,24 +42,17 @@ export default function SkillsCard({
               <p>{formatJobRole(group.category, group.role)}</p>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              {group.skills.map((skill, skillIndex) => (
-                <SkillChip
-                  key={`${group.category}-${skill}-${skillIndex}`}
-                  label={skill}
-                  size="md"
-                  onRemove={
-                    editable
-                      ? () =>
-                          onSkillsChange?.(
-                            groupIndex,
-                            group.skills.filter((currentSkill) => currentSkill !== skill),
-                          )
-                      : undefined
-                  }
-                />
-              ))}
-            </div>
+            {!editable ? (
+              <div className="flex flex-wrap gap-2">
+                {group.skills.map((skill, skillIndex) => (
+                  <SkillChip
+                    key={`${group.category}-${skill}-${skillIndex}`}
+                    label={skill}
+                    size="md"
+                  />
+                ))}
+              </div>
+            ) : null}
 
             {editable ? (
               <TechStackPicker
@@ -69,7 +62,9 @@ export default function SkillsCard({
                 value={group.skills}
                 onChange={(nextSkills) => onSkillsChange?.(groupIndex, nextSkills)}
                 placeholder="기술 스택 검색"
-                showSelectedChips={false}
+                enableSelectedChipReorder={true}
+                rankedChipCount={3}
+                selectedChipsDataCy={`profile-skills-selected-${groupIndex}`}
               />
             ) : null}
           </div>

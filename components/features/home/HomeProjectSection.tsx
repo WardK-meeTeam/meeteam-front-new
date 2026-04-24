@@ -73,10 +73,10 @@ export default function HomeProjectSection() {
     <section className="space-y-6">
       <ToastMessage message={errorMessage} />
 
-      <div className="space-y-4">
-        <div className="flex items-end justify-between">
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
           <h2 className="font-brand-display text-2xl text-mt-text-primary">프로젝트</h2>
-          <Link href="/projects" className="text-sm font-semibold text-mt-primary">
+          <Link href="/projects" className="text-sm leading-5 font-semibold text-mt-primary">
             전체보기 &gt;
           </Link>
         </div>

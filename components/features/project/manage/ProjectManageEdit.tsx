@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import ProjectForm from '@/components/features/project/create/ProjectForm';
 import {
@@ -11,6 +11,7 @@ import {
   updateProject,
 } from '@/components/features/project/projectApi';
 import ToastMessage from '@/components/shared/ToastMessage';
+import type { ProjectRecruitmentStatus } from '@/types/project';
 import ProjectManageShell from './ProjectManageShell';
 import { ProjectManageEditSkeleton } from './ProjectManageSkeletons';
 
@@ -18,12 +19,18 @@ type ProjectManageEditProps = {
   projectId: string;
 };
 
+const SUSPENDED_EDIT_MESSAGE =
+  '모집이 중단된 상태에서는 수정할 수 없습니다. 모집을 재개한 후 수정해주세요.';
+
 export default function ProjectManageEdit({ projectId }: ProjectManageEditProps) {
   const router = useRouter();
   const handleAuthRequired = useAuthRequiredModal();
   const [prefill, setPrefill] = useState<ProjectEditPrefill | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const handleRecruitmentStatusChange = useCallback((status: ProjectRecruitmentStatus) => {
+    setPrefill((current) => syncPrefillEditableState(current, status));
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -69,7 +76,11 @@ export default function ProjectManageEdit({ projectId }: ProjectManageEditProps)
 
   if (isLoading) {
     return (
-      <ProjectManageShell projectId={projectId} activeTab="edit">
+      <ProjectManageShell
+        projectId={projectId}
+        activeTab="edit"
+        onRecruitmentStatusChange={handleRecruitmentStatusChange}
+      >
         <ProjectManageEditSkeleton />
       </ProjectManageShell>
     );
@@ -77,7 +88,11 @@ export default function ProjectManageEdit({ projectId }: ProjectManageEditProps)
 
   if (!prefill) {
     return (
-      <ProjectManageShell projectId={projectId} activeTab="edit">
+      <ProjectManageShell
+        projectId={projectId}
+        activeTab="edit"
+        onRecruitmentStatusChange={handleRecruitmentStatusChange}
+      >
         <ToastMessage message={errorMessage} />
 
         <section className="rounded-3xl border border-mt-border bg-mt-white px-8 py-12 text-center shadow-sm">
@@ -91,7 +106,11 @@ export default function ProjectManageEdit({ projectId }: ProjectManageEditProps)
   }
 
   return (
-    <ProjectManageShell projectId={projectId} activeTab="edit">
+    <ProjectManageShell
+      projectId={projectId}
+      activeTab="edit"
+      onRecruitmentStatusChange={handleRecruitmentStatusChange}
+    >
       <ProjectForm
         variant="edit"
         initialValues={prefill.values}
@@ -106,4 +125,20 @@ export default function ProjectManageEdit({ projectId }: ProjectManageEditProps)
       />
     </ProjectManageShell>
   );
+}
+
+function syncPrefillEditableState(
+  current: ProjectEditPrefill | null,
+  status: ProjectRecruitmentStatus,
+) {
+  if (!current || status === 'CLOSED') {
+    return current;
+  }
+
+  return {
+    ...current,
+    editable: status === 'RECRUITING',
+    notEditableReason:
+      status === 'RECRUITING' ? null : (current.notEditableReason ?? SUSPENDED_EDIT_MESSAGE),
+  };
 }

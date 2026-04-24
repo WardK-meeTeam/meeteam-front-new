@@ -17,6 +17,7 @@ type ProjectManageShellProps = {
   projectId: string;
   activeTab: 'members' | 'applicants' | 'edit';
   pendingApplicantsCount?: number;
+  onRecruitmentStatusChange?: (status: ProjectRecruitmentStatus) => void;
   children: ReactNode;
 };
 
@@ -61,6 +62,19 @@ const EDITABLE_STATUS_OPTIONS = [
   { value: 'SUSPENDED', label: '모집 중단' },
 ] as const satisfies ReadonlyArray<{ value: ProjectRecruitmentStatus; label: string }>;
 
+const STATUS_OPTION_ACTIVE_CLASS: Record<
+  (typeof EDITABLE_STATUS_OPTIONS)[number]['value'],
+  string
+> = {
+  RECRUITING: 'bg-mt-badge-bg text-mt-primary',
+  SUSPENDED: 'bg-mt-danger-soft text-mt-danger',
+};
+
+const STATUS_OPTION_DOT_CLASS: Record<(typeof EDITABLE_STATUS_OPTIONS)[number]['value'], string> = {
+  RECRUITING: 'bg-mt-primary',
+  SUSPENDED: 'bg-mt-danger',
+};
+
 type ProjectManageHeader = {
   title: string;
   status: ProjectRecruitmentStatus;
@@ -73,6 +87,7 @@ export default function ProjectManageShell({
   projectId,
   activeTab,
   pendingApplicantsCount,
+  onRecruitmentStatusChange,
   children,
 }: ProjectManageShellProps) {
   const handleAuthRequired = useAuthRequiredModal();
@@ -124,6 +139,7 @@ export default function ProjectManageShell({
         projectManageHeaderCache.set(projectId, nextHeader);
         setProjectTitle(nextHeader.title);
         setProjectStatus(nextHeader.status);
+        onRecruitmentStatusChange?.(nextHeader.status);
         setPendingApplicants(pendingApplicantsCount ?? nextHeader.pendingApplicants);
       } catch (error) {
         if (!active) {
@@ -150,7 +166,7 @@ export default function ProjectManageShell({
     return () => {
       active = false;
     };
-  }, [handleAuthRequired, pendingApplicantsCount, projectId]);
+  }, [handleAuthRequired, onRecruitmentStatusChange, pendingApplicantsCount, projectId]);
 
   useEffect(() => {
     if (typeof pendingApplicantsCount === 'number') {
@@ -178,6 +194,7 @@ export default function ProjectManageShell({
       const statusResponse = await toggleProjectRecruitmentStatus(projectId);
 
       setProjectStatus(statusResponse.recruitmentStatus);
+      onRecruitmentStatusChange?.(statusResponse.recruitmentStatus);
       const cached = projectManageHeaderCache.get(projectId);
 
       if (cached) {
@@ -243,7 +260,7 @@ export default function ProjectManageShell({
                         key={option.value}
                         className={`inline-flex h-8 cursor-pointer items-center gap-2 rounded-full px-3 text-sm leading-5 font-bold transition-colors ${
                           checked
-                            ? 'bg-mt-badge-bg text-mt-primary'
+                            ? STATUS_OPTION_ACTIVE_CLASS[option.value]
                             : 'text-mt-text-secondary hover:text-mt-primary'
                         } ${isStatusUpdating ? 'cursor-not-allowed opacity-70' : ''}`}
                       >
@@ -258,7 +275,7 @@ export default function ProjectManageShell({
                         />
                         <span
                           className={`h-2 w-2 rounded-full ${
-                            checked ? 'bg-mt-primary' : 'bg-mt-border'
+                            checked ? STATUS_OPTION_DOT_CLASS[option.value] : 'bg-mt-border'
                           }`}
                           aria-hidden
                         />

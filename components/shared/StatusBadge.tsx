@@ -22,7 +22,7 @@ const STATUS_CLASS: Record<StatusBadgeStatus, string> = {
   open: 'border-mt-mint bg-mt-mint text-mt-white',
   closed: 'border-mt-text-secondary bg-mt-text-secondary text-mt-white',
   deadline: 'border-mt-white/20 bg-mt-white/20 text-mt-white shadow-sm backdrop-blur-md',
-  suspended: 'border-mt-text-nav bg-mt-text-nav text-mt-white',
+  suspended: 'border-mt-danger bg-mt-danger text-mt-white',
   completed: 'border-transparent bg-mt-text-nav text-mt-white',
   pending: 'border-transparent bg-mt-border text-mt-primary',
   leader: 'border-transparent bg-mt-badge-bg text-mt-primary',

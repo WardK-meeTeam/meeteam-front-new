@@ -156,7 +156,7 @@ export default function BasicInfoCard({
 
         <div className="space-y-4 border-t border-mt-border pt-4">
           <div className="flex items-center gap-3 text-sm leading-5 font-medium text-mt-text-nav">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full border border-mt-logo-blue/30 bg-mt-badge-bg text-mt-primary">
               <EmailIcon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
             </span>
             <div className="min-w-0">
@@ -203,7 +203,7 @@ function ProfileContactLink({ item }: { item: ProfileContactItem }) {
   const content = (
     <>
       <span className="flex min-w-0 items-center gap-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-mt-border text-mt-text-secondary">
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-mt-logo-blue/30 bg-mt-badge-bg text-mt-primary">
           <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
         </span>
         <span className="shrink-0 text-mt-text-secondary">{item.label}</span>

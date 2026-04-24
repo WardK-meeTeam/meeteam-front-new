@@ -487,6 +487,16 @@ function mapPlatformApiValueToLabel(platform: BackendProjectDetailResponse['plat
   }
 }
 
+function isRecruitmentCompletedDeadline(project: {
+  recruitmentDeadlineType?: BackendProjectDetailResponse['recruitmentDeadlineType'];
+  endDate: string | null;
+}) {
+  return (
+    project.recruitmentDeadlineType === 'RECRUITMENT_COMPLETED' ||
+    (!project.recruitmentDeadlineType && project.endDate === null)
+  );
+}
+
 export function buildProjectCreatePayload(values: ProjectFormValues, jobFields: JobFieldOption[]) {
   const creatorField = findProjectJobField(jobFields, values.myInterest.major);
 
@@ -962,7 +972,7 @@ export async function fetchProjectEditPrefill(
     ]),
   );
 
-  const isRecruitUntilComplete = project.recruitmentDeadlineType === 'RECRUITMENT_COMPLETED';
+  const isRecruitUntilComplete = isRecruitmentCompletedDeadline(project);
 
   return {
     values: {

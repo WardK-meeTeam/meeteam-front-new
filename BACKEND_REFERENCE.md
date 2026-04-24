@@ -47,6 +47,7 @@ Commits included:
   - `PUT /api/v1/projects/{projectId}` now accepts `recruitmentDeadlineType`.
   - `endDate` is required only for `END_DATE`; `RECRUITMENT_COMPLETED` can omit `endDate`.
   - Frontend no longer uses the old compatibility `2099-12-31` end date workaround.
+  - Current `GET /api/v1/projects/{projectId}/edit` prefill response does not include `recruitmentDeadlineType`; frontend should infer `RECRUITMENT_COMPLETED` when `endDate` is `null` until the backend adds that response field.
 
 ## Frontend reflection
 
@@ -54,6 +55,7 @@ Commits included:
 - User card rendering now shows up to 3 tech stacks, and member-card API mapping keeps only the top 3 by `displayOrder`.
 - Added Q&A `isSecret` mapping and a secret-question toggle in the project detail Q&A composer.
 - Added a frontend helper for soft withdrawal only.
+- Added a project edit prefill fallback for the current backend response gap: missing `recruitmentDeadlineType` is treated as `RECRUITMENT_COMPLETED` when `endDate` is `null`.
 
 Backend-only/ops notes:
 

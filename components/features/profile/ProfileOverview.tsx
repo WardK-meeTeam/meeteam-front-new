@@ -469,29 +469,24 @@ export default function ProfileOverview({
         </div>
 
         {isEditing ? (
-          <div className="rounded-2xl border border-mt-border bg-mt-white px-5 py-4 shadow-sm">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm leading-5 font-bold text-mt-text-secondary">
-                변경사항을 저장해야 프로필에 반영돼요.
-              </p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleCancelEdit}
-                  disabled={isSaving}
-                  className="inline-flex h-10 items-center justify-center rounded-xl border border-mt-border bg-mt-white px-4 text-sm font-bold text-mt-text-secondary disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  취소
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void handleSave()}
-                  disabled={isSaving}
-                  className="inline-flex h-10 items-center justify-center rounded-xl bg-mt-primary px-4 text-sm font-bold text-mt-white disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isSaving ? '저장 중' : '저장하기'}
-                </button>
-              </div>
+          <div className="fixed right-8 bottom-8 z-50 rounded-2xl border border-mt-border bg-mt-white/95 p-3 shadow-2xl backdrop-blur">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                disabled={isSaving}
+                className="inline-flex h-11 min-w-20 items-center justify-center rounded-xl border border-mt-border bg-mt-white px-5 text-sm font-bold text-mt-text-secondary disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleSave()}
+                disabled={isSaving}
+                className="inline-flex h-11 min-w-26 items-center justify-center rounded-xl bg-mt-primary px-5 text-sm font-bold text-mt-white shadow-sm disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSaving ? '저장 중' : '저장하기'}
+              </button>
             </div>
           </div>
         ) : null}
