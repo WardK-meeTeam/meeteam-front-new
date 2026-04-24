@@ -261,7 +261,7 @@ function seedAuthSession(window: Window) {
 }
 
 function installAuthenticatedShellIntercepts() {
-  cy.intercept('GET', '**/api/notifications/unread/count', {
+  cy.intercept('GET', '**/api/v1/notifications/unread/count', {
     statusCode: 200,
     body: {
       result: {
@@ -270,7 +270,7 @@ function installAuthenticatedShellIntercepts() {
     },
   }).as('unreadNotificationCountRequest');
 
-  cy.intercept('GET', '**/api/members', {
+  cy.intercept('GET', '**/api/v1/members/me', {
     statusCode: 200,
     body: {
       result: MEMBER_PROFILE,
@@ -590,7 +590,7 @@ describe('프로젝트 생성 및 관리 흐름', () => {
   });
 
   it('내가 만든 프로젝트와 참여 프로젝트는 내 프로필에서 확인한다', () => {
-    cy.intercept('GET', '**/api/members', {
+    cy.intercept('GET', '**/api/v1/members/me', {
       statusCode: 200,
       body: {
         result: {

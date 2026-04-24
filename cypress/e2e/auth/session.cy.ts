@@ -68,7 +68,7 @@ function seedAuthSession(window: Window) {
 }
 
 function installAuthenticatedShellIntercepts() {
-  cy.intercept('GET', '**/api/notifications/unread/count', {
+  cy.intercept('GET', '**/api/v1/notifications/unread/count', {
     statusCode: 200,
     body: {
       result: {
@@ -77,7 +77,7 @@ function installAuthenticatedShellIntercepts() {
     },
   }).as('unreadNotificationCountRequest');
 
-  cy.intercept('GET', '**/api/members', {
+  cy.intercept('GET', '**/api/v1/members/me', {
     statusCode: 200,
     body: {
       result: MEMBER_PROFILE_INFO,
@@ -133,7 +133,7 @@ describe('인증 세션 흐름', () => {
     cy.contains('a', '로그인').should('be.visible');
     cy.get('button[aria-label="프로필 메뉴"]').should('not.exist');
 
-    cy.intercept('GET', '**/api/members', {
+    cy.intercept('GET', '**/api/v1/members/me', {
       statusCode: 401,
       body: {
         message: '인증이 필요합니다.',
@@ -210,7 +210,7 @@ describe('인증 세션 흐름', () => {
   });
 
   it('미인증 사용자가 보호 페이지에 직접 접근하면 로그인 모달과 안내 화면이 노출된다', () => {
-    cy.intercept('GET', '**/api/members', {
+    cy.intercept('GET', '**/api/v1/members/me', {
       statusCode: 401,
       body: {
         message: '인증이 필요합니다.',

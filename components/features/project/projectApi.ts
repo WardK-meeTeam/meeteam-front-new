@@ -87,16 +87,6 @@ type BackendTeamManagementResponse = {
   }>;
 };
 
-type BackendProjectRepositoryResponse = {
-  id: number;
-  repoFullName: string;
-  description: string | null;
-  starCount: number;
-  watcherCount: number;
-  pushedAt: string | null;
-  language: string | null;
-};
-
 type BackendProjectEditPrefillResponse = {
   projectId: number;
   name: string;
@@ -319,16 +309,6 @@ export type ProjectTeamManagement = {
   totalRecruitmentCount: number;
   pendingApplicationCount: number;
   members: ProjectMember[];
-};
-
-export type ProjectRepository = {
-  id: number;
-  repoFullName: string;
-  description: string;
-  starCount: number;
-  watcherCount: number;
-  pushedAt: string;
-  language: string;
 };
 
 async function readEnvelope<T>(response: Response, fallbackMessage: string) {
@@ -895,50 +875,6 @@ export async function expelProjectMember(projectId: string | number, memberId: s
   }>(response, '팀원 방출 중 오류가 발생했습니다.');
 }
 
-function mapProjectRepository(repo: BackendProjectRepositoryResponse): ProjectRepository {
-  return {
-    id: repo.id,
-    repoFullName: repo.repoFullName,
-    description: repo.description ?? '',
-    starCount: repo.starCount,
-    watcherCount: repo.watcherCount,
-    pushedAt: repo.pushedAt ?? '',
-    language: repo.language ?? '',
-  };
-}
-
-export async function connectProjectRepositories(projectId: string | number, repoUrls: string[]) {
-  const response = await fetch(`${API_BASE_URL}/api/projects/${projectId}/repos`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({ repoUrls }),
-  });
-
-  const repos = await readEnvelope<BackendProjectRepositoryResponse[]>(
-    response,
-    'GitHub 레포지토리 연결 중 오류가 발생했습니다.',
-  );
-
-  return repos.map(mapProjectRepository);
-}
-
-export async function fetchProjectRepositories(projectId: string | number) {
-  const response = await fetch(`${API_BASE_URL}/api/projects/${projectId}/repos`, {
-    method: 'GET',
-    cache: 'no-store',
-    credentials: 'include',
-  });
-
-  const repos = await readEnvelope<BackendProjectRepositoryResponse[]>(
-    response,
-    '프로젝트 레포지토리 정보를 불러오지 못했습니다.',
-  );
-
-  return repos.map(mapProjectRepository);
-}
 
 export async function fetchProjectEditPrefill(
   projectId: string | number,

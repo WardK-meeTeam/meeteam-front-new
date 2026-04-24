@@ -50,7 +50,7 @@ export function useNotificationSync(enabled: boolean) {
       return undefined;
     }
 
-    const eventSource = new EventSource(`${NOTIFICATION_API_BASE_URL}/api/subscribe`, {
+    const eventSource = new EventSource(`${NOTIFICATION_API_BASE_URL}/api/v1/subscribe`, {
       withCredentials: true,
     });
     const handleNotification = (event: MessageEvent<string>) => {

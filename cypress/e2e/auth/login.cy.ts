@@ -10,7 +10,7 @@ describe('로그인 흐름', () => {
       },
     }).as('loginRequest');
 
-    cy.intercept('GET', '**/api/members', {
+    cy.intercept('GET', '**/api/v1/members/me', {
       statusCode: 200,
       body: {
         result: {
@@ -177,7 +177,7 @@ describe('로그인 흐름', () => {
       });
     }).as('loginAttemptRequest');
 
-    cy.intercept('GET', '**/api/members', {
+    cy.intercept('GET', '**/api/v1/members/me', {
       statusCode: 200,
       body: {
         result: {

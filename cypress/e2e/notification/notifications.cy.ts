@@ -79,7 +79,7 @@ function seedAuthSession(window: Window) {
 }
 
 function installAuthenticatedShellIntercepts() {
-  cy.intercept('GET', '**/api/notifications/unread/count', {
+  cy.intercept('GET', '**/api/v1/notifications/unread/count', {
     statusCode: 200,
     body: {
       result: {
@@ -88,7 +88,7 @@ function installAuthenticatedShellIntercepts() {
     },
   }).as('unreadNotificationCountRequest');
 
-  cy.intercept('GET', '**/api/members', {
+  cy.intercept('GET', '**/api/v1/members/me', {
     statusCode: 200,
     body: {
       result: MEMBER_PROFILE,
@@ -111,7 +111,7 @@ describe('알림 흐름', () => {
   });
 
   it('알림 목록을 조회하고 모두 읽음 처리한다', () => {
-    cy.intercept('GET', '**/api/notifications?page=0&size=20', {
+    cy.intercept('GET', '**/api/v1/notifications?page=0&size=20', {
       statusCode: 200,
       body: {
         result: {
@@ -160,7 +160,7 @@ describe('알림 흐름', () => {
   });
 
   it('알림 액션을 클릭하면 프로젝트 상세로 이동한다', () => {
-    cy.intercept('GET', '**/api/notifications?page=0&size=20', {
+    cy.intercept('GET', '**/api/v1/notifications?page=0&size=20', {
       statusCode: 200,
       body: {
         result: {
@@ -212,7 +212,7 @@ describe('알림 흐름', () => {
   });
 
   it('알림 목록 조회가 실패하면 에러 메시지를 보여준다', () => {
-    cy.intercept('GET', '**/api/notifications?page=0&size=20', {
+    cy.intercept('GET', '**/api/v1/notifications?page=0&size=20', {
       statusCode: 500,
       body: {
         message: '알림 목록을 불러오지 못했습니다.',

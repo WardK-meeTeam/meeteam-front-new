@@ -96,7 +96,7 @@ const PROJECT_DETAIL = {
 };
 
 function installApplicationIntercepts() {
-  cy.intercept('GET', '**/api/members', {
+  cy.intercept('GET', '**/api/v1/members/me', {
     statusCode: 200,
     body: {
       result: MEMBER_PROFILE,

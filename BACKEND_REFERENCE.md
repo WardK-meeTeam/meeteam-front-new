@@ -2,33 +2,50 @@
 
 - Remote repository: `https://github.com/WardK-meeTeam/meeteam-backend`
 - Local clone used for backend code inspection in this workspace: `/tmp/meeteam-backend`
-- Last synced commit: `2fdad09`
-- Last checked at: `2026-04-24`
+- Last synced commit: `a85a0d3`
+- Last checked at: `2026-04-25`
 
 ## Latest backend sync
 
 Synced `/tmp/meeteam-backend` from `origin/master` by fast-forwarding:
 
-- From: `0e7bcf5` (`feat: 프로젝트 카테고리 변경 (캡스톤, 창의학기제, 동아리)`)
-- To: `2fdad09` (`feat: 프로젝트 수정 시 모집 마감 방식 변경 기능 추가`)
+- From: `2fdad09` (`feat: 프로젝트 수정 시 모집 마감 방식 변경 기능 추가`)
+- To: `a85a0d3` (`chore: 미사용 OkHttp 의존성 제거`)
 
-Rechecked on `2026-04-24`; `/tmp/meeteam-backend` is already up to date at `2fdad09`.
+Rechecked on `2026-04-25`; `/tmp/meeteam-backend` is up to date at `a85a0d3`.
 
 Commits included:
 
-- `a57b723` `feat: 회원 탈퇴 기능 추가 (소프트 삭제)`
-- `92b1148` `feat: 프로젝트 카테고리에 기타(ETC) 추가`
-- `45e6b97` `feat: Q&A 비밀글 기능 추가`
-- `ccc3d23` `fix: create로 수정`
-- `0f5303a` `feat: 회원 하드 삭제 API 추가`
-- `93ee940` `feat: 회원 하드 삭제 시 CASCADE 삭제 기능 추가`
-- `bc23479` `docs: CLAUDE.md에 세종대 포털 SSL 호환성 정보 추가`
-- `597ca47` `refactor: 회원 하드 삭제 API를 Admin용으로 변경`
-- `b472cb3` `fix: s3 url 경로 추가`
-- `2fdad09` `feat: 프로젝트 수정 시 모집 마감 방식 변경 기능 추가`
+- `78022a0` `feat: 내정보 수정에 프로젝트 경험 횟수, 기술스택 displayOrder 추가`
+- `ea0bab4` `feat: 프로젝트 등록 시 기술스택 직군 제약 해제`
+- `0b813fc` `refactor: notification API를 v1으로 마이그레이션 및 정리`
+- `0965cc1` `feat: 나의 프로필 API를 v1으로 마이그레이션`
+- `a85a0d3` `chore: 미사용 OkHttp 의존성 제거`
 
 ## Frontend-impacting changes
 
+- My profile APIs were migrated to v1:
+  - `GET /api/v1/members/me`
+  - `PUT /api/v1/members/me` with `multipart/form-data`
+  - Legacy `/api/members` profile endpoints still exist in the backend controller but are marked deprecated.
+- `PUT /api/v1/members/me` request body `memberInfo` now requires:
+  - `name: string`
+  - `age: number`
+  - `gender: "MALE" | "FEMALE"`
+  - `jobPositionIds: number[]`
+  - `techStacks: Array<{ id: number; displayOrder: number }>`
+  - `projectExperienceCount: number`
+  - `isParticipating?: boolean`
+  - `introduction?: string`
+  - `githubUrl?: string`
+  - `blogUrl?: string`
+- Notification APIs were migrated to v1:
+  - `GET /api/v1/notifications`
+  - `GET /api/v1/notifications/unread/count`
+  - `GET /api/v1/subscribe` for SSE
+- `NotificationResponse` no longer includes `message`; frontend notification copy should be generated from `type` and `payload`.
+- Project recruitment creation no longer validates that selected tech stacks belong to the selected job field. The frontend may allow any known tech stack for a recruitment position.
+- The backend still has deprecated GitHub repository routes at `POST /api/projects/{projectId}/repos` and `GET /api/projects/{projectId}/repos`, but the frontend no longer calls them.
 - `ProjectCategory` values are now `CAPSTONE`, `CREATIVE_SEMESTER`, `CLUB`, and `ETC`.
 - `GET /api/v1/main/members` member cards now return `techStacks` sorted by `displayOrder` and limited to the top 3 items.
 - `POST /api/v1/projects/{projectId}/qna` request body now accepts:
@@ -51,6 +68,12 @@ Commits included:
 
 ## Frontend reflection
 
+- Switched my-profile fetch/update calls to `/api/v1/members/me`.
+- Updated profile edit `memberInfo` payload to send `techStacks` with `displayOrder` and include `projectExperienceCount`.
+- Switched notification list, unread count, and SSE subscription calls to `/api/v1/...`.
+- Kept notification rendering resilient to the removed backend `message` field by deriving copy from notification `type` and `payload`.
+- Updated Cypress API intercepts for the migrated profile and notification endpoints.
+- Removed unused GitHub repository connect/read helpers that called deprecated non-v1 backend routes.
 - Added `ETC`/`기타` project category support in project creation, detail mapping, project search filters, and home project filters.
 - User card rendering now shows up to 3 tech stacks, and member-card API mapping keeps only the top 3 by `displayOrder`.
 - Added Q&A `isSecret` mapping and a secret-question toggle in the project detail Q&A composer.
@@ -59,6 +82,7 @@ Commits included:
 
 Backend-only/ops notes:
 
+- Backend removed the unused OkHttp dependency from `build.gradle`.
 - Hard delete now explicitly removes related Q&A, applications, likes, notifications, project memberships, created projects, skills, and member job positions before deleting the member.
 - Hard delete was changed to an Admin-only path: `DELETE /api/v1/auth/delete/{memberId}`.
 - Production config was adjusted in backend commits; no direct frontend contract change was found.

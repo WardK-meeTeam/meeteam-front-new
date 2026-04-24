@@ -70,7 +70,11 @@ export interface UpdateMemberProfilePayload {
   age: number;
   gender: ProfileGender;
   jobPositionIds: number[];
-  techStackIds: number[];
+  techStacks: Array<{
+    id: number;
+    displayOrder: number;
+  }>;
+  projectExperienceCount: number;
   isParticipating: boolean;
   introduction?: string;
   githubUrl?: string;
@@ -93,7 +97,7 @@ async function readEnvelope<T>(response: Response) {
 }
 
 export async function fetchMyProfile() {
-  const response = await fetch(`${API_BASE_URL}/api/members`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
     method: 'GET',
     cache: 'no-store',
     credentials: 'include',
@@ -124,7 +128,8 @@ export async function updateMyProfile(payload: UpdateMemberProfilePayload) {
           age: payload.age,
           gender: payload.gender,
           jobPositionIds: payload.jobPositionIds,
-          techStackIds: payload.techStackIds,
+          techStacks: payload.techStacks,
+          projectExperienceCount: payload.projectExperienceCount,
           isParticipating: payload.isParticipating,
           introduction: payload.introduction?.trim() || '',
           githubUrl: normalizeUrl(payload.githubUrl ?? ''),
@@ -139,7 +144,7 @@ export async function updateMyProfile(payload: UpdateMemberProfilePayload) {
     formData.append('profileImage', payload.profileImage);
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/members`, {
+  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
     method: 'PUT',
     credentials: 'include',
     body: formData,

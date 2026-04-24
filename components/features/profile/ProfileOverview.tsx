@@ -298,14 +298,17 @@ export default function ProfileOverview({
         throw new Error('선택한 직군 정보를 확인할 수 없습니다.');
       }
 
-      const techStackIds = editableSkills.map((skill) => {
+      const techStacks = editableSkills.map((skill, index) => {
         const techStack = currentField?.techStacks.find((item) => item.name === skill);
 
         if (!techStack) {
           throw new Error(`'${skill}' 기술 스택을 옵션에서 찾을 수 없습니다.`);
         }
 
-        return techStack.id;
+        return {
+          id: techStack.id,
+          displayOrder: index + 1,
+        };
       });
 
       await updateMyProfile({
@@ -313,7 +316,8 @@ export default function ProfileOverview({
         age: parseInt(profileForm.age.replace(/\D/g, ''), 10),
         gender: mapGenderLabelToValue(profileForm.gender),
         jobPositionIds: [position.id],
-        techStackIds,
+        techStacks,
+        projectExperienceCount: profile.projectExperienceCount,
         isParticipating: profileForm.isParticipating,
         introduction: profileForm.introduction,
         githubUrl: profileForm.github,

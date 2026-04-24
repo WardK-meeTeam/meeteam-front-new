@@ -78,7 +78,7 @@ function installTeammateIntercepts() {
 }
 
 function installAuthenticatedShellIntercepts() {
-  cy.intercept('GET', '**/api/notifications/unread/count', {
+  cy.intercept('GET', '**/api/v1/notifications/unread/count', {
     statusCode: 200,
     body: {
       result: {
@@ -87,7 +87,7 @@ function installAuthenticatedShellIntercepts() {
     },
   }).as('unreadNotificationCountRequest');
 
-  cy.intercept('GET', '**/api/members', {
+  cy.intercept('GET', '**/api/v1/members/me', {
     statusCode: 200,
     body: {
       result: MEMBER_PROFILE,

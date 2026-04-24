@@ -180,7 +180,7 @@ function seedAuthSession(window: Window) {
 }
 
 function installAuthenticatedShellIntercepts() {
-  cy.intercept('GET', '**/api/notifications/unread/count', {
+  cy.intercept('GET', '**/api/v1/notifications/unread/count', {
     statusCode: 200,
     body: {
       result: {
@@ -205,7 +205,7 @@ describe('프로필 흐름', () => {
 
   it('내 프로필을 조회하고 기본 정보와 참여 프로젝트를 보여준다', () => {
     installAuthenticatedShellIntercepts();
-    cy.intercept('GET', '**/api/members', {
+    cy.intercept('GET', '**/api/v1/members/me', {
       statusCode: 200,
       body: {
         result: MY_PROFILE,
@@ -238,7 +238,7 @@ describe('프로필 흐름', () => {
   it('프로필 수정 시 링크, 자기소개, 기술 스택, 참여 여부를 변경하고 저장한다', () => {
     installAuthenticatedShellIntercepts();
     let profileFetchCount = 0;
-    cy.intercept('GET', '**/api/members', (request) => {
+    cy.intercept('GET', '**/api/v1/members/me', (request) => {
       profileFetchCount += 1;
 
       request.reply({
@@ -256,7 +256,7 @@ describe('프로필 흐름', () => {
       },
     }).as('jobOptionsRequest');
 
-    cy.intercept('PUT', '**/api/members', {
+    cy.intercept('PUT', '**/api/v1/members/me', {
       statusCode: 200,
       body: {
         result: {
@@ -303,7 +303,7 @@ describe('프로필 흐름', () => {
 
   it('유효하지 않은 직군 상태에서는 저장하지 않고 에러를 보여준다', () => {
     installAuthenticatedShellIntercepts();
-    cy.intercept('GET', '**/api/members', {
+    cy.intercept('GET', '**/api/v1/members/me', {
       statusCode: 200,
       body: {
         result: MY_PROFILE,
@@ -318,7 +318,7 @@ describe('프로필 흐름', () => {
     }).as('jobOptionsRequest');
 
     let updateCount = 0;
-    cy.intercept('PUT', '**/api/members', () => {
+    cy.intercept('PUT', '**/api/v1/members/me', () => {
       updateCount += 1;
     }).as('updateProfileRequest');
 
@@ -340,7 +340,7 @@ describe('프로필 흐름', () => {
 
   it('프로필 저장이 실패해도 수정 상태를 유지하고 다음 시도로 복구할 수 있다', () => {
     installAuthenticatedShellIntercepts();
-    cy.intercept('GET', '**/api/members', {
+    cy.intercept('GET', '**/api/v1/members/me', {
       statusCode: 200,
       body: {
         result: MY_PROFILE,
@@ -355,7 +355,7 @@ describe('프로필 흐름', () => {
     }).as('jobOptionsRequest');
 
     let saveAttempt = 0;
-    cy.intercept('PUT', '**/api/members', (request) => {
+    cy.intercept('PUT', '**/api/v1/members/me', (request) => {
       saveAttempt += 1;
 
       if (saveAttempt === 1) {
@@ -395,7 +395,7 @@ describe('프로필 흐름', () => {
     cy.get('[data-cy="profile-introduction-input"]').should('have.value', '실패 후 재시도 소개글');
     cy.get('[data-cy="profile-action-button"]').should('contain', '저장하기');
 
-    cy.intercept('GET', '**/api/members', {
+    cy.intercept('GET', '**/api/v1/members/me', {
       statusCode: 200,
       body: {
         result: {

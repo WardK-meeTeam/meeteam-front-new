@@ -91,7 +91,7 @@ export async function fetchNotifications(page = 0, size = NOTIFICATION_PAGE_SIZE
     size: String(size),
   });
 
-  const response = await fetch(`${NOTIFICATION_API_BASE_URL}/api/notifications?${params}`, {
+  const response = await fetch(`${NOTIFICATION_API_BASE_URL}/api/v1/notifications?${params}`, {
     method: 'GET',
     cache: 'no-store',
     credentials: 'include',
@@ -110,7 +110,7 @@ export async function fetchNotifications(page = 0, size = NOTIFICATION_PAGE_SIZE
 }
 
 export async function fetchUnreadNotificationCount() {
-  const response = await fetch(`${NOTIFICATION_API_BASE_URL}/api/notifications/unread/count`, {
+  const response = await fetch(`${NOTIFICATION_API_BASE_URL}/api/v1/notifications/unread/count`, {
     method: 'GET',
     cache: 'no-store',
     credentials: 'include',
