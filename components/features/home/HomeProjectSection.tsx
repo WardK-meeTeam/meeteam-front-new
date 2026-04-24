@@ -79,7 +79,7 @@ export default function HomeProjectSection() {
       <div className="space-y-4">
         <div className="flex items-end justify-between">
           <h2 className="font-brand-display text-2xl text-text-black">프로젝트</h2>
-          <Link href="/projects" className="text-sm font-semibold text-brand-500">
+          <Link href="/projects" className="text-sm font-semibold text-home-blue-500">
             전체보기 &gt;
           </Link>
         </div>
@@ -98,8 +98,8 @@ export default function HomeProjectSection() {
                   role="tab"
                   className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm leading-5 transition-all ${
                     selected
-                      ? 'bg-text-black font-medium text-white shadow-sm'
-                      : 'font-normal text-text-gray hover:text-text-black'
+                      ? 'bg-home-blue-300 font-medium text-text-black shadow-sm'
+                      : 'font-normal text-text-gray hover:bg-home-blue-50 hover:text-text-black'
                   }`}
                 >
                   <span aria-hidden>{chip.emoji}</span>

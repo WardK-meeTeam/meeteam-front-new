@@ -32,7 +32,7 @@ export default function ProfileAvatar({
 
   return (
     <span
-      className={`inline-flex shrink-0 items-center justify-center overflow-hidden bg-brand-50 text-brand-500 ${sizeClassName} ${shapeClassName} ${className}`}
+      className={`inline-flex shrink-0 items-center justify-center overflow-hidden bg-home-blue-50 text-home-blue-500 ${sizeClassName} ${shapeClassName} ${className}`}
       aria-hidden
     >
       {resolvedImageUrl ? (

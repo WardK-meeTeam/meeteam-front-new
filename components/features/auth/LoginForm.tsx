@@ -174,8 +174,8 @@ export default function LoginForm({ redirectPath = '/', onSuccess }: LoginFormPr
             </span>
           </span>
           <span className="flex flex-col gap-1">
-            <span className="text-sm font-semibold text-text-black">
-              포털 인증 진행에 동의합니다.
+            <span className="text-sm leading-5 font-semibold text-text-black">
+              비밀번호는 저장하지 않으며, 로그인 후 세종대 포털에서 로그아웃됩니다.
             </span>
           </span>
         </label>

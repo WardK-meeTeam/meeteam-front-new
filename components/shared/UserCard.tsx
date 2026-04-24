@@ -25,7 +25,7 @@ export default function UserCard({
   return (
     <AuthLink
       href={`/profile/${userId}`}
-      className="group block h-full rounded-2xl border border-border-gray bg-white px-6 pt-6 pb-14 shadow-sm transition-shadow hover:shadow-md"
+      className="group block h-full rounded-2xl border border-home-blue-100 bg-white px-6 pt-6 pb-14 shadow-sm transition-shadow hover:shadow-md"
     >
       <div className="relative h-16 w-full">
         <ProfileAvatar
@@ -38,7 +38,7 @@ export default function UserCard({
           imageClassName="transition-transform duration-400 group-hover:scale-135"
         />
 
-        <span className="absolute top-0 right-0 rounded-lg bg-brand-50 px-2 py-1 text-xs font-medium text-text-gray">
+        <span className="absolute top-0 right-0 rounded-lg bg-home-blue-50 px-2 py-1 text-xs font-medium text-home-blue-500">
           {role}
         </span>
       </div>

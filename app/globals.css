@@ -1,34 +1,70 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-brand-50: #f7f9ff;
-  --color-brand-400: #6366f1;
-  --color-brand-500: #4f46e5;
-  --color-danger-400: #ef4444;
-  --color-danger-500: #e12e2e;
-  --color-danger-soft: #f0cece;
-  --color-error-red: #e12e2e;
-  --color-project-recruiting-bg: #d4fde7;
-  --color-role-leader-bg: #fef9c3;
-  --color-role-leader-text: #a16207;
-  --color-project-status-closed: #475569;
-  --color-project-status-progress: #16a34a;
-  --color-muted-gray: #94a3b8;
-  --color-border-gray: #e2e8f0;
-  --color-text-black: #0f172a;
-  --color-text-gray: #64748b;
+  /* Brand blue from the blue logo: primary buttons, active navigation, links, focus rings. */
+  --color-brand-50: #f4f9ff;
+  --color-brand-100: #e6f2ff;
+  --color-brand-200: #c0e0ff;
+  --color-brand-300: #98b8e8;
+  --color-brand-400: #75a0df;
+  --color-brand-500: #4f86d8;
+  --color-brand-600: #346ec4;
+  --color-brand-700: #28589d;
+  --color-brand-800: #223f6d;
+
+  /* Blue-based accents: small badges, secondary highlights, selected quiet surfaces. */
+  --color-accent-aqua-50: #f0fffc;
+  --color-accent-aqua-100: #d6f7f1;
+  --color-accent-aqua-300: #88d0c8;
+  --color-accent-aqua-500: #48a9a0;
+  --color-accent-aqua-700: #2f746f;
+  --color-accent-sky-50: #f3fbff;
+  --color-accent-sky-100: #d8f0ff;
+  --color-accent-sky-300: #90c8ff;
+  --color-accent-sky-500: #4d9df0;
+
+  /* Neutral ink: text hierarchy, borders, page surfaces. */
+  --color-ink-50: #f8fafc;
+  --color-ink-100: #eef3f8;
+  --color-ink-200: #dde7f0;
+  --color-ink-300: #c6d4e1;
+  --color-ink-400: #90a3b7;
+  --color-ink-500: #68798c;
+  --color-ink-600: #4b5b6c;
+  --color-ink-700: #334155;
+  --color-ink-800: #1f2937;
+  --color-ink-900: #111827;
+
+  /* Semantic aliases used across components. */
+  --color-danger-400: #f15b70;
+  --color-danger-500: #dc3048;
+  --color-danger-soft: #ffe5ea;
+  --color-error-red: #dc3048;
+  --color-project-recruiting-bg: #d6f7f1;
+  --color-role-leader-bg: #e6f2ff;
+  --color-role-leader-text: #28589d;
+  --color-project-status-closed: #4b5b6c;
+  --color-project-status-progress: #0f835f;
+  --color-muted-gray: #90a3b7;
+  --color-border-gray: #dde7f0;
+  --color-text-black: #111827;
+  --color-text-gray: #68798c;
   --color-surface-soft: #f8fafc;
-  --color-divider-soft: #cbd5e1;
-  --color-label-dark: #1e293b;
+  --color-divider-soft: #c6d4e1;
+  --color-label-dark: #1f2937;
   --color-text-body: #334155;
-  --color-brand-100: #e0e7ff;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-chip-bg: #eef2ff;
-  --color-chip-text: #4338ca;
-  --color-border-soft: #f1f5f9;
-  --color-text-soft: #6b7280;
-  --color-accent-violet-500: #a855f7;
+  --color-chip-bg: #f2f8ff;
+  --color-chip-text: #0756ad;
+  --color-border-soft: #eef3f8;
+  --color-text-soft: #68798c;
+
+  /* Home aliases keep existing pages stable while sharing the service palette. */
+  --color-home-blue-50: #f4f9ff;
+  --color-home-blue-100: #e6f2ff;
+  --color-home-blue-200: #c0e0ff;
+  --color-home-blue-300: #98b8e8;
+  --color-home-blue-400: #75a0df;
+  --color-home-blue-500: #4f86d8;
   --color-overlay-dark: rgb(0 0 0 / 40%);
   --color-overlay-white: rgb(255 255 255 / 50%);
 }
@@ -47,7 +83,7 @@ body {
 }
 
 body {
-  color: #0f172a;
+  color: var(--color-text-black);
   background-color: #fff;
 }
 

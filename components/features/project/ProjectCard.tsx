@@ -45,7 +45,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
     <Link
       data-cy="project-card"
       data-project-id={project.id}
-      className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-text-black shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] transition-all duration-300 hover:ring-1 hover:ring-brand-400/50`}
+      className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-text-black shadow-[0_25px_50px_-12px_rgba(79,155,232,0.28)] transition-all duration-300 hover:ring-1 hover:ring-home-blue-400/50`}
       href={`/projects/${project.id}`}
     >
       <div className="absolute inset-0 h-full w-full">
@@ -105,7 +105,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                 </div>
                 <div className="h-1.5 w-20 overflow-hidden rounded-full bg-white/20">
                   <div
-                    className="h-full bg-brand-500"
+                    className="h-full bg-home-blue-400"
                     style={{ width: `${Math.min(100, Math.max(0, percentage))}%` }}
                   />
                 </div>
@@ -157,7 +157,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">
-                  <span className="cursor-pointer text-xs font-bold text-brand-400 transition-colors hover:text-brand-500">
+                  <span className="cursor-pointer text-xs font-bold text-home-blue-400 transition-colors hover:text-home-blue-500">
                     자세히 보기 →
                   </span>
                 </div>

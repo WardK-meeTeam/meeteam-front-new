@@ -13,7 +13,8 @@ export default function AppLogo({ className = 'h-8 w-36', priority = false }: Ap
         alt="meeTeam 로고"
         fill
         priority={priority}
-        sizes="(max-width: 768px) 144px, 160px"
+        unoptimized
+        sizes="(max-width: 768px) 240px, 320px"
         className="object-contain"
       />
     </span>

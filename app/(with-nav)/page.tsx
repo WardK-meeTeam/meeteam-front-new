@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { ArrowRight, GraduationCap, Sparkles } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, GraduationCap } from 'lucide-react';
 import HomeProjectSection from '@/components/features/home/HomeProjectSection';
 import { fetchHomeMembers } from '@/components/features/home/homeApi';
 import StartJourneyModalTrigger from '@/components/features/home/StartJourneyModalTrigger';
@@ -25,31 +26,32 @@ export default async function Page() {
 
   return (
     <div className="space-y-12 pb-8 md:space-y-16">
-      <section className="relative overflow-hidden rounded-3xl border border-border-gray bg-brand-50 px-5 py-5 md:px-6 md:py-6">
-        <div className="pointer-events-none absolute left-6 top-6 h-28 w-28 rounded-full bg-brand-100 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 right-0 h-56 w-56 rounded-full bg-white blur-3xl" />
+      <section className="relative overflow-hidden bg-white px-2 py-8 md:px-4 md:py-12 xl:py-16">
+        <div className="pointer-events-none absolute right-0 top-14 h-96 w-96 rounded-full bg-home-blue-50 blur-3xl md:right-16 md:h-[32rem] md:w-[32rem]" />
 
-        <div className="relative grid items-center gap-5 lg:grid-cols-[0.72fr_1.28fr]">
-          <div className="space-y-5 px-2 py-3 hero-fade-up md:px-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border-gray bg-white px-4 py-2 text-xs font-bold text-text-gray hero-fade-up hero-delay-1">
-              <GraduationCap className="h-4 w-4 text-brand-500" strokeWidth={1.8} />
+        <div className="relative grid items-center gap-10 lg:grid-cols-[0.88fr_1.12fr]">
+          <div className="space-y-8 px-2 hero-fade-up md:px-4">
+            <div className="inline-flex items-center gap-2 rounded-full bg-home-blue-50 px-5 py-2.5 text-sm font-bold text-home-blue-500 hero-fade-up hero-delay-1">
+              <GraduationCap className="h-4 w-4 text-home-blue-500" strokeWidth={1.8} />
               대학생 전용 프로젝트 플랫폼
             </div>
-            <div className="space-y-3 hero-fade-up hero-delay-2">
-              <h1 className="font-brand-display text-3xl leading-tight text-text-black md:text-4xl xl:text-5xl">
-                캠퍼스에서 바로
+            <div className="space-y-6 hero-fade-up hero-delay-2">
+              <h1 className="font-brand-display text-4xl leading-tight text-text-black md:text-5xl xl:text-6xl">
+                캠퍼스 프로젝트,
                 <br />
-                <span className="text-brand-500">프로젝트를 시작해요</span>
+                <span className="text-home-blue-500">함께할 팀을 쉽게 찾아요</span>
               </h1>
-              <p className="max-w-md text-sm leading-6 text-text-gray md:text-base">
-                팀원 모집부터 지원 확인까지, 대학생 프로젝트를 더 가볍게 연결해요.
+              <p className="max-w-md text-lg leading-8 text-text-gray">
+                팀원 모집부터 지원 관리까지
+                <br />
+                meeTeam에서 한 번에 연결해요.
               </p>
             </div>
             <div className="flex flex-wrap gap-3 hero-fade-up hero-delay-3">
               <StartJourneyModalTrigger />
               <Link
                 href="/projects"
-                className="inline-flex items-center gap-2 rounded-full border border-border-gray bg-white px-6 py-3 text-base font-bold text-text-gray"
+                className="inline-flex items-center gap-2 rounded-full border border-home-blue-100 bg-white px-7 py-3.5 text-base font-bold text-home-blue-500 transition-colors hover:border-home-blue-200 hover:bg-home-blue-50 hover:text-text-black"
               >
                 프로젝트 둘러보기
                 <ArrowRight className="h-4 w-4" strokeWidth={2} />
@@ -57,46 +59,18 @@ export default async function Page() {
             </div>
           </div>
 
-          <div className="relative hero-fade-up hero-delay-2">
-            <div className="absolute inset-x-6 top-10 h-40 rounded-full bg-brand-100 blur-3xl" />
-
-            <div className="relative overflow-hidden rounded-[2rem] border border-border-gray bg-white p-3 shadow-2xl hero-image-settle">
-              <div className="relative overflow-hidden rounded-2xl">
-                <img
-                  src="/campus-hero-generated.png"
-                  alt="대학교 캠퍼스 전경"
-                  className="h-[24rem] w-full object-cover md:h-[32rem] xl:h-[38rem]"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-overlay-dark via-transparent to-transparent" />
-                <div className="absolute left-5 top-5">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white bg-overlay-white px-3 py-1.5 text-xs font-bold text-text-black backdrop-blur-sm">
-                    <Sparkles className="h-3.5 w-3.5 text-brand-500" strokeWidth={1.8} />
-                    CAMPUS PROJECTS
-                  </div>
-                </div>
-                <div className="absolute bottom-5 left-5 right-5">
-                  <div className="max-w-sm rounded-2xl border border-white bg-overlay-white p-4 backdrop-blur-sm">
-                    <h2 className="font-brand-display text-xl text-text-black">
-                      캠퍼스에서 시작하는 협업
-                    </h2>
-                    <p className="mt-2 text-sm leading-6 text-text-body">
-                      수업, 공모전, 동아리, 포트폴리오 프로젝트까지 대학생의 실제 협업 흐름에 맞춰
-                      팀을 찾고 연결해요.
-                    </p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-text-gray">
-                        팀원 모집
-                      </span>
-                      <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-text-gray">
-                        지원 관리
-                      </span>
-                      <span className="rounded-full bg-white px-3 py-1 text-xs font-bold text-text-gray">
-                        캠퍼스 매칭
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div className="relative flex min-h-80 items-center justify-center hero-fade-up hero-delay-2">
+            <div className="absolute right-2 top-2 h-80 w-80 rounded-full bg-home-blue-50 md:h-[30rem] md:w-[30rem]" />
+            <div className="absolute bottom-8 right-10 h-20 w-64 rounded-full bg-home-blue-100/70 blur-xl" />
+            <div className="relative hero-image-settle">
+              <Image
+                src="/brand/meeteam_character.png"
+                alt="하트를 들고 있는 meeTeam 캐릭터"
+                width={1472}
+                height={1472}
+                priority
+                className="w-full max-w-sm md:max-w-md xl:max-w-lg"
+              />
             </div>
           </div>
         </div>
@@ -107,7 +81,7 @@ export default async function Page() {
       <section className="space-y-6">
         <div className="flex items-end justify-between">
           <h2 className="font-brand-display text-2xl text-text-black">팀을 구해요!</h2>
-          <Link href="/teammates" className="text-sm font-semibold text-brand-500">
+          <Link href="/teammates" className="text-sm font-semibold text-home-blue-500">
             더 많은 멤버 보기 &gt;
           </Link>
         </div>

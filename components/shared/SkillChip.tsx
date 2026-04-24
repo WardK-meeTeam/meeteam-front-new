@@ -12,7 +12,7 @@ type SkillChipProps = {
 };
 
 const VARIANT_CLASS: Record<SkillChipVariant, string> = {
-  primary: 'border-transparent bg-chip-bg text-brand-700',
+  primary: 'border-transparent bg-home-blue-50 text-home-blue-500',
   neutral: 'border-transparent bg-surface-soft text-label-dark',
   outline: 'border-border-gray bg-white text-project-status-closed',
 };

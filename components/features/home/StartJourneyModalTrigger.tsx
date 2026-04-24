@@ -15,10 +15,10 @@ interface OptionCardProps {
 
 function OptionIcon({ type }: { type: 'rocket' | 'search' }) {
   if (type === 'rocket') {
-    return <Rocket aria-hidden className="h-8 w-8 text-brand-500" strokeWidth={1.8} />;
+    return <Rocket aria-hidden className="h-8 w-8 text-home-blue-500" strokeWidth={1.8} />;
   }
 
-  return <Search aria-hidden className="h-8 w-8 text-brand-500" strokeWidth={1.8} />;
+  return <Search aria-hidden className="h-8 w-8 text-home-blue-500" strokeWidth={1.8} />;
 }
 
 function OptionCard({ title, description, icon, onClick }: OptionCardProps) {
@@ -26,9 +26,9 @@ function OptionCard({ title, description, icon, onClick }: OptionCardProps) {
     <button
       type="button"
       onClick={onClick}
-      className="w-full rounded-3xl border border-border-gray bg-white p-6 text-left transition-colors hover:bg-brand-50"
+      className="w-full rounded-3xl border border-border-gray bg-white p-6 text-left transition-colors hover:border-home-blue-100 hover:bg-home-blue-50"
     >
-      <div className="mb-4 inline-flex rounded-2xl border border-border-gray bg-white p-4 shadow-sm">
+      <div className="mb-4 inline-flex rounded-2xl border border-home-blue-100 bg-home-blue-50 p-4 shadow-sm">
         <OptionIcon type={icon} />
       </div>
 
@@ -61,7 +61,7 @@ export default function StartJourneyModalTrigger() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 text-base font-bold text-white shadow-lg"
+        className="inline-flex items-center gap-2 rounded-full bg-home-blue-500 px-7 py-3.5 text-base font-bold text-white shadow-lg transition-colors hover:bg-home-blue-400"
       >
         ⚡ 프로젝트 시작하기
       </button>
@@ -93,7 +93,7 @@ export default function StartJourneyModalTrigger() {
             />
           </div>
 
-          <footer className="border-t border-border-gray bg-brand-50 px-6 py-4">
+          <footer className="border-t border-border-gray bg-home-blue-50 px-6 py-4">
             <button
               type="button"
               onClick={() => handleMove('/profile')}

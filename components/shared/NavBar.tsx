@@ -46,7 +46,7 @@ export function NavBar() {
 
   return (
     <nav
-      className={`sticky top-0 z-[100] border-b border-border-gray bg-white shadow-[0_1px_0_var(--color-border-gray),0_10px_24px_rgba(15,23,42,0.04)] transition-transform duration-300 ease-out ${
+      className={`sticky top-0 z-40 border-b border-home-blue-100 bg-white/95 backdrop-blur-md transition-transform duration-300 ease-out ${
         isAtTop ? 'translate-y-0' : '-translate-y-full'
       }`}
     >
@@ -63,8 +63,8 @@ export function NavBar() {
                   <AuthLink
                     className={
                       isActiveLink(item.href)
-                        ? 'text-sm leading-5 font-semibold text-brand-500'
-                        : 'text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black'
+                        ? 'text-sm leading-5 font-semibold text-home-blue-500'
+                        : 'text-sm leading-5 font-medium text-text-gray transition-colors hover:text-home-blue-500'
                     }
                     href={item.href}
                   >
@@ -74,8 +74,8 @@ export function NavBar() {
                   <Link
                     className={
                       isActiveLink(item.href)
-                        ? 'text-sm leading-5 font-semibold text-brand-500'
-                        : 'text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black'
+                        ? 'text-sm leading-5 font-semibold text-home-blue-500'
+                        : 'text-sm leading-5 font-medium text-text-gray transition-colors hover:text-home-blue-500'
                     }
                     href={item.href}
                   >
@@ -92,7 +92,7 @@ export function NavBar() {
             <Link href="/notifications">
               <button
                 type="button"
-                className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-project-status-closed transition-colors hover:bg-surface-soft hover:text-text-black"
+                className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-text-gray transition-colors hover:bg-home-blue-100 hover:text-home-blue-500"
                 aria-label="알림"
               >
                 <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
@@ -104,13 +104,13 @@ export function NavBar() {
                 ) : null}
               </button>
             </Link>
-            <span className="h-6 w-px bg-border-gray" aria-hidden />
+            <span className="h-6 w-px bg-home-blue-100" aria-hidden />
             <ProfileMenu />
           </div>
         ) : (
           <Link
             href="/auth/login"
-            className="text-sm leading-5 font-medium text-project-status-closed transition-colors hover:text-text-black"
+            className="inline-flex h-10 items-center justify-center rounded-full border border-home-blue-100 bg-white px-5 text-sm leading-5 font-bold text-home-blue-500 shadow-sm transition-colors hover:bg-home-blue-100 hover:text-text-black"
           >
             로그인
           </Link>
