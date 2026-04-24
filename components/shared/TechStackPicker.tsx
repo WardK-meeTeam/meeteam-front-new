@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 import BaseInput from '@/components/shared/BaseInput';
 import SkillChip from '@/components/shared/SkillChip';
+import TechStackIcon from '@/components/shared/TechStackIcon';
 
 type TechStackPickerProps = {
   options: string[];
@@ -120,7 +121,10 @@ export default function TechStackPicker({
                       onClick={() => handleSelect(option)}
                       className="flex w-full items-center justify-between rounded-xl px-3 py-2 text-left text-sm leading-5 text-mt-text-nav transition-colors hover:bg-mt-bg-soft hover:text-mt-text-primary"
                     >
-                      <span>{option}</span>
+                      <span className="flex min-w-0 items-center gap-2">
+                        <TechStackIcon label={option} size={16} />
+                        <span className="truncate">{option}</span>
+                      </span>
                     </button>
                   </li>
                 ))}

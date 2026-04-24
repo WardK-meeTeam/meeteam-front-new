@@ -14,14 +14,9 @@ export type ProjectStatus = 'recruiting' | 'closed';
 export type ProjectRecruitmentStatus = 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
 
 export type ProjectCategoryId =
-  | 'ai-tech'
-  | 'eco'
-  | 'healthcare'
-  | 'pets'
-  | 'education'
-  | 'fashion'
-  | 'fintech'
-  | 'etc';
+  | 'capstone'
+  | 'creative-semester'
+  | 'club';
 
 export type ReleasePlatform = '웹' | 'iOS' | '안드로이드';
 

@@ -36,7 +36,7 @@ export default function ProfileSection({
             data-cy="signup-name"
           />
         </BaseField>
-        <BaseField label="생년월일" errorText={birthError}>
+        <BaseField label="생년월일" errorText={birthError} className="gap-3">
           <BirthDateSelect value={birth} onChange={onChangeBirth} />
         </BaseField>
       </div>

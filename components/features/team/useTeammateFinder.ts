@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useInfiniteScroll } from '@/components/shared/useInfiniteScroll';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
 import { collectTechStackNames } from '@/components/features/auth/jobOptionUtils';
@@ -40,6 +40,7 @@ export function useTeammateFinder() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const hasLoadedRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -74,7 +75,10 @@ export function useTeammateFinder() {
 
     const loadTeammates = async () => {
       try {
-        setIsInitialLoading(true);
+        if (!hasLoadedRef.current) {
+          setIsInitialLoading(true);
+        }
+
         setErrorMessage(null);
 
         const result = await fetchTeammates({
@@ -94,14 +98,18 @@ export function useTeammateFinder() {
         setTotalCount(result.totalCount);
         setCurrentPage(result.page);
         setHasMore(!result.last);
+        hasLoadedRef.current = true;
       } catch (error) {
         if (!active) {
           return;
         }
 
-        setTeammates([]);
-        setTotalCount(0);
-        setHasMore(false);
+        if (!hasLoadedRef.current) {
+          setTeammates([]);
+          setTotalCount(0);
+          setHasMore(false);
+        }
+
         setErrorMessage(
           error instanceof Error ? error.message : '팀원 목록을 불러오지 못했습니다.',
         );

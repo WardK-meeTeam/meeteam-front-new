@@ -64,13 +64,13 @@ export default function BirthDateSelect({ value, onChange }: BirthDateSelectProp
   };
 
   return (
-    <div className="grid grid-cols-3 gap-2" data-cy="signup-birth">
+    <div className="grid grid-cols-[1.5fr_1fr_1fr] gap-3" data-cy="signup-birth">
       <BirthSelect
         ariaLabel="출생 연도"
         value={year}
         placeholder="연도"
         options={YEARS}
-        suffix="년"
+        unit="년"
         dataCy="signup-birth-year"
         onChange={handleYearChange}
       />
@@ -79,7 +79,7 @@ export default function BirthDateSelect({ value, onChange }: BirthDateSelectProp
         value={month}
         placeholder="월"
         options={MONTHS}
-        suffix="월"
+        unit="월"
         dataCy="signup-birth-month"
         onChange={(nextMonth) => handleMonthChange(nextMonth)}
       />
@@ -88,7 +88,7 @@ export default function BirthDateSelect({ value, onChange }: BirthDateSelectProp
         value={day}
         placeholder="일"
         options={days}
-        suffix="일"
+        unit="일"
         dataCy="signup-birth-day"
         onChange={(nextDay) => updateBirthDate(year, month, nextDay)}
       />
@@ -101,7 +101,7 @@ function BirthSelect({
   value,
   placeholder,
   options,
-  suffix,
+  unit,
   dataCy,
   onChange,
 }: {
@@ -109,7 +109,7 @@ function BirthSelect({
   value: string;
   placeholder: string;
   options: string[];
-  suffix: string;
+  unit: string;
   dataCy: string;
   onChange: (value: string) => void;
 }) {
@@ -120,18 +120,20 @@ function BirthSelect({
         value={value}
         data-cy={dataCy}
         onChange={(event) => onChange(event.target.value)}
-        className="h-12 w-full appearance-none rounded-xl border border-mt-border bg-mt-white px-3 pr-8 text-sm leading-5 font-bold text-mt-text-primary outline-none transition-all focus:border-mt-primary focus:ring-2 focus:ring-mt-logo-blue/20"
+        className="h-12 w-full appearance-none rounded-xl border border-mt-border bg-mt-white pl-3 pr-10 text-sm leading-5 font-bold text-mt-text-primary outline-none transition-all focus:border-mt-primary focus:ring-2 focus:ring-mt-logo-blue/20"
       >
         <option value="">{placeholder}</option>
         {options.map((option) => (
           <option key={option} value={option}>
             {option}
-            {suffix}
           </option>
         ))}
       </select>
+      <span className="pointer-events-none absolute right-6 top-1/2 -translate-y-1/2 text-sm font-bold text-mt-text-primary">
+        {value ? unit : ''}
+      </span>
       <ChevronDown
-        className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-mt-text-secondary"
+        className="pointer-events-none absolute right-1.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-mt-text-secondary"
         aria-hidden
         strokeWidth={1.8}
       />

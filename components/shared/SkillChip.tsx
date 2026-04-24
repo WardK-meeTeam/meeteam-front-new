@@ -1,4 +1,5 @@
 import { X } from 'lucide-react';
+import TechStackIcon from '@/components/shared/TechStackIcon';
 
 type SkillChipVariant = 'primary' | 'neutral' | 'outline';
 type SkillChipSize = 'sm' | 'md';
@@ -33,6 +34,7 @@ export default function SkillChip({
     <span
       className={`inline-flex items-center gap-1 border font-medium ${VARIANT_CLASS[variant]} ${SIZE_CLASS[size]} ${className}`}
     >
+      <TechStackIcon label={label} size={size === 'md' ? 16 : 14} />
       {label}
       {onRemove ? (
         <button

@@ -31,7 +31,7 @@ export interface JoinedProject {
 export const joinedProject: JoinedProject | null = {
   id: 1,
   title: 'AI 기반 뉴스 요약 서비스 개발',
-  category: 'AI/테크',
+  category: '캡스톤',
   leader: '정연준',
   currentMembers: 2,
   maxMembers: 4,

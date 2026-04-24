@@ -12,12 +12,9 @@ import {
 } from '@/components/features/home/homeApi';
 import ToastMessage from '@/components/shared/ToastMessage';
 
-const CATEGORY_CHIPS: Array<{ emoji: string; label: HomeProjectCategory }> = [
-  { emoji: '✨', label: '전체' },
-  ...PROJECT_CATEGORIES.map((category) => ({
-    emoji: category.icon,
-    label: category.label as HomeProjectCategory,
-  })),
+const CATEGORY_CHIPS: HomeProjectCategory[] = [
+  '전체',
+  ...PROJECT_CATEGORIES.map((category) => category.label as HomeProjectCategory),
 ];
 
 export default function HomeProjectSection() {
@@ -86,24 +83,23 @@ export default function HomeProjectSection() {
 
         <div className="overflow-x-auto pb-1" role="tablist" aria-label="프로젝트 카테고리">
           <div className="flex min-w-max gap-2">
-            {CATEGORY_CHIPS.map((chip) => {
-              const selected = selectedCategory === chip.label;
+            {CATEGORY_CHIPS.map((category) => {
+              const selected = selectedCategory === category;
 
               return (
                 <button
-                  key={chip.label}
+                  key={category}
                   type="button"
-                  onClick={() => setSelectedCategory(chip.label)}
+                  onClick={() => setSelectedCategory(category)}
                   aria-pressed={selected}
                   role="tab"
-                  className={`inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm leading-5 transition-all ${
+                  className={`inline-flex shrink-0 items-center justify-center rounded-full px-3.5 py-1.5 text-sm leading-5 transition-all ${
                     selected
                       ? 'bg-mt-primary font-medium text-mt-white shadow-sm'
                       : 'font-normal text-mt-text-secondary hover:bg-mt-badge-bg hover:text-mt-text-primary'
                   }`}
                 >
-                  <span aria-hidden>{chip.emoji}</span>
-                  <span>{chip.label}</span>
+                  {category}
                 </button>
               );
             })}

@@ -63,8 +63,8 @@ export function NavBar() {
                   <AuthLink
                     className={
                       isActiveLink(item.href)
-                        ? 'text-sm leading-5 font-semibold text-mt-primary'
-                        : 'text-sm leading-5 font-medium text-mt-text-secondary transition-colors hover:text-mt-primary'
+                        ? 'text-sm leading-5 font-bold text-mt-primary'
+                        : 'text-sm leading-5 font-semibold text-mt-text-secondary transition-colors hover:text-mt-primary'
                     }
                     href={item.href}
                   >
@@ -74,8 +74,8 @@ export function NavBar() {
                   <Link
                     className={
                       isActiveLink(item.href)
-                        ? 'text-sm leading-5 font-semibold text-mt-primary'
-                        : 'text-sm leading-5 font-medium text-mt-text-secondary transition-colors hover:text-mt-primary'
+                        ? 'text-sm leading-5 font-bold text-mt-primary'
+                        : 'text-sm leading-5 font-semibold text-mt-text-secondary transition-colors hover:text-mt-primary'
                     }
                     href={item.href}
                   >

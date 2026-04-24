@@ -26,15 +26,7 @@ type BackendProjectDetailResponse = {
   id: number;
   name: string;
   description: string;
-  projectCategory:
-    | 'ENVIRONMENT'
-    | 'PET'
-    | 'HEALTHCARE'
-    | 'EDUCATION'
-    | 'AI_TECH'
-    | 'FASHION_BEAUTY'
-    | 'FINANCE_PRODUCTIVITY'
-    | 'ETC';
+  projectCategory: 'CAPSTONE' | 'CREATIVE_SEMESTER' | 'CLUB';
   platformCategory: 'IOS' | 'ANDROID' | 'WEB';
   imageUrl: string | null;
   recruitmentStatus: 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
@@ -441,22 +433,12 @@ function mapApplicationDetail(application: BackendApplicationDetailResponse): Pr
 
 function mapCategoryIdToApiValue(categoryId: ProjectFormValues['categoryId']) {
   switch (categoryId) {
-    case 'eco':
-      return 'ENVIRONMENT';
-    case 'pets':
-      return 'PET';
-    case 'healthcare':
-      return 'HEALTHCARE';
-    case 'education':
-      return 'EDUCATION';
-    case 'ai-tech':
-      return 'AI_TECH';
-    case 'fashion':
-      return 'FASHION_BEAUTY';
-    case 'fintech':
-      return 'FINANCE_PRODUCTIVITY';
-    case 'etc':
-      return 'ETC';
+    case 'capstone':
+      return 'CAPSTONE';
+    case 'creative-semester':
+      return 'CREATIVE_SEMESTER';
+    case 'club':
+      return 'CLUB';
     default:
       throw new Error('프로젝트 카테고리를 다시 선택해 주세요.');
   }
@@ -464,22 +446,12 @@ function mapCategoryIdToApiValue(categoryId: ProjectFormValues['categoryId']) {
 
 function mapCategoryApiValueToId(category: BackendProjectDetailResponse['projectCategory']) {
   switch (category) {
-    case 'ENVIRONMENT':
-      return 'eco';
-    case 'PET':
-      return 'pets';
-    case 'HEALTHCARE':
-      return 'healthcare';
-    case 'EDUCATION':
-      return 'education';
-    case 'AI_TECH':
-      return 'ai-tech';
-    case 'FASHION_BEAUTY':
-      return 'fashion';
-    case 'FINANCE_PRODUCTIVITY':
-      return 'fintech';
-    case 'ETC':
-      return 'etc';
+    case 'CAPSTONE':
+      return 'capstone';
+    case 'CREATIVE_SEMESTER':
+      return 'creative-semester';
+    case 'CLUB':
+      return 'club';
   }
 }
 

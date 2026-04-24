@@ -1,8 +1,8 @@
 'use client';
 
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, Settings, UserPlus, Users } from 'lucide-react';
+import { Settings, UserPlus, Users } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import {
   fetchProjectDetail,
@@ -50,11 +50,16 @@ const TABS: ManageTab[] = [
   },
 ];
 
-const STATUS_COPY: Record<ProjectRecruitmentStatus, { label: string; actionLabel?: string }> = {
-  RECRUITING: { label: '모집 중', actionLabel: '모집 중단' },
-  SUSPENDED: { label: '모집 중단', actionLabel: '모집 재개' },
+const STATUS_COPY: Record<ProjectRecruitmentStatus, { label: string }> = {
+  RECRUITING: { label: '모집 중' },
+  SUSPENDED: { label: '모집 중단' },
   CLOSED: { label: '모집 완료' },
 };
+
+const EDITABLE_STATUS_OPTIONS = [
+  { value: 'RECRUITING', label: '모집 중' },
+  { value: 'SUSPENDED', label: '모집 중단' },
+] as const satisfies ReadonlyArray<{ value: ProjectRecruitmentStatus; label: string }>;
 
 type ProjectManageHeader = {
   title: string;
@@ -72,7 +77,6 @@ export default function ProjectManageShell({
 }: ProjectManageShellProps) {
   const handleAuthRequired = useAuthRequiredModal();
   const cachedHeader = projectManageHeaderCache.get(projectId);
-  const [isStatusMenuOpen, setIsStatusMenuOpen] = useState(false);
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);
   const [isHeaderLoading, setIsHeaderLoading] = useState(!cachedHeader);
   const [projectTitle, setProjectTitle] = useState(cachedHeader?.title ?? '');
@@ -81,20 +85,8 @@ export default function ProjectManageShell({
   );
   const [pendingApplicants, setPendingApplicants] = useState(cachedHeader?.pendingApplicants ?? 0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const statusMenuRef = useRef<HTMLDivElement>(null);
   const statusCopy = STATUS_COPY[projectStatus];
-  const canToggleStatus = projectStatus !== 'CLOSED' && Boolean(statusCopy.actionLabel);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (!statusMenuRef.current?.contains(event.target as Node)) {
-        setIsStatusMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const canEditStatus = projectStatus !== 'CLOSED';
 
   useEffect(() => {
     let active = true;
@@ -174,9 +166,8 @@ export default function ProjectManageShell({
     }
   }, [pendingApplicantsCount, projectId]);
 
-  const handleToggleStatus = async () => {
-    if (!canToggleStatus || isStatusUpdating) {
-      setIsStatusMenuOpen(false);
+  const handleStatusChange = async (nextStatus: ProjectRecruitmentStatus) => {
+    if (!canEditStatus || isStatusUpdating || nextStatus === projectStatus) {
       return;
     }
 
@@ -184,19 +175,17 @@ export default function ProjectManageShell({
       setIsStatusUpdating(true);
       setErrorMessage(null);
 
-      const nextStatus = await toggleProjectRecruitmentStatus(projectId);
+      const statusResponse = await toggleProjectRecruitmentStatus(projectId);
 
-      setProjectStatus(nextStatus.recruitmentStatus);
+      setProjectStatus(statusResponse.recruitmentStatus);
       const cached = projectManageHeaderCache.get(projectId);
 
       if (cached) {
         projectManageHeaderCache.set(projectId, {
           ...cached,
-          status: nextStatus.recruitmentStatus,
+          status: statusResponse.recruitmentStatus,
         });
       }
-
-      setIsStatusMenuOpen(false);
     } catch (error) {
       if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
         return;
@@ -219,54 +208,66 @@ export default function ProjectManageShell({
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div className="space-y-0.5">
               {isHeaderLoading ? (
-                <SkeletonBlock className="h-8 w-64 max-w-full" />
+                <SkeletonBlock className="h-10 w-72 max-w-full" />
               ) : (
-                <h1 className="text-2xl leading-8 font-bold text-mt-text-primary">
+                <Link
+                  href={`/projects/${projectId}`}
+                  className="inline-flex text-3xl leading-10 font-bold text-mt-text-primary transition-colors hover:text-mt-primary"
+                  data-cy="project-manage-title-link"
+                >
                   {projectTitle}
-                </h1>
+                </Link>
               )}
             </div>
 
-            <div className="flex items-center gap-3 self-end md:self-auto">
+            <div className="flex flex-wrap items-center gap-3 self-end md:self-auto">
               <span className="text-sm leading-5 font-bold text-mt-text-nav">상태:</span>
-              <div className="relative" ref={statusMenuRef}>
-                {isHeaderLoading ? (
-                  <SkeletonBlock className="h-10 w-28 rounded-xl" />
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => setIsStatusMenuOpen((prev) => !prev)}
-                    disabled={isStatusUpdating}
-                    data-cy="project-manage-status-button"
-                    className={`inline-flex items-center gap-3 rounded-xl px-4 py-2.5 text-sm leading-5 font-bold text-mt-white shadow-md transition-colors ${
-                      projectStatus === 'CLOSED'
-                        ? 'bg-mt-text-nav hover:opacity-95'
-                        : 'bg-mt-primary hover:bg-mt-logo-blue'
-                    } disabled:cursor-not-allowed disabled:opacity-70`}
-                  >
-                    {isStatusUpdating ? '변경 중' : statusCopy.label}
-                    <ChevronDown
-                      className={`h-4 w-4 transition-transform ${isStatusMenuOpen ? 'rotate-180' : ''}`}
-                      aria-hidden
-                      strokeWidth={2}
-                    />
-                  </button>
-                )}
+              {isHeaderLoading ? (
+                <SkeletonBlock className="h-10 w-48 rounded-xl" />
+              ) : projectStatus === 'CLOSED' ? (
+                <span className="inline-flex h-10 items-center rounded-xl bg-mt-bg-soft px-4 text-sm leading-5 font-bold text-mt-text-nav">
+                  {statusCopy.label}
+                </span>
+              ) : (
+                <fieldset
+                  className="inline-flex rounded-full border border-mt-border bg-mt-white p-1 shadow-sm"
+                  disabled={isStatusUpdating}
+                  data-cy="project-manage-status-radio-group"
+                >
+                  <legend className="sr-only">프로젝트 모집 상태</legend>
+                  {EDITABLE_STATUS_OPTIONS.map((option) => {
+                    const checked = projectStatus === option.value;
 
-                {isStatusMenuOpen && !isHeaderLoading ? (
-                  <div className="absolute right-0 top-[calc(100%+8px)] z-30 min-w-32 rounded-2xl border border-mt-border bg-mt-white p-2 shadow-xl">
-                    <button
-                      type="button"
-                      onClick={handleToggleStatus}
-                      disabled={!canToggleStatus || isStatusUpdating}
-                      data-cy="project-manage-status-toggle"
-                      className="flex w-full items-center justify-between rounded-xl bg-mt-badge-bg px-4 py-2.5 text-sm leading-5 font-bold text-mt-primary transition-colors hover:bg-mt-border disabled:cursor-not-allowed disabled:bg-mt-bg-soft disabled:text-mt-text-secondary"
-                    >
-                      {statusCopy.actionLabel ?? '변경 불가'}
-                    </button>
-                  </div>
-                ) : null}
-              </div>
+                    return (
+                      <label
+                        key={option.value}
+                        className={`inline-flex h-8 cursor-pointer items-center gap-2 rounded-full px-3 text-sm leading-5 font-bold transition-colors ${
+                          checked
+                            ? 'bg-mt-badge-bg text-mt-primary'
+                            : 'text-mt-text-secondary hover:text-mt-primary'
+                        } ${isStatusUpdating ? 'cursor-not-allowed opacity-70' : ''}`}
+                      >
+                        <input
+                          type="radio"
+                          name={`project-${projectId}-recruitment-status`}
+                          value={option.value}
+                          checked={checked}
+                          onChange={() => handleStatusChange(option.value)}
+                          className="sr-only"
+                          data-cy={`project-manage-status-${option.value.toLowerCase()}`}
+                        />
+                        <span
+                          className={`h-2 w-2 rounded-full ${
+                            checked ? 'bg-mt-primary' : 'bg-mt-border'
+                          }`}
+                          aria-hidden
+                        />
+                        {option.label}
+                      </label>
+                    );
+                  })}
+                </fieldset>
+              )}
             </div>
           </div>
 

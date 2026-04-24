@@ -134,6 +134,17 @@ button {
   }
 }
 
+@keyframes hero-character-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
 .hero-fade-up {
   animation: hero-fade-up 560ms ease-out both;
   will-change: opacity, transform;
@@ -141,6 +152,13 @@ button {
 
 .hero-image-settle {
   animation: hero-image-settle 720ms ease-out 120ms both;
+  will-change: opacity, transform;
+}
+
+.hero-character-float {
+  animation:
+    hero-image-settle 720ms ease-out 120ms both,
+    hero-character-float 2800ms ease-in-out 960ms infinite;
   will-change: opacity, transform;
 }
 
@@ -166,6 +184,7 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .hero-fade-up,
   .hero-image-settle,
+  .hero-character-float,
   .hero-badge-animate,
   .hero-delay-1,
   .hero-delay-2,

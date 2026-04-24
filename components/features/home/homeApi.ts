@@ -6,14 +6,9 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8
 
 export type HomeProjectCategory =
   | '전체'
-  | 'AI/테크'
-  | '친환경'
-  | '헬스케어'
-  | '반려동물'
-  | '교육/학습'
-  | '패션/뷰티'
-  | '금융/핀테크'
-  | '기타';
+  | '캡스톤'
+  | '창의학기제'
+  | '동아리';
 
 export type HomeProjectCard = {
   id: number;
@@ -91,14 +86,9 @@ type BackendMemberCardResponse = {
 };
 
 const CATEGORY_API_VALUES: Partial<Record<HomeProjectCategory, string>> = {
-  'AI/테크': 'AI_TECH',
-  친환경: 'ENVIRONMENT',
-  헬스케어: 'HEALTHCARE',
-  반려동물: 'PET',
-  '교육/학습': 'EDUCATION',
-  '패션/뷰티': 'FASHION_BEAUTY',
-  '금융/핀테크': 'FINANCE_PRODUCTIVITY',
-  기타: 'ETC',
+  캡스톤: 'CAPSTONE',
+  창의학기제: 'CREATIVE_SEMESTER',
+  동아리: 'CLUB',
 };
 
 async function readPublicEnvelope<T>(response: Response, fallbackMessage: string) {

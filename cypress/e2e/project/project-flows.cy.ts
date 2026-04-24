@@ -584,10 +584,9 @@ describe('프로젝트 생성 및 관리 흐름', () => {
     visitAuthenticated(`/projects/${PROJECT_ID}/manage`);
     cy.wait('@teamManagementRequest');
 
-    cy.get('[data-cy="project-manage-status-button"]').click();
-    cy.get('[data-cy="project-manage-status-toggle"]').click();
+    cy.get('[data-cy="project-manage-status-suspended"]').check({ force: true });
     cy.wait('@toggleRecruitmentRequest');
-    cy.get('[data-cy="project-manage-status-button"]').should('contain', '모집 중단');
+    cy.get('[data-cy="project-manage-status-suspended"]').should('be.checked');
   });
 
   it('내가 만든 프로젝트와 참여 프로젝트는 내 프로필에서 확인한다', () => {

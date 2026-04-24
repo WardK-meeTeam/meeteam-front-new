@@ -137,22 +137,12 @@ function mapProjectCard(project: BackendProjectCardResponse): ProjectSearchCard 
 
 function mapCategoryFilter(category: CategoryFilter) {
   switch (category) {
-    case 'AI/테크':
-      return 'AI_TECH';
-    case '친환경':
-      return 'ENVIRONMENT';
-    case '헬스케어':
-      return 'HEALTHCARE';
-    case '반려동물':
-      return 'PET';
-    case '교육/학습':
-      return 'EDUCATION';
-    case '패션/뷰티':
-      return 'FASHION_BEAUTY';
-    case '금융/핀테크':
-      return 'FINANCE_PRODUCTIVITY';
-    case '기타':
-      return 'ETC';
+    case '캡스톤':
+      return 'CAPSTONE';
+    case '창의학기제':
+      return 'CREATIVE_SEMESTER';
+    case '동아리':
+      return 'CLUB';
     default:
       return null;
   }

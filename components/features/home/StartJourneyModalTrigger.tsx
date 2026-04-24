@@ -63,7 +63,7 @@ export default function StartJourneyModalTrigger() {
         onClick={() => setOpen(true)}
         className="inline-flex items-center gap-2 rounded-full bg-mt-hero-blue px-7 py-3.5 text-base font-bold text-mt-white shadow-lg transition-colors hover:bg-mt-primary"
       >
-        ⚡ 프로젝트 시작하기
+        프로젝트 시작하기
       </button>
 
       <BaseModal isOpen={open} onClose={() => setOpen(false)}>
