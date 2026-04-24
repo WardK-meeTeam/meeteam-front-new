@@ -51,20 +51,20 @@ export function NavBar() {
       }`}
     >
       <div className="relative mx-auto flex min-h-16 w-full max-w-7xl flex-col gap-2 px-4 py-3 sm:px-6 md:h-16 md:flex-row md:items-center md:justify-between md:gap-4 md:py-0 lg:px-8">
-        <div className="flex min-w-0 flex-1 flex-col gap-2 md:flex-row md:items-center md:gap-8">
+        <div className="flex min-w-0 flex-1 flex-col gap-2 md:flex-row md:items-center md:gap-9">
           <Link href="/" className="inline-flex items-center" aria-label="meeTeam 홈">
-            <AppLogo className="h-8 w-36 sm:h-9 sm:w-40" priority />
+            <AppLogo className="h-9 w-40 sm:h-10 sm:w-44" priority />
           </Link>
 
-          <ul className="flex list-none items-center gap-4 overflow-x-auto p-0 pb-1 md:gap-6 md:overflow-visible md:pb-0">
+          <ul className="flex list-none items-center gap-3 overflow-x-auto p-0 pb-1 md:gap-4 md:overflow-visible md:pb-0">
             {navItems.map((item) => (
               <li key={item.href} className="shrink-0">
                 {item.authRequired ? (
                   <AuthLink
                     className={
                       isActiveLink(item.href)
-                        ? 'text-sm leading-5 font-bold text-mt-primary'
-                        : 'text-sm leading-5 font-semibold text-mt-text-secondary transition-colors hover:text-mt-primary'
+                        ? 'inline-flex h-10 items-center rounded-full bg-mt-bg-soft px-4 text-base leading-6 font-extrabold text-mt-primary transition-colors'
+                        : 'inline-flex h-10 items-center rounded-full px-4 text-base leading-6 font-bold text-mt-text-primary transition-colors hover:bg-mt-bg-soft hover:text-mt-primary'
                     }
                     href={item.href}
                   >
@@ -74,8 +74,8 @@ export function NavBar() {
                   <Link
                     className={
                       isActiveLink(item.href)
-                        ? 'text-sm leading-5 font-bold text-mt-primary'
-                        : 'text-sm leading-5 font-semibold text-mt-text-secondary transition-colors hover:text-mt-primary'
+                        ? 'inline-flex h-10 items-center rounded-full bg-mt-bg-soft px-4 text-base leading-6 font-extrabold text-mt-primary transition-colors'
+                        : 'inline-flex h-10 items-center rounded-full px-4 text-base leading-6 font-bold text-mt-text-primary transition-colors hover:bg-mt-bg-soft hover:text-mt-primary'
                     }
                     href={item.href}
                   >
