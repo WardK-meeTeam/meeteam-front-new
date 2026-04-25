@@ -14,7 +14,7 @@ const jua = Jua({
 const DEFAULT_SITE_URL = 'https://meeteam.alom-sejong.com';
 const SITE_NAME = '미팀 - meeTeam';
 const SITE_DESCRIPTION = '대학생 전용 팀빌딩 플랫폼';
-const OG_IMAGE = '/brand/meeteam_character_hat.png';
+const OG_IMAGE = '/brand/meeteam_logo_hat.png';
 
 function getSiteOrigin() {
   const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL;
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
         url: OG_IMAGE,
         width: 1536,
         height: 1024,
-        alt: 'meeTeam 캐릭터',
+        alt: 'meeTeam 로고',
       },
     ],
   },
