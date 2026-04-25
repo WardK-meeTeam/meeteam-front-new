@@ -174,17 +174,19 @@ body {
   background: color-mix(in srgb, var(--mt-primary) 65%, transparent);
 }
 
-input,
-button,
-textarea,
-select {
-  font-family: inherit;
-  font-size: inherit;
-  line-height: inherit;
-}
+@layer base {
+  input,
+  button,
+  textarea,
+  select {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
 
-button {
-  cursor: pointer;
+  button {
+    cursor: pointer;
+  }
 }
 
 .hero-primary-cta {

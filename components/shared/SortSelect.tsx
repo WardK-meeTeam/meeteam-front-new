@@ -27,7 +27,7 @@ export default function SortSelect<TValue extends string>({
         onChange={(event) => onChange(event.target.value as TValue)}
         data-cy={dataCy}
         aria-label={ariaLabel}
-        className="h-10 w-full appearance-none rounded-lg border border-transparent bg-mt-white py-2 pl-3 pr-9 text-sm leading-5 font-bold text-mt-text-nav outline-none transition-colors focus:border-mt-border"
+        className="h-10 w-full appearance-none rounded-lg border border-transparent bg-mt-white py-2 pl-3 pr-9 text-sm leading-5 font-bold text-mt-text-nav outline-none transition-colors focus:border-transparent"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
