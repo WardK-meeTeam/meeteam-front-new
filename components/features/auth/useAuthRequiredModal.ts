@@ -2,6 +2,7 @@
 
 import { useCallback } from 'react';
 import { usePathname } from 'next/navigation';
+import { useAuthStore } from '@/stores/useAuthStore';
 import { useLoginModalStore } from '@/stores/useLoginModalStore';
 
 import { isAuthRequiredError } from './authError';
@@ -13,12 +14,17 @@ type AuthRequiredModalOptions = {
 
 export function useAuthRequiredModal() {
   const pathname = usePathname();
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
   const openLoginModal = useLoginModalStore((state) => state.openLoginModal);
 
   return useCallback(
     (error: unknown, options?: AuthRequiredModalOptions) => {
       if (!isAuthRequiredError(error)) {
         return false;
+      }
+
+      if (isLoggingOut) {
+        return true;
       }
 
       const redirectPath = normalizeProtectedPath(options?.redirectPath ?? pathname);
@@ -30,6 +36,6 @@ export function useAuthRequiredModal() {
 
       return true;
     },
-    [openLoginModal, pathname],
+    [isLoggingOut, openLoginModal, pathname],
   );
 }

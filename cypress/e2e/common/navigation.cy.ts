@@ -52,6 +52,34 @@ function installProjectSearchIntercept() {
   }).as('projectSearchRequest');
 }
 
+function installHomeIntercepts() {
+  cy.intercept('GET', '**/api/v1/main/projects*', {
+    statusCode: 200,
+    body: {
+      result: {
+        content: [],
+        last: true,
+        number: 0,
+        size: 4,
+        empty: true,
+      },
+    },
+  }).as('homeProjectsRequest');
+
+  cy.intercept('GET', '**/api/v1/main/members*', {
+    statusCode: 200,
+    body: {
+      result: {
+        content: [],
+        last: true,
+        number: 0,
+        size: 5,
+        empty: true,
+      },
+    },
+  }).as('homeMembersRequest');
+}
+
 function installTeammateIntercepts() {
   cy.intercept('GET', '**/api/v1/jobs/options', {
     statusCode: 200,
@@ -113,6 +141,7 @@ describe('내비게이션과 공통 UI', () => {
 
   it('로그인 상태의 헤더는 알림과 프로필 메뉴를 보여주고 로그아웃 후 로그인 CTA로 돌아간다', () => {
     installProjectSearchIntercept();
+    installHomeIntercepts();
     installAuthenticatedShellIntercepts();
     cy.intercept('POST', '**/api/v1/auth/logout', {
       statusCode: 200,
@@ -137,8 +166,11 @@ describe('내비게이션과 공통 UI', () => {
     cy.contains('button', '로그아웃').click();
     cy.wait('@logoutRequest');
 
-    cy.location('pathname').should('eq', '/projects');
+    cy.location('pathname').should('eq', '/');
+    cy.wait('@homeProjectsRequest');
+    cy.wait('@homeMembersRequest');
     cy.contains('a', '로그인').should('exist').and('have.attr', 'href', '/auth/login');
+    cy.contains('로그인이 필요한 기능입니다').should('not.exist');
   });
 
   it('모바일 viewport에서도 주요 헤더 링크로 이동할 수 있다', () => {

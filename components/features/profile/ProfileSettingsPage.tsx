@@ -7,10 +7,13 @@ import { withdrawMember } from '@/components/features/auth/loginApi';
 import BaseModal from '@/components/shared/BaseModal';
 import ToastMessage from '@/components/shared/ToastMessage';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useLoginModalStore } from '@/stores/useLoginModalStore';
 
 export default function ProfileSettingsPage() {
   const router = useRouter();
+  const beginLogout = useAuthStore((state) => state.beginLogout);
   const clearSession = useAuthStore((state) => state.clearSession);
+  const closeLoginModal = useLoginModalStore((state) => state.closeLoginModal);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -32,9 +35,11 @@ export default function ProfileSettingsPage() {
       setIsWithdrawing(true);
       setErrorMessage(null);
       await withdrawMember();
+      beginLogout();
+      closeLoginModal();
       clearSession();
-      router.push('/auth/login');
-      router.refresh();
+      setIsConfirmOpen(false);
+      router.replace('/');
     } catch (error) {
       setErrorMessage(
         error instanceof Error ? error.message : '회원 탈퇴 처리 중 오류가 발생했습니다.',
@@ -91,8 +96,8 @@ export default function ProfileSettingsPage() {
               회원탈퇴를 진행할까요?
             </h2>
             <p className="mt-3 text-sm leading-6 text-mt-text-secondary">
-              탈퇴하면 계정 정보와 활동 내역을 복구할 수 없습니다. 진행 전 필요한 정보가
-              남아있는지 한 번 더 확인해 주세요.
+              탈퇴하면 계정 정보와 활동 내역을 복구할 수 없습니다. 진행 전 필요한 정보가 남아있는지
+              한 번 더 확인해 주세요.
             </p>
 
             <div className="mt-7 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

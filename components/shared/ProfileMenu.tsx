@@ -8,6 +8,7 @@ import { logoutMember } from '@/components/features/auth/loginApi';
 import { fetchMyProfile } from '@/components/features/profile/profileApi';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useLoginModalStore } from '@/stores/useLoginModalStore';
 
 const MENU_ITEMS = [
   {
@@ -25,11 +26,13 @@ const MENU_ITEMS = [
 export default function ProfileMenu() {
   const pathname = usePathname();
   const router = useRouter();
+  const beginLogout = useAuthStore((state) => state.beginLogout);
   const clearSession = useAuthStore((state) => state.clearSession);
   const setProfileIdentity = useAuthStore((state) => state.setProfileIdentity);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const name = useAuthStore((state) => state.name);
   const email = useAuthStore((state) => state.email);
+  const closeLoginModal = useLoginModalStore((state) => state.closeLoginModal);
 
   const [open, setOpen] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
@@ -110,15 +113,18 @@ export default function ProfileMenu() {
   }, [open]);
 
   const handleLogout = async () => {
+    beginLogout();
+
     try {
       await logoutMember();
     } catch {
       // Clear local session even if backend logout fails.
     } finally {
+      closeLoginModal();
       clearSession();
       setProfileImageUrl(null);
       setOpen(false);
-      router.refresh();
+      router.replace('/');
     }
   };
 
