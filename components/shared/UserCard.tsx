@@ -79,11 +79,7 @@ export default function UserCard({
         </p>
         <div className="flex flex-wrap gap-2">
           {visibleSkills.map((skill, index) => (
-            <SkillChip
-              key={`${skill}-${index}`}
-              label={skill}
-              variant={index === 0 ? 'primary' : 'outline'}
-            />
+            <SkillChip key={`${skill}-${index}`} label={skill} variant="primary" />
           ))}
         </div>
       </div>
