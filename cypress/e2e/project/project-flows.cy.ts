@@ -443,6 +443,7 @@ describe('프로젝트 지원 흐름', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     installAuthenticatedShellIntercepts();
+    installProjectDetailIntercept();
     installJobOptionsIntercept();
   });
 

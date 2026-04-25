@@ -2,10 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { type FormEvent, useEffect, useMemo, useState } from 'react';
+import { MessageSquareText } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
 import {
   applyToProject,
+  fetchProjectDetail,
   fetchProjectApplicationPage,
   type ProjectApplicationPage,
 } from '@/components/features/project/projectApi';
@@ -14,12 +16,16 @@ import {
   findProjectJobPosition,
 } from '@/components/features/project/projectJobOptions';
 import { projectApplicationSchema } from '@/components/features/project/apply/schema';
+import { PROJECT_CATEGORIES } from '@/components/features/project/constants';
 import BaseButton from '@/components/shared/BaseButton';
 import BaseTextarea from '@/components/shared/BaseTextarea';
 import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import SkillChip from '@/components/shared/SkillChip';
 import ToastMessage from '@/components/shared/ToastMessage';
+import { findUniversityByEmail } from '@/components/shared/universityLogoRegistry';
 import type { JobFieldOption } from '@/types/auth';
+import type { ProjectRecord } from '@/types/project';
 
 type ProjectApplyPageProps = {
   projectId: string;
@@ -36,6 +42,9 @@ type ApplicationPositionOption = {
   techStacks: string[];
 };
 
+const PROJECT_APPLICATION_MAX_LENGTH = 700;
+const PROJECT_APPLY_FALLBACK_IMAGE_SRC = '/brand/meeteam_character_hat.png';
+
 function InfoChip({ label, tone = 'position' }: { label: string; tone?: 'position' | 'tech' }) {
   const toneClass =
     tone === 'tech'
@@ -51,30 +60,69 @@ function InfoChip({ label, tone = 'position' }: { label: string; tone?: 'positio
   );
 }
 
-function getGenderLabel(gender: string | null | undefined) {
-  switch (gender) {
-    case 'MALE':
-    case '남성':
-      return '남성';
-    case 'FEMALE':
-    case '여성':
-      return '여성';
-    default:
-      return '-';
-  }
+function getProjectCategoryLabel(project?: ProjectRecord | null) {
+  const category = PROJECT_CATEGORIES.find((item) => item.id === project?.categoryId);
+
+  return category?.label ?? '카테고리 미정';
 }
 
-function buildApplicantRoleLabels(applicant?: ProjectApplicationPage['applicant']) {
-  const fields = applicant?.jobFieldNames ?? [];
-  const positions = applicant?.jobPositionNames ?? [];
-  const itemCount = Math.max(fields.length, positions.length);
-
-  if (itemCount === 0) {
-    return ['-'];
+function getProjectDeadlineLabel(project?: ProjectRecord | null) {
+  if (!project) {
+    return '마감일 미정';
   }
 
-  return Array.from({ length: itemCount }, (_, index) =>
-    formatJobRole(fields[index], positions[index]),
+  if (project.isRecruitUntilComplete) {
+    return '상시 모집';
+  }
+
+  if (!project.recruitDeadline) {
+    return '마감일 미정';
+  }
+
+  return `${project.recruitDeadline.replaceAll('-', '.')} 마감`;
+}
+
+function getProjectTeamName(project?: ProjectRecord | null) {
+  return project?.title ? `${project.title} 팀` : '프로젝트 팀';
+}
+
+function getPositionTitle(position?: ApplicationPositionOption) {
+  if (!position) {
+    return '선택한 포지션';
+  }
+
+  return `${position.fieldName}(${position.positionName})`;
+}
+
+function ProjectApplyThumbnail({
+  src,
+  alt,
+  className = '',
+}: {
+  src?: string | null;
+  alt: string;
+  className?: string;
+}) {
+  const [resolvedSrc, setResolvedSrc] = useState(src?.trim() || PROJECT_APPLY_FALLBACK_IMAGE_SRC);
+  const isFallback = resolvedSrc === PROJECT_APPLY_FALLBACK_IMAGE_SRC;
+
+  useEffect(() => {
+    setResolvedSrc(src?.trim() || PROJECT_APPLY_FALLBACK_IMAGE_SRC);
+  }, [src]);
+
+  return (
+    <div
+      className={`relative overflow-hidden rounded-2xl border border-mt-border bg-mt-bg-soft ${className}`}
+    >
+      <img
+        src={resolvedSrc}
+        alt={alt}
+        className={`absolute inset-0 h-full w-full ${
+          isFallback ? 'scale-125 object-cover object-center' : 'object-cover'
+        }`}
+        onError={() => setResolvedSrc(PROJECT_APPLY_FALLBACK_IMAGE_SRC)}
+      />
+    </div>
   );
 }
 
@@ -126,6 +174,7 @@ export default function ProjectApplyPage({
   const router = useRouter();
   const handleAuthRequired = useAuthRequiredModal();
   const [applicationPage, setApplicationPage] = useState<ProjectApplicationPage | null>(null);
+  const [project, setProject] = useState<ProjectRecord | null>(null);
   const [jobFields, setJobFields] = useState<JobFieldOption[]>([]);
   const [selectedJobPositionCode, setSelectedJobPositionCode] = useState('');
   const [motivation, setMotivation] = useState('');
@@ -150,8 +199,9 @@ export default function ProjectApplyPage({
         setIsLoading(true);
         setErrorMessage(null);
 
-        const [nextApplicationPage, nextJobFields] = await Promise.all([
+        const [nextApplicationPage, nextProject, nextJobFields] = await Promise.all([
           fetchProjectApplicationPage(projectId),
+          fetchProjectDetail(projectId),
           fetchJobOptions(),
         ]);
 
@@ -160,6 +210,7 @@ export default function ProjectApplyPage({
         }
 
         setApplicationPage(nextApplicationPage);
+        setProject(nextProject);
         setJobFields(nextJobFields);
       } catch (error) {
         if (!active) {
@@ -269,135 +320,154 @@ export default function ProjectApplyPage({
     );
   }
 
+  const universityName = findUniversityByEmail(applicant?.email)?.nameKo;
+
   return (
     <section className="min-h-screen">
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-7 px-4 py-12">
-        <h1 className="text-2xl leading-8 font-extrabold text-mt-text-primary">
-          프로젝트 지원하기
-        </h1>
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6 px-4 py-12">
+        <header>
+          <h1 className="text-2xl leading-8 font-extrabold text-mt-text-primary">
+            프로젝트 지원하기
+          </h1>
+        </header>
 
-        <form
-          onSubmit={handleSubmit}
-          className="rounded-3xl border border-mt-border bg-mt-white p-6 shadow-sm sm:p-8"
-        >
-          <div className="grid gap-6 border-b border-mt-border pb-7 sm:grid-cols-[7.5rem_minmax(0,1fr)]">
-            <div className="flex flex-col items-center text-center">
-              <ProfileAvatar
-                name={applicant?.name ?? 'M'}
-                imageUrl={applicant?.profileImageUrl}
-                sizeClassName="h-24 w-24"
-                shape="rounded"
-                textClassName="text-3xl"
-                className="shadow-lg shadow-mt-logo-blue/20"
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <section className="rounded-3xl border border-mt-border bg-mt-white px-5 py-6 shadow-[0_16px_40px_rgba(48,83,130,0.08)] sm:px-8 sm:py-8">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-sm leading-5 font-extrabold text-mt-primary">
+                  To. {getProjectTeamName(project)}
+                </p>
+                <h2 className="mt-2 text-2xl leading-8 font-extrabold text-mt-text-primary">
+                  {getPositionTitle(selectedPosition)}에 지원합니다.
+                </h2>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <InfoChip label={getProjectCategoryLabel(project)} />
+                  <InfoChip label={project?.releasePlatforms[0] ?? '플랫폼 미정'} />
+                  <InfoChip label={getProjectDeadlineLabel(project)} />
+                </div>
+              </div>
+
+              <ProjectApplyThumbnail
+                src={project?.coverImageUrl}
+                alt={project?.title ?? '프로젝트 이미지'}
+                className="h-16 w-16 shrink-0 sm:h-20 sm:w-20"
               />
-              <p className="mt-4 text-2xl leading-8 font-extrabold text-mt-text-primary">
-                {applicant?.name ?? '-'}
-              </p>
-              <p className="text-sm leading-5 text-mt-text-secondary">지원자</p>
             </div>
 
-            <dl className="grid content-center gap-4 text-sm leading-5">
-              <div className="grid gap-2 sm:grid-cols-[5rem_minmax(0,1fr)] sm:items-center">
-                <dt className="font-bold text-mt-text-primary">지원 분야</dt>
-                <dd className="flex flex-wrap gap-2">
-                  {buildApplicantRoleLabels(applicant).map((roleLabel) => (
-                    <InfoChip key={roleLabel} label={roleLabel} tone="tech" />
-                  ))}
-                </dd>
+            <div className="mt-6 space-y-3">
+              <span data-cy="project-application-position" className="sr-only">
+                {getPositionTitle(selectedPosition)}
+              </span>
+              <div className="space-y-2">
+                <p className="text-sm leading-5 font-bold text-mt-text-primary">필요 기술</p>
+                {selectedPosition?.techStacks.length ? (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedPosition.techStacks.map((techStack) => (
+                      <SkillChip
+                        key={techStack}
+                        label={techStack}
+                        variant="primary"
+                        size="md"
+                        className="border-mt-border font-bold"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm leading-5 text-mt-text-secondary">
+                    등록된 기술 스택이 없습니다.
+                  </p>
+                )}
               </div>
-              <div className="grid gap-2 sm:grid-cols-[5rem_minmax(0,1fr)]">
-                <dt className="font-bold text-mt-text-primary">나이</dt>
-                <dd className="font-medium text-mt-text-secondary">
-                  {typeof applicant?.age === 'number' ? `${applicant.age}세` : '-'}
-                </dd>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-[5rem_minmax(0,1fr)]">
-                <dt className="font-bold text-mt-text-primary">성별</dt>
-                <dd className="font-medium text-mt-text-secondary">
-                  {getGenderLabel(applicant?.gender)}
-                </dd>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-[5rem_minmax(0,1fr)]">
-                <dt className="font-bold text-mt-text-primary">이메일</dt>
-                <dd className="min-w-0 break-words font-medium text-mt-text-secondary">
-                  {applicant?.email ?? '-'}
-                </dd>
-              </div>
-              <div className="grid gap-2 sm:grid-cols-[5rem_minmax(0,1fr)]">
-                <dt className="font-bold text-mt-text-primary">프로필</dt>
-                <dd className="font-medium text-mt-text-secondary">
-                  {applicant?.profileSummary ?? '-'}
-                </dd>
-              </div>
-            </dl>
-          </div>
-
-          <div className="mt-7 space-y-3">
-            <p className="text-base leading-6 font-bold text-mt-text-primary">지원 포지션</p>
-            <div
-              data-cy="project-application-position"
-              className="flex min-h-14 w-full items-center rounded-xl border border-mt-border bg-mt-bg-soft px-4 text-base leading-6 font-medium text-mt-text-primary"
-            >
-              {selectedPosition?.label ?? '모집 중인 포지션이 없습니다.'}
             </div>
 
-            {selectedPosition?.techStacks.length ? (
-              <div className="flex flex-wrap gap-2">
-                {selectedPosition.techStacks.map((techStack) => (
-                  <InfoChip key={techStack} label={techStack} tone="tech" />
-                ))}
+            <div className="mt-7 border-t border-mt-border pt-6">
+              <div className="flex items-center gap-2">
+                <MessageSquareText
+                  className="h-4 w-4 text-mt-primary"
+                  aria-hidden
+                  strokeWidth={1.8}
+                />
+                <h2 className="text-base leading-6 font-extrabold text-mt-text-primary">
+                  지원 메시지
+                </h2>
               </div>
-            ) : null}
-          </div>
 
-          <div className="mt-6 space-y-3 pb-1">
-            <div className="flex items-center gap-2">
-              <span className="h-6 w-1 rounded-full bg-mt-primary" />
-              <h2 className="text-base leading-6 font-bold text-mt-text-primary">
-                지원 사유 및 자기소개
-              </h2>
+              <BaseTextarea
+                rows={7}
+                value={motivation}
+                data-cy="project-application-motivation"
+                onChange={(event) => setMotivation(event.target.value)}
+                disabled={isSubmitting || positionOptions.length === 0}
+                placeholder="팀에게 보낼 메시지를 입력해 주세요."
+                maxLength={PROJECT_APPLICATION_MAX_LENGTH}
+                className="mt-4 min-h-60 resize-none bg-mt-white text-base leading-7"
+              />
+
+              <div className="mt-3 flex justify-end">
+                <p className="text-right text-xs leading-4 font-medium text-mt-text-secondary">
+                  {motivation.length}/{PROJECT_APPLICATION_MAX_LENGTH}자
+                </p>
+              </div>
             </div>
 
-            <BaseTextarea
-              rows={8}
-              value={motivation}
-              data-cy="project-application-motivation"
-              onChange={(event) => setMotivation(event.target.value)}
-              disabled={isSubmitting || positionOptions.length === 0}
-              placeholder="지원 사유와 자기소개를 입력해 주세요."
-              maxLength={1000}
-              className="min-h-64 resize-none bg-mt-white text-base leading-7"
-            />
-            <p className="text-right text-xs leading-4 font-medium text-mt-text-secondary">
-              {motivation.length}/1000자
-            </p>
-          </div>
+            <div className="mt-7 border-t border-mt-border pt-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex min-w-0 items-center gap-3">
+                  <ProfileAvatar
+                    name={applicant?.name ?? 'M'}
+                    imageUrl={applicant?.profileImageUrl}
+                    sizeClassName="h-12 w-12"
+                    shape="rounded"
+                    textClassName="text-base"
+                    className="bg-mt-bg-soft text-mt-text-secondary"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm leading-5 font-extrabold text-mt-primary">
+                      From. {applicant?.name ?? '-'}
+                    </p>
+                    {universityName ? (
+                      <p className="truncate text-sm leading-5 text-mt-text-secondary">
+                        {universityName}
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => router.push('/profile')}
+                  className="inline-flex h-9 shrink-0 items-center justify-center self-start rounded-lg border border-mt-border bg-mt-white px-3 text-xs leading-4 font-bold text-mt-text-secondary shadow-sm transition-colors hover:bg-mt-bg-soft sm:self-auto"
+                >
+                  프로필 수정
+                </button>
+              </div>
+            </div>
+          </section>
 
           <ToastMessage message={errorMessage} />
 
-          <div className="mt-7 space-y-4">
+          <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <BaseButton
-              size="XL"
-              variant="primary"
-              full
-              type="submit"
-              disabled={isSubmitting || positionOptions.length === 0}
-              data-cy="project-application-submit"
-              className="h-14 rounded-xl shadow-xl shadow-mt-logo-blue/30"
+              size="L"
+              variant="gray"
+              type="button"
+              disabled={isSubmitting}
+              className="w-full sm:w-fit"
+              onClick={() => router.push(`/projects/${projectId}`)}
             >
-              {isSubmitting ? '지원 중' : '지원하기'}
+              취소
             </BaseButton>
 
             <BaseButton
-              size="XL"
-              variant="gray"
-              full
-              type="button"
-              disabled={isSubmitting}
-              className="h-14 w-full rounded-xl"
-              onClick={() => router.push(`/projects/${projectId}`)}
+              size="L"
+              variant="primary"
+              type="submit"
+              disabled={isSubmitting || positionOptions.length === 0}
+              data-cy="project-application-submit"
+              className="w-full px-7 sm:w-fit"
             >
-              취소하기
+              {isSubmitting ? '보내는 중' : '지원서 보내기'}
             </BaseButton>
           </div>
         </form>

@@ -180,10 +180,9 @@ describe('프로젝트 지원 흐름', () => {
 
     cy.wait('@jobOptionsRequest');
     cy.contains('프론트엔드').should('be.visible');
-    cy.contains('웹 프론트엔드').should('be.visible');
 
     cy.get('textarea').type('프론트엔드 구현 경험을 바탕으로 프로젝트에 기여하고 싶습니다.');
-    cy.contains('button', '지원하기').click();
+    cy.get('[data-cy="project-application-submit"]').click();
 
     cy.wait('@applicationRequest').its('request.body').should('deep.equal', {
       jobPositionCode: 'WEB_FRONTEND',
@@ -221,7 +220,7 @@ describe('프로젝트 지원 흐름', () => {
     cy.get('[data-cy="project-application-submit"]').click();
     cy.get('[data-cy="project-application-submit"]')
       .should('be.disabled')
-      .and('contain', '지원 중');
+      .and('contain', '보내는 중');
     cy.wait('@dedupedApplicationRequest');
 
     cy.wrap(null).should(() => {
