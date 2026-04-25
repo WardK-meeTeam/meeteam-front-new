@@ -1,9 +1,11 @@
 'use client';
 
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Settings, UserPlus, Users } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
+import { isPermissionDeniedError } from '@/components/features/auth/authError';
 import {
   fetchProjectDetail,
   fetchProjectTeamManagement,
@@ -11,6 +13,7 @@ import {
 } from '@/components/features/project/projectApi';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
 import ToastMessage from '@/components/shared/ToastMessage';
+import { useToastStore } from '@/stores/useToastStore';
 import type { ProjectRecruitmentStatus } from '@/types/project';
 
 type ProjectManageShellProps = {
@@ -90,8 +93,11 @@ export default function ProjectManageShell({
   onRecruitmentStatusChange,
   children,
 }: ProjectManageShellProps) {
+  const router = useRouter();
   const handleAuthRequired = useAuthRequiredModal();
+  const showToast = useToastStore((state) => state.showToast);
   const cachedHeader = projectManageHeaderCache.get(projectId);
+  const permissionRedirectedRef = useRef(false);
   const [isStatusUpdating, setIsStatusUpdating] = useState(false);
   const [isHeaderLoading, setIsHeaderLoading] = useState(!cachedHeader);
   const [projectTitle, setProjectTitle] = useState(cachedHeader?.title ?? '');
@@ -102,6 +108,23 @@ export default function ProjectManageShell({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const statusCopy = STATUS_COPY[projectStatus];
   const canEditStatus = projectStatus !== 'CLOSED';
+
+  const redirectToProjectDetailIfPermissionDenied = useCallback(
+    (error: unknown) => {
+      if (!isPermissionDeniedError(error)) {
+        return false;
+      }
+
+      if (!permissionRedirectedRef.current) {
+        permissionRedirectedRef.current = true;
+        showToast({ message: error.message });
+        router.replace(`/projects/${projectId}`);
+      }
+
+      return true;
+    },
+    [projectId, router, showToast],
+  );
 
   useEffect(() => {
     let active = true;
@@ -146,6 +169,10 @@ export default function ProjectManageShell({
           return;
         }
 
+        if (redirectToProjectDetailIfPermissionDenied(error)) {
+          return;
+        }
+
         if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
           setErrorMessage(null);
           return;
@@ -166,7 +193,13 @@ export default function ProjectManageShell({
     return () => {
       active = false;
     };
-  }, [handleAuthRequired, onRecruitmentStatusChange, pendingApplicantsCount, projectId]);
+  }, [
+    handleAuthRequired,
+    onRecruitmentStatusChange,
+    pendingApplicantsCount,
+    projectId,
+    redirectToProjectDetailIfPermissionDenied,
+  ]);
 
   useEffect(() => {
     if (typeof pendingApplicantsCount === 'number') {
@@ -205,6 +238,10 @@ export default function ProjectManageShell({
       }
     } catch (error) {
       if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
+        return;
+      }
+
+      if (redirectToProjectDetailIfPermissionDenied(error)) {
         return;
       }
 

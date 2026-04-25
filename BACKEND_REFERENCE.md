@@ -64,6 +64,13 @@ Commits included:
   - `endDate` is required only for `END_DATE`; `RECRUITMENT_COMPLETED` can omit `endDate`.
   - Frontend no longer uses the old compatibility `2099-12-31` end date workaround.
   - Current `GET /api/v1/projects/{projectId}/edit` prefill response does not include `recruitmentDeadlineType`; frontend should infer `RECRUITMENT_COMPLETED` when `endDate` is `null` until the backend adds that response field.
+- Project management APIs are leader-only on the backend:
+  - `GET /api/v1/projects/{projectId}/team`
+  - `GET /api/v1/projects/{projectId}/edit`
+  - `PUT /api/v1/projects/{projectId}`
+  - `POST /api/v1/projects/{projectId}/recruitment/toggle`
+  - `DELETE /api/v1/projects/{projectId}/members/{memberId}`
+  - These paths call `Project.validateLeaderPermission(...)` and return HTTP `403` with `PROJECT_MEMBER403` / "해당 프로젝트 관리 권한이 없습니다." when the requester is not the project leader.
 
 ## Frontend reflection
 
@@ -79,6 +86,7 @@ Commits included:
 - Added Q&A `isSecret` mapping and a secret-question toggle in the project detail Q&A composer.
 - Added a frontend helper for soft withdrawal only.
 - Added a project edit prefill fallback for the current backend response gap: missing `recruitmentDeadlineType` is treated as `RECRUITMENT_COMPLETED` when `endDate` is `null`.
+- Split frontend handling for authentication vs authorization errors: `401` still opens the login-required flow, while `403` is treated as a permission-denied state so project management pages redirect back to the project detail page and show an error toast instead of a login modal.
 
 Backend-only/ops notes:
 

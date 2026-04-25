@@ -85,21 +85,85 @@ function installAuthenticatedShellIntercepts() {
   }).as('myProfileRequest');
 }
 
+function installHomeIntercepts() {
+  cy.intercept('GET', '**/api/v1/main/projects*', {
+    statusCode: 200,
+    body: {
+      result: {
+        content: [],
+        last: true,
+        number: 0,
+        size: 4,
+        empty: true,
+      },
+    },
+  }).as('homeProjectsRequest');
+
+  cy.intercept('GET', '**/api/v1/main/members*', {
+    statusCode: 200,
+    body: {
+      result: {
+        content: [],
+        last: true,
+        number: 0,
+        size: 5,
+        empty: true,
+      },
+    },
+  }).as('homeMembersRequest');
+}
+
 describe('인증 세션 흐름', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
   });
 
   it('로그아웃하면 세션이 초기화되고 보호 페이지에 다시 접근할 수 없다', () => {
-    installAuthenticatedShellIntercepts();
-    cy.intercept('POST', '**/api/v1/auth/logout', {
+    let backendSessionActive = true;
+
+    cy.intercept('GET', '**/api/v1/notifications/unread/count', {
       statusCode: 200,
       body: {
-        result: '로그아웃되었습니다.',
+        result: {
+          unreadCount: 0,
+        },
       },
+    }).as('unreadNotificationCountRequest');
+    cy.intercept('GET', '**/api/v1/members/me', (request) => {
+      request.reply(
+        backendSessionActive
+          ? {
+              statusCode: 200,
+              body: {
+                result: MEMBER_PROFILE_INFO,
+              },
+            }
+          : {
+              statusCode: 401,
+              body: {
+                message: '인증이 필요합니다.',
+              },
+            },
+      );
+    }).as('myProfileRequest');
+    cy.intercept('GET', '**/api/v1/jobs/options', {
+      statusCode: 200,
+      body: {
+        result: JOB_OPTIONS_INFO,
+      },
+    }).as('jobOptionsRequest');
+    installHomeIntercepts();
+    cy.intercept('POST', '**/api/v1/auth/logout', (request) => {
+      backendSessionActive = false;
+      request.reply({
+        statusCode: 200,
+        body: {
+          result: '로그아웃되었습니다.',
+        },
+      });
     }).as('logoutRequest');
 
-    cy.visit('/', {
+    cy.visit('/profile', {
       onBeforeLoad(window) {
         seedAuthSession(window);
       },
@@ -107,12 +171,18 @@ describe('인증 세션 흐름', () => {
 
     cy.wait('@unreadNotificationCountRequest');
     cy.wait('@myProfileRequest');
+    cy.wait('@jobOptionsRequest');
+    cy.contains('button', '프로필 수정').should('be.visible');
 
     cy.get('button[aria-label="프로필 메뉴"]').click();
     cy.contains('button', '로그아웃').click();
 
     cy.wait('@logoutRequest');
     cy.location('pathname').should('eq', '/');
+    cy.wait('@homeProjectsRequest');
+    cy.wait('@homeMembersRequest');
+    cy.contains('로그인이 필요한 기능입니다').should('not.exist');
+    cy.get('[data-cy="login-form"]').should('not.exist');
 
     cy.window().then((window) => {
       const storedSession = window.localStorage.getItem(AUTH_STORAGE_KEY);
@@ -133,18 +203,83 @@ describe('인증 세션 흐름', () => {
     cy.contains('a', '로그인').should('be.visible');
     cy.get('button[aria-label="프로필 메뉴"]').should('not.exist');
 
-    cy.intercept('GET', '**/api/v1/members/me', {
-      statusCode: 401,
-      body: {
-        message: '인증이 필요합니다.',
-      },
-    }).as('unauthorizedProfileRequest');
-
     cy.visit('/profile');
-    cy.wait('@unauthorizedProfileRequest');
+    cy.wait('@myProfileRequest');
     cy.location('pathname').should('eq', '/profile');
     cy.contains('로그인이 필요한 기능입니다').should('be.visible');
     cy.contains('홈으로 돌아가기').should('be.visible');
+  });
+
+  it('회원탈퇴하면 세션이 초기화되고 로그인 모달 없이 홈으로 이동한다', () => {
+    let backendSessionActive = true;
+
+    cy.intercept('GET', '**/api/v1/notifications/unread/count', {
+      statusCode: 200,
+      body: {
+        result: {
+          unreadCount: 0,
+        },
+      },
+    }).as('unreadNotificationCountRequest');
+    cy.intercept('GET', '**/api/v1/members/me', (request) => {
+      request.reply(
+        backendSessionActive
+          ? {
+              statusCode: 200,
+              body: {
+                result: MEMBER_PROFILE_INFO,
+              },
+            }
+          : {
+              statusCode: 401,
+              body: {
+                message: '인증이 필요합니다.',
+              },
+            },
+      );
+    }).as('myProfileRequest');
+    installHomeIntercepts();
+    cy.intercept('DELETE', '**/api/v1/auth/withdraw', (request) => {
+      backendSessionActive = false;
+      request.reply({
+        statusCode: 200,
+        body: {
+          result: null,
+        },
+      });
+    }).as('withdrawRequest');
+
+    cy.visit('/settings', {
+      onBeforeLoad(window) {
+        seedAuthSession(window);
+      },
+    });
+
+    cy.wait('@unreadNotificationCountRequest');
+    cy.wait('@myProfileRequest');
+    cy.contains('button', '회원탈퇴').click();
+    cy.contains('button', '탈퇴하기').click();
+    cy.wait('@withdrawRequest');
+
+    cy.location('pathname').should('eq', '/');
+    cy.wait('@homeProjectsRequest');
+    cy.wait('@homeMembersRequest');
+    cy.contains('로그인이 필요한 기능입니다').should('not.exist');
+    cy.get('[data-cy="login-form"]').should('not.exist');
+    cy.window().then((window) => {
+      const storedSession = window.localStorage.getItem(AUTH_STORAGE_KEY);
+
+      expect(storedSession).to.not.equal(null);
+      expect(JSON.parse(storedSession ?? '{}')).to.deep.equal({
+        state: {
+          memberId: null,
+          name: null,
+          email: null,
+          isAuthenticated: false,
+        },
+        version: 0,
+      });
+    });
   });
 
   it('저장된 로그인 상태는 새로고침 후에도 유지된다', () => {

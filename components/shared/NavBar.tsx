@@ -10,6 +10,7 @@ import { useNotificationSync } from '@/components/features/notification/useNotif
 import AppLogo from '@/components/shared/AppLogo';
 import ProfileMenu from '@/components/shared/ProfileMenu';
 import { useAuthStore } from '@/stores/useAuthStore';
+import { useLoginModalStore } from '@/stores/useLoginModalStore';
 
 const navItems = [
   { href: '/teammates', label: '팀원 찾기' },
@@ -19,10 +20,20 @@ const navItems = [
 
 export function NavBar() {
   const pathname = usePathname();
+  const finishLogout = useAuthStore((state) => state.finishLogout);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
   const unreadCount = useNotificationStore((state) => state.unreadCount);
+  const closeLoginModal = useLoginModalStore((state) => state.closeLoginModal);
   const [isAtTop, setIsAtTop] = useState(true);
   useNotificationSync(isAuthenticated);
+
+  useEffect(() => {
+    if (pathname === '/' && isLoggingOut) {
+      closeLoginModal();
+      finishLogout();
+    }
+  }, [closeLoginModal, finishLogout, isLoggingOut, pathname]);
 
   useEffect(() => {
     const updateNavVisibility = () => {
