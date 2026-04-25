@@ -48,7 +48,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
     <Link
       data-cy="project-card"
       data-project-id={project.id}
-      className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-mt-bg-soft shadow-2xl transition-all duration-300 hover:ring-1 hover:ring-mt-logo-blue/50`}
+      className={`group relative block ${heightClass} w-full overflow-hidden rounded-3xl bg-mt-bg-soft shadow-sm transition-all duration-300 hover:ring-1 hover:ring-mt-logo-blue/50`}
       href={`/projects/${project.id}`}
     >
       <div className="absolute inset-0 h-full w-full">
