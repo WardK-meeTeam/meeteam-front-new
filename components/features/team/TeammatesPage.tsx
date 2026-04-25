@@ -19,6 +19,7 @@ export default function TeammatesPage() {
     errorMessage,
     hasMore,
     loadMoreRef,
+    retrySearch,
     setSearchValue,
     setSelectedRole,
     setSelectedSkills,
@@ -50,6 +51,7 @@ export default function TeammatesPage() {
         hasMore={hasMore}
         errorMessage={errorMessage}
         loadMoreRef={loadMoreRef}
+        onRetry={retrySearch}
         onSortChange={setSort}
       />
     </section>

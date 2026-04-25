@@ -16,6 +16,7 @@ type TeammateListSectionProps = {
   hasMore: boolean;
   errorMessage: string | null;
   loadMoreRef: RefObject<HTMLDivElement | null>;
+  onRetry: () => void;
   onSortChange: (value: TeammateSort) => void;
 };
 
@@ -28,29 +29,32 @@ export function TeammateListSection({
   hasMore,
   errorMessage,
   loadMoreRef,
+  onRetry,
   onSortChange,
 }: TeammateListSectionProps) {
   const shouldShowErrorOnly = !isInitialLoading && Boolean(errorMessage) && teammates.length === 0;
 
   return (
     <>
-      <ToastMessage message={errorMessage} />
+      <ToastMessage message={shouldShowErrorOnly ? null : errorMessage} />
 
-      <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <p
-          data-cy="teammate-total-count"
-          className="text-base leading-6 font-semibold text-mt-text-nav"
-        >
-          총 <span className="text-mt-primary">{totalCount}</span>명의 팀원
-        </p>
+      {!shouldShowErrorOnly ? (
+        <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p
+            data-cy="teammate-total-count"
+            className="text-base leading-6 font-semibold text-mt-text-nav"
+          >
+            총 <span className="text-mt-primary">{totalCount}</span>명의 팀원
+          </p>
 
-        <SortSelect
-          value={sort}
-          options={TEAMMATE_SORT_OPTIONS}
-          onChange={onSortChange}
-          dataCy="teammate-sort-select"
-        />
-      </div>
+          <SortSelect
+            value={sort}
+            options={TEAMMATE_SORT_OPTIONS}
+            onChange={onSortChange}
+            dataCy="teammate-sort-select"
+          />
+        </div>
+      ) : null}
 
       {isInitialLoading ? (
         <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
@@ -60,7 +64,26 @@ export function TeammateListSection({
             </li>
           ))}
         </ul>
-      ) : !shouldShowErrorOnly ? (
+      ) : shouldShowErrorOnly ? (
+        <div
+          data-cy="teammate-error-state"
+          className="rounded-2xl border border-mt-border bg-mt-white px-6 py-16 text-center shadow-sm"
+          role="alert"
+        >
+          <p className="text-lg font-bold text-mt-text-primary">{errorMessage}</p>
+          <p className="mt-2 text-sm leading-5 text-mt-text-secondary">
+            네트워크 상태를 확인한 뒤 다시 시도해 주세요.
+          </p>
+          <button
+            type="button"
+            onClick={onRetry}
+            data-cy="teammate-retry-button"
+            className="mt-6 inline-flex h-11 items-center justify-center rounded-xl border border-mt-border px-5 text-sm font-semibold text-mt-text-primary transition-colors hover:bg-mt-bg-soft"
+          >
+            다시 불러오기
+          </button>
+        </div>
+      ) : (
         <ul
           data-cy="teammate-list"
           className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
@@ -71,7 +94,7 @@ export function TeammateListSection({
             </li>
           ))}
         </ul>
-      ) : null}
+      )}
 
       {!isInitialLoading && !errorMessage && teammates.length === 0 ? (
         <div

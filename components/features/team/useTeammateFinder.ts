@@ -9,6 +9,9 @@ import type { Teammate } from '@/types/team';
 import { fetchTeammates } from './teamApi';
 import { TEAMMATE_LIST_CONFIG, TEAMMATE_ROLE_OPTIONS } from './constants';
 
+const TEAMMATE_LIST_ERROR_MESSAGE = '팀원 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
+const TEAMMATE_LOAD_MORE_ERROR_MESSAGE = '팀원을 더 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
+
 const JOB_FIELD_ID_BY_CODE: Record<string, number> = {
   PLANNING: 1,
   DESIGN: 2,
@@ -40,6 +43,7 @@ export function useTeammateFinder() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
   const hasLoadedRef = useRef(false);
 
   useEffect(() => {
@@ -99,7 +103,7 @@ export function useTeammateFinder() {
         setCurrentPage(result.page);
         setHasMore(!result.last);
         hasLoadedRef.current = true;
-      } catch (error) {
+      } catch {
         if (!active) {
           return;
         }
@@ -110,9 +114,7 @@ export function useTeammateFinder() {
           setHasMore(false);
         }
 
-        setErrorMessage(
-          error instanceof Error ? error.message : '팀원 목록을 불러오지 못했습니다.',
-        );
+        setErrorMessage(TEAMMATE_LIST_ERROR_MESSAGE);
       } finally {
         if (active) {
           setIsInitialLoading(false);
@@ -125,7 +127,7 @@ export function useTeammateFinder() {
     return () => {
       active = false;
     };
-  }, [searchValue, selectedJobFieldId, selectedSkills, sort]);
+  }, [retryKey, searchValue, selectedJobFieldId, selectedSkills, sort]);
 
   const handleLoadMore = useCallback(() => {
     if (!hasMore || isLoadingMore || isInitialLoading) {
@@ -150,10 +152,8 @@ export function useTeammateFinder() {
         setTotalCount(result.totalCount);
         setCurrentPage(result.page);
         setHasMore(!result.last);
-      } catch (error) {
-        setErrorMessage(
-          error instanceof Error ? error.message : '팀원 목록을 더 불러오지 못했습니다.',
-        );
+      } catch {
+        setErrorMessage(TEAMMATE_LOAD_MORE_ERROR_MESSAGE);
       } finally {
         setIsLoadingMore(false);
       }
@@ -177,6 +177,11 @@ export function useTeammateFinder() {
     onLoadMore: handleLoadMore,
   });
 
+  const retrySearch = () => {
+    setErrorMessage(null);
+    setRetryKey((current) => current + 1);
+  };
+
   return {
     searchValue,
     selectedRole,
@@ -190,6 +195,7 @@ export function useTeammateFinder() {
     errorMessage,
     hasMore,
     loadMoreRef,
+    retrySearch,
     setSearchValue,
     setSelectedRole,
     setSelectedSkills,

@@ -22,6 +22,7 @@ export default function ProjectFindPage() {
     setField,
     setSort,
     resetFilters,
+    retrySearch,
   } = useProjectFinder();
 
   return (
@@ -53,6 +54,7 @@ export default function ProjectFindPage() {
         loadMoreRef={loadMoreRef}
         onSortChange={setSort}
         onResetFilters={resetFilters}
+        onRetry={retrySearch}
       />
     </section>
   );

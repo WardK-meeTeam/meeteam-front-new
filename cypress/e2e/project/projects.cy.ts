@@ -364,12 +364,33 @@ describe('프로젝트 찾기 예외 흐름', () => {
     cy.visit(PROJECTS_PATH);
     cy.wait('@failedProjectSearchRequest');
 
-    cy.contains('프로젝트 목록을 불러오지 못했습니다.').should('be.visible');
+    cy.get('[data-cy="project-error-state"]').should('be.visible');
+    cy.contains('프로젝트 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should(
+      'be.visible',
+    );
+    cy.contains('Failed to fetch').should('not.exist');
+    cy.get('[data-cy="project-total-count"]').should('not.exist');
     cy.get('[data-cy="project-list"]').should('not.exist');
     cy.get('[data-cy="project-empty-state"]').should('not.exist');
   });
 
-  it('초기 프로젝트 응답 형식이 올바르지 않으면 파싱 에러를 보여준다', () => {
+  it('초기 프로젝트 네트워크 실패도 사용자 문구로 보여준다', () => {
+    cy.intercept('GET', '**/api/v1/projects/search*', {
+      forceNetworkError: true,
+    }).as('networkFailedProjectSearchRequest');
+
+    cy.visit(PROJECTS_PATH);
+    cy.wait('@networkFailedProjectSearchRequest');
+
+    cy.get('[data-cy="project-error-state"]').should('be.visible');
+    cy.contains('프로젝트 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should(
+      'be.visible',
+    );
+    cy.contains('Failed to fetch').should('not.exist');
+    cy.get('[data-cy="project-empty-state"]').should('not.exist');
+  });
+
+  it('초기 프로젝트 응답 형식이 올바르지 않아도 사용자 문구로 에러 상태를 보여준다', () => {
     cy.intercept('GET', '**/api/v1/projects/search*', {
       statusCode: 200,
       body: {},
@@ -378,12 +399,15 @@ describe('프로젝트 찾기 예외 흐름', () => {
     cy.visit(PROJECTS_PATH);
     cy.wait('@invalidProjectSearchRequest');
 
-    cy.contains('응답 형식을 해석할 수 없습니다.').should('be.visible');
+    cy.get('[data-cy="project-error-state"]').should('be.visible');
+    cy.contains('프로젝트 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should(
+      'be.visible',
+    );
     cy.get('[data-cy="project-list"]').should('not.exist');
     cy.get('[data-cy="project-empty-state"]').should('not.exist');
   });
 
-  it('초기 조회 실패 뒤 필터를 바꾸면 에러를 지우고 다시 목록을 불러온다', () => {
+  it('초기 조회 실패 뒤 다시 불러오기를 누르면 에러를 지우고 다시 목록을 불러온다', () => {
     let requestCount = 0;
 
     cy.intercept('GET', '**/api/v1/projects/search*', (request) => {
@@ -418,16 +442,17 @@ describe('프로젝트 찾기 예외 흐름', () => {
     cy.visit(PROJECTS_PATH);
     cy.wait('@recoveringProjectSearchRequest');
 
-    cy.contains('프로젝트 목록을 불러오지 못했습니다.').should('be.visible');
+    cy.contains('프로젝트 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should(
+      'be.visible',
+    );
 
-    cy.get('[data-cy="project-category-select"]').select('동아리');
+    cy.get('[data-cy="project-retry-button"]').click();
     cy.wait('@recoveringProjectSearchRequest');
 
     cy.get('[data-cy="project-total-count"]').should('contain', '1');
     getProjectCards().should('have.length', 1);
     getProjectTitles().should('have.text', '그린루프: 제로웨이스트 실천 챌린지');
   });
-
   it('추가 프로젝트 조회가 실패해도 기존 목록은 유지하고 에러 메시지를 보여준다', () => {
     let requestCount = 0;
 
@@ -471,7 +496,9 @@ describe('프로젝트 찾기 예외 흐름', () => {
     cy.wait('@projectSearchWithLoadMoreFailure');
 
     getProjectCards().should('have.length', 8);
-    cy.contains('프로젝트 목록을 더 불러오지 못했습니다.').should('be.visible');
+    cy.contains('프로젝트를 더 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should(
+      'be.visible',
+    );
     cy.get('[data-cy="project-load-more-trigger"]').should('exist');
   });
 
@@ -533,7 +560,9 @@ describe('프로젝트 찾기 예외 흐름', () => {
     cy.get('[data-cy="project-load-more-trigger"]').scrollIntoView();
     cy.wait('@projectLoadMoreRecoveryRequest');
 
-    cy.contains('프로젝트 목록을 더 불러오지 못했습니다.').should('be.visible');
+    cy.contains('프로젝트를 더 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should(
+      'be.visible',
+    );
     getProjectCards().should('have.length', 8);
 
     cy.get('[data-cy="project-category-select"]').select('캡스톤');

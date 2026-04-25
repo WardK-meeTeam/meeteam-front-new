@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useInfiniteScroll } from '@/components/shared/useInfiniteScroll';
 import { fetchProjectSearchResults, type ProjectSearchCard } from './projectFindApi';
 import { LOAD_DELAY_MS, LOAD_MORE_COUNT } from './projectFinder';
@@ -11,6 +11,10 @@ import type {
   RecruitFilter,
   SortFilter,
 } from './types';
+
+const PROJECT_LIST_ERROR_MESSAGE = '프로젝트 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
+const PROJECT_LOAD_MORE_ERROR_MESSAGE =
+  '프로젝트를 더 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
 
 export function useProjectFinder() {
   const [searchValue, setSearchValue] = useState('');
@@ -25,10 +29,14 @@ export function useProjectFinder() {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
   const hasLoadedRef = useRef(false);
   const loadMoreTimeoutRef = useRef<number | null>(null);
 
-  const filters = { searchValue, category, recruitOnly, platform, field, sort };
+  const filters = useMemo(
+    () => ({ searchValue, category, recruitOnly, platform, field, sort }),
+    [category, field, platform, recruitOnly, searchValue, sort],
+  );
 
   useEffect(() => {
     setIsLoadingMore(false);
@@ -37,7 +45,7 @@ export function useProjectFinder() {
       window.clearTimeout(loadMoreTimeoutRef.current);
       loadMoreTimeoutRef.current = null;
     }
-  }, [category, field, platform, recruitOnly, searchValue, sort]);
+  }, [filters, retryKey]);
 
   useEffect(() => {
     let active = true;
@@ -60,7 +68,7 @@ export function useProjectFinder() {
         setHasMore(result.hasMore);
         setPage(0);
         hasLoadedRef.current = true;
-      } catch (error) {
+      } catch {
         if (!active) {
           return;
         }
@@ -70,9 +78,7 @@ export function useProjectFinder() {
           setHasMore(false);
         }
 
-        setErrorMessage(
-          error instanceof Error ? error.message : '프로젝트 목록을 불러오지 못했습니다.',
-        );
+        setErrorMessage(PROJECT_LIST_ERROR_MESSAGE);
       } finally {
         if (active) {
           setIsInitialLoading(false);
@@ -85,7 +91,7 @@ export function useProjectFinder() {
     return () => {
       active = false;
     };
-  }, [category, field, platform, recruitOnly, searchValue, sort]);
+  }, [filters, retryKey]);
 
   useEffect(
     () => () => {
@@ -114,10 +120,8 @@ export function useProjectFinder() {
             setProjects((current) => [...current, ...result.projects]);
             setHasMore(result.hasMore);
             setPage(nextPage);
-          } catch (error) {
-            setErrorMessage(
-              error instanceof Error ? error.message : '프로젝트 목록을 더 불러오지 못했습니다.',
-            );
+          } catch {
+            setErrorMessage(PROJECT_LOAD_MORE_ERROR_MESSAGE);
           } finally {
             setIsLoadingMore(false);
             loadMoreTimeoutRef.current = null;
@@ -136,6 +140,11 @@ export function useProjectFinder() {
     setSort('latest');
   };
 
+  const retrySearch = () => {
+    setErrorMessage(null);
+    setRetryKey((current) => current + 1);
+  };
+
   return {
     filters,
     projects,
@@ -152,6 +161,7 @@ export function useProjectFinder() {
       filters.field !== '전체' ||
       filters.sort !== 'latest',
     loadMoreRef,
+    retrySearch,
     setSearchValue,
     setCategory,
     setRecruitOnly,

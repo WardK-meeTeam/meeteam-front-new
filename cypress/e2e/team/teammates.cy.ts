@@ -442,8 +442,25 @@ describe('팀원 찾기 예외 흐름', () => {
     cy.visit(TEAMMATES_PATH);
     cy.wait('@failedTeammatesRequest');
 
-    cy.contains('팀원 목록을 불러오지 못했습니다.').should('be.visible');
+    cy.get('[data-cy="teammate-error-state"]').should('be.visible');
+    cy.contains('팀원 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should('be.visible');
+    cy.contains('Failed to fetch').should('not.exist');
+    cy.get('[data-cy="teammate-total-count"]').should('not.exist');
     cy.get('[data-cy="teammate-list"]').should('not.exist');
+    cy.get('[data-cy="teammate-empty-state"]').should('not.exist');
+  });
+
+  it('초기 팀원 네트워크 실패도 사용자 문구로 보여준다', () => {
+    cy.intercept('GET', '**/api/v1/members/search*', {
+      forceNetworkError: true,
+    }).as('networkFailedTeammatesRequest');
+
+    cy.visit(TEAMMATES_PATH);
+    cy.wait('@networkFailedTeammatesRequest');
+
+    cy.get('[data-cy="teammate-error-state"]').should('be.visible');
+    cy.contains('팀원 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should('be.visible');
+    cy.contains('Failed to fetch').should('not.exist');
     cy.get('[data-cy="teammate-empty-state"]').should('not.exist');
   });
 
@@ -456,11 +473,12 @@ describe('팀원 찾기 예외 흐름', () => {
     cy.visit(TEAMMATES_PATH);
     cy.wait('@fallbackFailedTeammatesRequest');
 
-    cy.contains('팀원 목록을 불러오지 못했습니다.').should('be.visible');
+    cy.get('[data-cy="teammate-error-state"]').should('be.visible');
+    cy.contains('팀원 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should('be.visible');
     cy.get('[data-cy="teammate-list"]').should('not.exist');
   });
 
-  it('초기 팀원 응답 형식이 올바르지 않으면 파싱 에러를 보여준다', () => {
+  it('초기 팀원 응답 형식이 올바르지 않아도 사용자 문구로 에러 상태를 보여준다', () => {
     cy.intercept('GET', '**/api/v1/members/search*', {
       statusCode: 200,
       body: {},
@@ -469,7 +487,8 @@ describe('팀원 찾기 예외 흐름', () => {
     cy.visit(TEAMMATES_PATH);
     cy.wait('@invalidTeammatesResponseRequest');
 
-    cy.contains('응답 형식을 해석할 수 없습니다.').should('be.visible');
+    cy.get('[data-cy="teammate-error-state"]').should('be.visible');
+    cy.contains('팀원 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.').should('be.visible');
     cy.get('[data-cy="teammate-list"]').should('not.exist');
     cy.get('[data-cy="teammate-empty-state"]').should('not.exist');
   });

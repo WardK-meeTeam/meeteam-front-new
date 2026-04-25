@@ -21,6 +21,7 @@ type ProjectFindResultsProps = {
   loadMoreRef: RefObject<HTMLDivElement | null>;
   onSortChange: (value: SortFilter) => void;
   onResetFilters: () => void;
+  onRetry: () => void;
 };
 
 export function ProjectFindResults({
@@ -35,28 +36,31 @@ export function ProjectFindResults({
   loadMoreRef,
   onSortChange,
   onResetFilters,
+  onRetry,
 }: ProjectFindResultsProps) {
   const shouldShowErrorOnly = !isInitialLoading && Boolean(errorMessage) && projects.length === 0;
 
   return (
     <>
-      <ToastMessage message={errorMessage} />
+      <ToastMessage message={shouldShowErrorOnly ? null : errorMessage} />
 
-      <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
-        <p
-          data-cy="project-total-count"
-          className="text-base leading-6 font-semibold text-mt-text-nav"
-        >
-          총 <span className="text-mt-primary">{countLabel}</span>개의 프로젝트
-        </p>
+      {!shouldShowErrorOnly ? (
+        <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p
+            data-cy="project-total-count"
+            className="text-base leading-6 font-semibold text-mt-text-nav"
+          >
+            총 <span className="text-mt-primary">{countLabel}</span>개의 프로젝트
+          </p>
 
-        <SortSelect
-          value={sort}
-          options={PROJECT_SORT_OPTIONS}
-          onChange={onSortChange}
-          dataCy="project-sort-select"
-        />
-      </div>
+          <SortSelect
+            value={sort}
+            options={PROJECT_SORT_OPTIONS}
+            onChange={onSortChange}
+            dataCy="project-sort-select"
+          />
+        </div>
+      ) : null}
 
       {isInitialLoading ? (
         <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -66,7 +70,26 @@ export function ProjectFindResults({
             </li>
           ))}
         </ul>
-      ) : shouldShowErrorOnly ? null : projects.length > 0 ? (
+      ) : shouldShowErrorOnly ? (
+        <div
+          data-cy="project-error-state"
+          className="rounded-2xl border border-mt-border bg-mt-white px-6 py-16 text-center shadow-sm"
+          role="alert"
+        >
+          <p className="text-lg font-bold text-mt-text-primary">{errorMessage}</p>
+          <p className="mt-2 text-sm leading-5 text-mt-text-secondary">
+            네트워크 상태를 확인한 뒤 다시 시도해 주세요.
+          </p>
+          <button
+            type="button"
+            onClick={onRetry}
+            data-cy="project-retry-button"
+            className="mt-6 inline-flex h-11 items-center justify-center rounded-xl border border-mt-border px-5 text-sm font-semibold text-mt-text-primary transition-colors hover:bg-mt-bg-soft"
+          >
+            다시 불러오기
+          </button>
+        </div>
+      ) : projects.length > 0 ? (
         <ul data-cy="project-list" className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {projects.map((project) => (
             <li key={project.id}>
