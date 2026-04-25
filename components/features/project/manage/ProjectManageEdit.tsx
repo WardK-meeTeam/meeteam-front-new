@@ -11,12 +11,26 @@ import {
   updateProject,
 } from '@/components/features/project/projectApi';
 import ToastMessage from '@/components/shared/ToastMessage';
-import type { ProjectRecruitmentStatus } from '@/types/project';
+import { useToastStore } from '@/stores/useToastStore';
+import type { JobFieldOption } from '@/types/auth';
+import type { ProjectFormValues, ProjectRecruitmentStatus } from '@/types/project';
 import ProjectManageShell from './ProjectManageShell';
 import { ProjectManageEditSkeleton } from './ProjectManageSkeletons';
+import ProjectPendingRecruitmentDeleteModal from './ProjectPendingRecruitmentDeleteModal';
+import {
+  getPendingRecruitmentDeleteTargets,
+  isPendingRecruitmentDeleteError,
+  type PendingRecruitmentDeleteTarget,
+} from './projectEditGuards';
 
 type ProjectManageEditProps = {
   projectId: string;
+};
+
+type PendingDeleteSubmit = {
+  values: ProjectFormValues;
+  jobFields: JobFieldOption[];
+  targets: PendingRecruitmentDeleteTarget[];
 };
 
 const SUSPENDED_EDIT_MESSAGE =
@@ -25,12 +39,59 @@ const SUSPENDED_EDIT_MESSAGE =
 export default function ProjectManageEdit({ projectId }: ProjectManageEditProps) {
   const router = useRouter();
   const handleAuthRequired = useAuthRequiredModal();
+  const showToast = useToastStore((state) => state.showToast);
   const [prefill, setPrefill] = useState<ProjectEditPrefill | null>(null);
+  const [pendingDeleteSubmit, setPendingDeleteSubmit] = useState<PendingDeleteSubmit | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const handleRecruitmentStatusChange = useCallback((status: ProjectRecruitmentStatus) => {
     setPrefill((current) => syncPrefillEditableState(current, status));
   }, []);
+
+  const submitEditProject = useCallback(
+    async (
+      values: ProjectFormValues,
+      jobFields: JobFieldOption[],
+      options: { confirmDeletePositionsWithPendingApplicants?: boolean } = {},
+    ) => {
+      const payload = buildProjectEditPayload(values, jobFields, options);
+      const result = await updateProject(projectId, payload, values.coverImage);
+
+      if (result.autoRejectedApplicantCount > 0) {
+        showToast({
+          tone: 'success',
+          message: `대기 지원자 ${result.autoRejectedApplicantCount}명을 자동 거절하고 저장했어요.`,
+        });
+      }
+
+      router.push(`/projects/${projectId}/manage`);
+    },
+    [projectId, router, showToast],
+  );
+
+  const handleConfirmPendingDelete = useCallback(async () => {
+    if (!pendingDeleteSubmit) {
+      return;
+    }
+
+    try {
+      setIsConfirmingDelete(true);
+      await submitEditProject(pendingDeleteSubmit.values, pendingDeleteSubmit.jobFields, {
+        confirmDeletePositionsWithPendingApplicants: true,
+      });
+    } catch (error) {
+      if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage/edit` })) {
+        return;
+      }
+
+      showToast({
+        message: error instanceof Error ? error.message : '프로젝트 수정 중 오류가 발생했습니다.',
+      });
+    } finally {
+      setIsConfirmingDelete(false);
+    }
+  }, [handleAuthRequired, pendingDeleteSubmit, projectId, showToast, submitEditProject]);
 
   useEffect(() => {
     let active = true;
@@ -118,10 +179,36 @@ export default function ProjectManageEdit({ projectId }: ProjectManageEditProps)
         editable={prefill.editable}
         notEditableReason={prefill.notEditableReason}
         onSubmit={async (values, { jobFields }) => {
-          const payload = buildProjectEditPayload(values, jobFields);
-          await updateProject(projectId, payload, values.coverImage);
-          router.push(`/projects/${projectId}/manage`);
+          try {
+            await submitEditProject(values, jobFields);
+          } catch (error) {
+            if (isPendingRecruitmentDeleteError(error)) {
+              setPendingDeleteSubmit({
+                values,
+                jobFields,
+                targets: getPendingRecruitmentDeleteTargets(
+                  prefill.values.recruitInterests,
+                  values.recruitInterests,
+                ),
+              });
+              return;
+            }
+
+            throw error;
+          }
         }}
+      />
+
+      <ProjectPendingRecruitmentDeleteModal
+        isOpen={pendingDeleteSubmit !== null}
+        isSubmitting={isConfirmingDelete}
+        targets={pendingDeleteSubmit?.targets ?? []}
+        onClose={() => {
+          if (!isConfirmingDelete) {
+            setPendingDeleteSubmit(null);
+          }
+        }}
+        onConfirm={() => void handleConfirmPendingDelete()}
       />
     </ProjectManageShell>
   );

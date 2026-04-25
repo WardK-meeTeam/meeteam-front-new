@@ -572,6 +572,85 @@ describe('프로젝트 생성 및 관리 흐름', () => {
     cy.location('pathname').should('eq', `/projects/${PROJECT_ID}/manage`);
   });
 
+  it('대기 지원자가 있는 모집 분야를 삭제하면 확인 후 자동 거절 플래그로 다시 저장한다', () => {
+    installProjectDetailIntercept(LEADER_PROJECT_DETAIL);
+    installTeamManagementIntercept();
+    cy.intercept('GET', `**/api/v1/projects/${PROJECT_ID}/edit`, {
+      statusCode: 200,
+      body: {
+        result: {
+          ...EDIT_PREFILL,
+          recruitments: [
+            {
+              ...EDIT_PREFILL.recruitments[0],
+              pendingApplicationCount: 0,
+            },
+            {
+              recruitmentStateId: 702,
+              jobFieldCode: 'BACKEND',
+              jobFieldName: '백엔드',
+              jobPositionCode: 'NODE_JS',
+              jobPositionName: 'Node.js',
+              recruitmentCount: 1,
+              currentCount: 0,
+              pendingApplicationCount: 1,
+              techStackIds: [11],
+              techStackNames: ['Node.js'],
+              deletable: true,
+              notDeletableReason: null,
+              minRecruitmentCount: 0,
+            },
+          ],
+        },
+      },
+    }).as('editPrefillRequest');
+
+    let updateAttempt = 0;
+    cy.intercept('PUT', `**/api/v1/projects/${PROJECT_ID}`, (request) => {
+      updateAttempt += 1;
+
+      if (updateAttempt === 1) {
+        request.reply({
+          statusCode: 409,
+          body: {
+            code: 'RECRUITMENT409',
+            message:
+              '대기 지원자가 있는 포지션입니다. 삭제 시 해당 지원자들의 지원이 자동 거절됩니다.',
+          },
+        });
+        return;
+      }
+
+      request.reply({
+        statusCode: 200,
+        body: {
+          result: {
+            projectId: PROJECT_ID,
+            name: '프로젝트 상세 테스트',
+            recruitmentStatus: 'RECRUITING',
+            autoRejectedApplicantCount: 1,
+          },
+        },
+      });
+    }).as('updateProjectRequest');
+
+    visitAuthenticated(`/projects/${PROJECT_ID}/manage/edit`);
+    cy.wait('@editPrefillRequest');
+    cy.wait('@jobOptionsRequest');
+
+    cy.contains('button', '역할과 모집').click();
+    cy.contains('대기 지원 1명').should('be.visible');
+    cy.get('[data-cy="project-form-recruit-delete-1"]').click();
+    cy.get('[data-cy="project-form-submit"]').click();
+    cy.wait('@updateProjectRequest');
+
+    cy.contains('대기 지원자가 있어요').should('be.visible');
+    cy.contains('자동 거절 예정 지원자 1명').should('be.visible');
+    cy.contains('button', '자동 거절 후 저장').click();
+    cy.wait('@updateProjectRequest');
+    cy.location('pathname').should('eq', `/projects/${PROJECT_ID}/manage`);
+  });
+
   it('프로젝트 모집 상태를 중단 처리한다', () => {
     installProjectDetailIntercept(LEADER_PROJECT_DETAIL);
     installTeamManagementIntercept();

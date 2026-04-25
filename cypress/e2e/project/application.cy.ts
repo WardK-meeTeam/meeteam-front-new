@@ -191,6 +191,43 @@ describe('프로젝트 지원 흐름', () => {
     });
     cy.location('pathname').should('eq', `/projects/${PROJECT_ID}`);
   });
+
+  it('[EX-011] 신청 버튼을 연속 클릭해도 지원 요청은 한 번만 보낸다', () => {
+    let applicationRequestCount = 0;
+
+    cy.intercept('POST', `**/api/v1/projects/${PROJECT_ID}/application`, (request) => {
+      applicationRequestCount += 1;
+      request.reply({
+        delay: 300,
+        statusCode: 200,
+        body: {
+          result: {
+            applicationId: 9001,
+            projectId: PROJECT_ID,
+            applicantId: MEMBER_PROFILE.memberId,
+            status: 'PENDING',
+          },
+        },
+      });
+    }).as('dedupedApplicationRequest');
+
+    cy.visit(`/projects/${PROJECT_ID}/apply`);
+    cy.wait('@applicationPageRequest');
+    cy.wait('@jobOptionsRequest');
+
+    cy.get('[data-cy="project-application-motivation"]').type(
+      '프론트엔드 구현 경험을 바탕으로 프로젝트에 기여하고 싶습니다.',
+    );
+    cy.get('[data-cy="project-application-submit"]').click();
+    cy.get('[data-cy="project-application-submit"]')
+      .should('be.disabled')
+      .and('contain', '지원 중');
+    cy.wait('@dedupedApplicationRequest');
+
+    cy.wrap(null).should(() => {
+      expect(applicationRequestCount).to.eq(1);
+    });
+  });
 });
 
 export {};

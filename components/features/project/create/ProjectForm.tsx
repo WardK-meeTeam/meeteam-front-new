@@ -128,6 +128,10 @@ function isValidGithubRepositoryUrl(value: string) {
   }
 }
 
+function getRecruitmentMinimumCount(interest: RecruitInterest) {
+  return Math.max(1, interest.minRecruitmentCount ?? 1);
+}
+
 export default function ProjectForm({
   variant = 'create',
   initialValues,
@@ -275,7 +279,7 @@ export default function ProjectForm({
     setRecruitInterests((prev) =>
       prev.map((item, itemIndex) =>
         itemIndex === index
-          ? { ...item, count: Math.max(item.minRecruitmentCount ?? 1, item.count + delta) }
+          ? { ...item, count: Math.max(getRecruitmentMinimumCount(item), item.count + delta) }
           : item,
       ),
     );
@@ -743,85 +747,109 @@ export default function ProjectForm({
                     {recruitInterests.map((interest, index) => (
                       <div
                         key={`${index}-${interest.major}-${interest.minor}`}
-                        className="flex flex-col gap-2 md:flex-row md:items-center"
+                        className="space-y-1"
                       >
-                        <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row">
-                          <BaseDropdown
-                            value={interest.major}
-                            placeholder="직군 선택"
-                            open={
-                              openRecruitDropdown?.index === index &&
-                              openRecruitDropdown.key === 'major'
-                            }
-                            items={majorOptions}
-                            dataCy={`project-form-recruit-major-${index}`}
-                            onToggle={() => toggleRecruitDropdown(index, 'major')}
-                            onSelect={(selectedMajor) => {
-                              updateRecruitInterest(index, { major: selectedMajor, minor: '' });
-                              setOpenRecruitDropdown(null);
-                            }}
-                            containerClassName="w-full sm:basis-2/5 md:basis-1/3"
-                            buttonClassName="justify-between px-4 py-3.5"
-                            textClassName="min-w-0 truncate text-sm font-medium"
-                          />
+                        <div className="flex flex-col gap-2 md:flex-row md:items-center">
+                          <div className="flex min-w-0 flex-1 flex-col gap-2 sm:flex-row">
+                            <BaseDropdown
+                              value={interest.major}
+                              placeholder="직군 선택"
+                              open={
+                                openRecruitDropdown?.index === index &&
+                                openRecruitDropdown.key === 'major'
+                              }
+                              items={majorOptions}
+                              dataCy={`project-form-recruit-major-${index}`}
+                              onToggle={() => toggleRecruitDropdown(index, 'major')}
+                              onSelect={(selectedMajor) => {
+                                updateRecruitInterest(index, { major: selectedMajor, minor: '' });
+                                setOpenRecruitDropdown(null);
+                              }}
+                              containerClassName="w-full sm:basis-2/5 md:basis-1/3"
+                              buttonClassName="justify-between px-4 py-3.5"
+                              textClassName="min-w-0 truncate text-sm font-medium"
+                            />
 
-                          <BaseDropdown
-                            value={interest.minor}
-                            placeholder="상세 분야 선택"
-                            open={
-                              openRecruitDropdown?.index === index &&
-                              openRecruitDropdown.key === 'minor'
-                            }
-                            items={getMinors(interest.major)}
-                            dataCy={`project-form-recruit-minor-${index}`}
-                            onToggle={() => interest.major && toggleRecruitDropdown(index, 'minor')}
-                            onSelect={(selectedMinor) => {
-                              updateRecruitInterest(index, {
-                                major: interest.major,
-                                minor: selectedMinor,
-                              });
-                              setOpenRecruitDropdown(null);
-                            }}
-                            disabled={!interest.major}
-                            containerClassName="w-full min-w-0 sm:flex-1"
-                            buttonClassName="justify-between px-4 py-3.5"
-                            textClassName="min-w-0 truncate text-sm font-normal"
-                          />
+                            <BaseDropdown
+                              value={interest.minor}
+                              placeholder="상세 분야 선택"
+                              open={
+                                openRecruitDropdown?.index === index &&
+                                openRecruitDropdown.key === 'minor'
+                              }
+                              items={getMinors(interest.major)}
+                              dataCy={`project-form-recruit-minor-${index}`}
+                              onToggle={() =>
+                                interest.major && toggleRecruitDropdown(index, 'minor')
+                              }
+                              onSelect={(selectedMinor) => {
+                                updateRecruitInterest(index, {
+                                  major: interest.major,
+                                  minor: selectedMinor,
+                                });
+                                setOpenRecruitDropdown(null);
+                              }}
+                              disabled={!interest.major}
+                              containerClassName="w-full min-w-0 sm:flex-1"
+                              buttonClassName="justify-between px-4 py-3.5"
+                              textClassName="min-w-0 truncate text-sm font-normal"
+                            />
+                          </div>
+
+                          <div className="flex h-12 w-full items-center justify-center self-start rounded-xl border border-mt-border bg-mt-white px-2 text-sm font-medium text-mt-text-secondary sm:w-auto md:self-auto">
+                            <button
+                              type="button"
+                              onClick={() => updateRecruitCount(index, -1)}
+                              disabled={interest.count <= getRecruitmentMinimumCount(interest)}
+                              title={
+                                interest.count <= getRecruitmentMinimumCount(interest)
+                                  ? '현재 승인된 인원보다 적게 설정할 수 없습니다.'
+                                  : undefined
+                              }
+                              data-cy={`project-form-recruit-decrement-${index}`}
+                              className="flex h-8 w-7 items-center justify-center rounded-md hover:bg-mt-bg-soft disabled:cursor-not-allowed disabled:opacity-40"
+                              aria-label="인원수 감소"
+                            >
+                              -
+                            </button>
+                            <span className="w-6 text-center text-mt-text-primary">
+                              {interest.count}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => updateRecruitCount(index, 1)}
+                              data-cy={`project-form-recruit-increment-${index}`}
+                              className="flex h-8 w-7 items-center justify-center rounded-md hover:bg-mt-bg-soft"
+                              aria-label="인원수 증가"
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          {recruitInterests.length > 1 ? (
+                            <button
+                              type="button"
+                              onClick={() => removeRecruitInterest(index)}
+                              disabled={interest.deletable === false}
+                              title={interest.notDeletableReason ?? undefined}
+                              data-cy={`project-form-recruit-delete-${index}`}
+                              className="self-start text-xs font-bold text-mt-hero-blue disabled:cursor-not-allowed disabled:text-mt-text-secondary md:self-auto"
+                              aria-label="모집 분야 삭제"
+                            >
+                              삭제
+                            </button>
+                          ) : null}
                         </div>
 
-                        <div className="flex h-12 w-full items-center justify-center self-start rounded-xl border border-mt-border bg-mt-white px-2 text-sm font-medium text-mt-text-secondary sm:w-auto md:self-auto">
-                          <button
-                            type="button"
-                            onClick={() => updateRecruitCount(index, -1)}
-                            className="flex h-8 w-7 items-center justify-center rounded-md hover:bg-mt-bg-soft"
-                            aria-label="인원수 감소"
-                          >
-                            -
-                          </button>
-                          <span className="w-6 text-center text-mt-text-primary">
-                            {interest.count}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => updateRecruitCount(index, 1)}
-                            className="flex h-8 w-7 items-center justify-center rounded-md hover:bg-mt-bg-soft"
-                            aria-label="인원수 증가"
-                          >
-                            +
-                          </button>
-                        </div>
-
-                        {recruitInterests.length > 1 ? (
-                          <button
-                            type="button"
-                            onClick={() => removeRecruitInterest(index)}
-                            disabled={interest.deletable === false}
-                            title={interest.notDeletableReason ?? undefined}
-                            className="self-start text-xs font-bold text-mt-hero-blue disabled:cursor-not-allowed disabled:text-mt-text-secondary md:self-auto"
-                            aria-label="모집 분야 삭제"
-                          >
-                            삭제
-                          </button>
+                        {isEdit &&
+                        ((interest.currentCount ?? 0) > 0 ||
+                          (interest.pendingApplicationCount ?? 0) > 0) ? (
+                          <p className="text-xs leading-4 text-mt-text-secondary">
+                            승인 {interest.currentCount ?? 0}명
+                            {(interest.pendingApplicationCount ?? 0) > 0
+                              ? ` · 대기 지원 ${interest.pendingApplicationCount}명`
+                              : ''}
+                          </p>
                         ) : null}
                       </div>
                     ))}

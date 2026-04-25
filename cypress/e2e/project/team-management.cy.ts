@@ -262,6 +262,61 @@ describe('팀 지원자 관리 흐름', () => {
     cy.contains('대기 중인 지원자가 없습니다.').should('be.visible');
   });
 
+  it('정원이 가득 찬 포지션의 지원자는 프론트에서 승인 버튼을 비활성화한다', () => {
+    cy.intercept('GET', `**/api/v1/projects/${PROJECT_ID}/applications`, {
+      statusCode: 200,
+      body: {
+        result: [
+          {
+            ...PENDING_APPLICATION,
+            currentCount: 2,
+            recruitmentCount: 2,
+            isRecruitmentFull: true,
+          },
+        ],
+      },
+    }).as('applicationsRequest');
+
+    visitAuthenticatedApplicantsPage();
+    cy.wait('@applicationsRequest');
+
+    cy.contains('현재 2/2명').should('be.visible');
+    cy.get(`[data-cy="project-applicant-approve-${APPLICATION_ID}"]`)
+      .should('be.disabled')
+      .and('contain', '정원 마감');
+  });
+
+  it('[EX-013] 이미 승인/거절된 지원서는 대기 결정 목록에서 제외한다', () => {
+    cy.intercept('GET', `**/api/v1/projects/${PROJECT_ID}/applications`, {
+      statusCode: 200,
+      body: {
+        result: [
+          {
+            ...PENDING_APPLICATION,
+            applicationId: 9101,
+            applicantName: '승인 완료 지원자',
+            status: 'ACCEPTED',
+          },
+          {
+            ...PENDING_APPLICATION,
+            applicationId: 9102,
+            applicantName: '거절 완료 지원자',
+            status: 'REJECTED',
+          },
+        ],
+      },
+    }).as('applicationsRequest');
+
+    visitAuthenticatedApplicantsPage();
+    cy.wait('@applicationsRequest');
+
+    cy.contains('대기 중인 지원자가 없습니다.').should('be.visible');
+    cy.contains('승인 완료 지원자').should('not.exist');
+    cy.contains('거절 완료 지원자').should('not.exist');
+    cy.contains('button', '승인').should('not.exist');
+    cy.contains('button', '거절').should('not.exist');
+  });
+
   it('지원자를 거절하면 대기 목록에서 제거된다', () => {
     const applications = installApplicationsIntercept();
     cy.intercept(

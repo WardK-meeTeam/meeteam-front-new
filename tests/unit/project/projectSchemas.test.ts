@@ -80,6 +80,66 @@ describe('projectFormSchema', () => {
       '모집 인원은 1명 이상이어야 해요.',
     );
   });
+
+  it('[EX-001] 수정 중 모집 인원은 현재 승인된 인원보다 작을 수 없다', () => {
+    const result = projectFormSchema.safeParse({
+      ...VALID_PROJECT_FORM_VALUES,
+      recruitInterests: [
+        {
+          major: '백엔드',
+          minor: 'Node.js/NestJS',
+          count: 2,
+          minRecruitmentCount: 3,
+        },
+      ],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues.map((issue) => issue.message)).toContain(
+      '현재 승인된 인원보다 적게 설정할 수 없어요.',
+    );
+  });
+
+  it('[EX-002][EX-003] 수정 중 모집 인원은 현재 승인된 인원 이상이면 허용한다', () => {
+    for (const count of [3, 5]) {
+      expect(
+        projectFormSchema.safeParse({
+          ...VALID_PROJECT_FORM_VALUES,
+          recruitInterests: [
+            {
+              major: '백엔드',
+              minor: 'Node.js/NestJS',
+              count,
+              minRecruitmentCount: 3,
+            },
+          ],
+        }).success,
+      ).toBe(true);
+    }
+  });
+
+  it('같은 모집 분야를 중복으로 추가할 수 없다', () => {
+    const result = projectFormSchema.safeParse({
+      ...VALID_PROJECT_FORM_VALUES,
+      recruitInterests: [
+        {
+          major: '백엔드',
+          minor: 'Node.js/NestJS',
+          count: 1,
+        },
+        {
+          major: '백엔드',
+          minor: 'Node.js/NestJS',
+          count: 2,
+        },
+      ],
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.error?.issues.map((issue) => issue.message)).toContain(
+      '같은 모집 분야는 한 번만 추가할 수 있어요.',
+    );
+  });
 });
 
 describe('projectApplicationSchema', () => {

@@ -1,5 +1,24 @@
 import { z } from 'zod';
 
+const recruitInterestSchema = z
+  .object({
+    major: z.string().min(1, '모집 분야의 직군을 선택해 주세요.'),
+    minor: z.string().min(1, '모집 분야의 상세 직무를 선택해 주세요.'),
+    count: z.number().int().min(1, '모집 인원은 1명 이상이어야 해요.'),
+    minRecruitmentCount: z.number().int().min(0).optional(),
+  })
+  .superRefine((value, ctx) => {
+    const minRecruitmentCount = value.minRecruitmentCount ?? 1;
+
+    if (value.count < minRecruitmentCount) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['count'],
+        message: '현재 승인된 인원보다 적게 설정할 수 없어요.',
+      });
+    }
+  });
+
 export const projectFormSchema = z
   .object({
     projectName: z.string().trim().min(1, '프로젝트 이름을 입력해 주세요.'),
@@ -14,13 +33,7 @@ export const projectFormSchema = z
       minor: z.string().min(1, '나의 상세 분야를 선택해 주세요.'),
     }),
     recruitInterests: z
-      .array(
-        z.object({
-          major: z.string().min(1, '모집 분야의 직군을 선택해 주세요.'),
-          minor: z.string().min(1, '모집 분야의 상세 직무를 선택해 주세요.'),
-          count: z.number().int().min(1, '모집 인원은 1명 이상이어야 해요.'),
-        }),
-      )
+      .array(recruitInterestSchema)
       .min(1, '최소 1개의 모집 분야를 추가해 주세요.'),
     recruitDeadline: z.string(),
     isRecruitUntilComplete: z.boolean(),
@@ -33,6 +46,33 @@ export const projectFormSchema = z
         message: '모집 마감일을 선택해 주세요.',
       });
     }
+
+    const recruitmentKeys = new Map<string, number>();
+
+    value.recruitInterests.forEach((interest, index) => {
+      if (!interest.major || !interest.minor) {
+        return;
+      }
+
+      const key = `${interest.major}:${interest.minor}`;
+      const previousIndex = recruitmentKeys.get(key);
+
+      if (previousIndex !== undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['recruitInterests', index, 'minor'],
+          message: '같은 모집 분야는 한 번만 추가할 수 있어요.',
+        });
+        ctx.addIssue({
+          code: 'custom',
+          path: ['recruitInterests', previousIndex, 'minor'],
+          message: '같은 모집 분야는 한 번만 추가할 수 있어요.',
+        });
+        return;
+      }
+
+      recruitmentKeys.set(key, index);
+    });
   });
 
 export type ProjectFormFieldErrors = Partial<

@@ -176,6 +176,17 @@ type BackendApplicationDecisionResponse = {
   decision: BackendApplicationStatus;
 };
 
+type BackendProjectDeleteResponse = {
+  projectId: number;
+  deleted?: boolean;
+};
+
+type BackendApplicationCancelResponse = {
+  applicationId: number;
+  cancelled?: boolean;
+  status?: BackendApplicationStatus;
+};
+
 type BackendProjectLikeStatusResponse = {
   isLiked?: boolean;
   liked?: boolean;
@@ -477,6 +488,26 @@ function isRecruitmentCompletedDeadline(project: {
   );
 }
 
+function assertRecruitmentEditableCount(interest: ProjectFormValues['recruitInterests'][number]) {
+  if (interest.count < Math.max(1, interest.minRecruitmentCount ?? 1)) {
+    throw new Error('현재 승인된 인원보다 적게 설정할 수 없습니다.');
+  }
+}
+
+function assertUniqueRecruitment(
+  recruitmentKeys: Set<string>,
+  fieldCode: string,
+  positionCode: string,
+) {
+  const recruitmentKey = `${fieldCode}:${positionCode}`;
+
+  if (recruitmentKeys.has(recruitmentKey)) {
+    throw new Error('같은 모집 분야는 한 번만 추가할 수 있어요.');
+  }
+
+  recruitmentKeys.add(recruitmentKey);
+}
+
 export function buildProjectCreatePayload(values: ProjectFormValues, jobFields: JobFieldOption[]) {
   const creatorField = findProjectJobField(jobFields, values.myInterest.major);
 
@@ -490,6 +521,7 @@ export function buildProjectCreatePayload(values: ProjectFormValues, jobFields: 
     throw new Error('나의 상세 분야 정보를 다시 선택해 주세요.');
   }
 
+  const recruitmentKeys = new Set<string>();
   const recruitments = values.recruitInterests.map((interest) => {
     const field = findProjectJobField(jobFields, interest.major);
 
@@ -502,6 +534,8 @@ export function buildProjectCreatePayload(values: ProjectFormValues, jobFields: 
     if (!position) {
       throw new Error('모집 상세 분야 정보를 다시 선택해 주세요.');
     }
+
+    assertUniqueRecruitment(recruitmentKeys, field.code, position.code);
 
     const techStackNames = values.recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [];
     const techStackIds = techStackNames.map((techStackName) => {
@@ -537,6 +571,8 @@ export function buildProjectCreatePayload(values: ProjectFormValues, jobFields: 
 }
 
 function buildRecruitmentRequests(values: ProjectFormValues, jobFields: JobFieldOption[]) {
+  const recruitmentKeys = new Set<string>();
+
   return values.recruitInterests.map((interest) => {
     const field = findProjectJobField(jobFields, interest.major);
 
@@ -549,6 +585,9 @@ function buildRecruitmentRequests(values: ProjectFormValues, jobFields: JobField
     if (!position) {
       throw new Error('모집 상세 분야 정보를 다시 선택해 주세요.');
     }
+
+    assertUniqueRecruitment(recruitmentKeys, field.code, position.code);
+    assertRecruitmentEditableCount(interest);
 
     const techStackNames = values.recruitTechStacks[`${interest.major} - ${interest.minor}`] ?? [];
     const techStackIds = techStackNames.map((techStackName) => {
@@ -656,6 +695,18 @@ export async function updateProject(
   }>(response, '프로젝트 수정 중 오류가 발생했습니다.');
 }
 
+export async function deleteProject(projectId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+  return readEnvelope<BackendProjectDeleteResponse>(
+    response,
+    '프로젝트 삭제 중 오류가 발생했습니다.',
+  );
+}
+
 export async function applyToProject(
   projectId: string | number,
   payload: ProjectApplicationRequestPayload,
@@ -738,6 +789,24 @@ export async function fetchProjectApplicationDetail(
   );
 
   return mapApplicationDetail(application);
+}
+
+export async function cancelProjectApplication(
+  projectId: string | number,
+  applicationId: string | number,
+) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/projects/${projectId}/applications/${applicationId}`,
+    {
+      method: 'DELETE',
+      credentials: 'include',
+    },
+  );
+
+  return readEnvelope<BackendApplicationCancelResponse>(
+    response,
+    '지원 취소 중 오류가 발생했습니다.',
+  );
 }
 
 export async function decideProjectApplication(
@@ -874,7 +943,6 @@ export async function expelProjectMember(projectId: string | number, memberId: s
     expelledMemberName: string;
   }>(response, '팀원 방출 중 오류가 발생했습니다.');
 }
-
 
 export async function fetchProjectEditPrefill(
   projectId: string | number,

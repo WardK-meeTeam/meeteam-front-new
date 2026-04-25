@@ -24,6 +24,14 @@ export type ProjectSearchCard = {
     name: string;
     avatar: string;
   };
+  recruitInfo: Array<{
+    id: string | number;
+    role: string;
+    subRoles: string[];
+    status: string;
+    current: number;
+    max: number;
+  }>;
 };
 
 interface BackendProjectCardResponse {
@@ -36,6 +44,14 @@ interface BackendProjectCardResponse {
   creatorImageUrl: string | null;
   currentCount: number;
   recruitmentCount: number;
+  recruitments?: Array<{
+    jobFieldName: string;
+    jobPositionName: string;
+    currentCount: number;
+    recruitmentCount: number;
+    isClosed?: boolean;
+    closed?: boolean;
+  }>;
 }
 
 interface ProjectSearchSlice {
@@ -132,6 +148,15 @@ function mapProjectCard(project: BackendProjectCardResponse): ProjectSearchCard 
       name: project.creatorName,
       avatar: project.creatorImageUrl ?? '',
     },
+    recruitInfo:
+      project.recruitments?.map((recruitment, index) => ({
+        id: `${project.projectId}-${index + 1}`,
+        role: recruitment.jobFieldName,
+        subRoles: [recruitment.jobPositionName],
+        status: (recruitment.isClosed ?? recruitment.closed) ? 'closed' : 'open',
+        current: recruitment.currentCount,
+        max: recruitment.recruitmentCount,
+      })) ?? [],
   };
 }
 
