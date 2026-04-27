@@ -360,6 +360,91 @@ describe('인증 세션 흐름', () => {
     cy.contains('홈으로 돌아가기').should('be.visible');
     cy.get('[data-cy="login-form"]').should('be.visible');
   });
+
+  it('access token이 만료되면 refresh 후 원 요청을 재시도하고 보호 페이지를 유지한다', () => {
+    let myProfileRequestCount = 0;
+
+    cy.intercept('GET', '**/api/v1/notifications/unread/count', {
+      statusCode: 200,
+      body: {
+        result: {
+          unreadCount: 0,
+        },
+      },
+    }).as('unreadNotificationCountRequest');
+    cy.intercept('GET', '**/api/v1/jobs/options', {
+      statusCode: 200,
+      body: {
+        result: JOB_OPTIONS_INFO,
+      },
+    }).as('jobOptionsRequest');
+    cy.intercept('POST', '**/api/v1/auth/refresh', {
+      statusCode: 200,
+      body: {
+        result: null,
+      },
+    }).as('refreshRequest');
+    cy.intercept('GET', '**/api/v1/members/me', (request) => {
+      myProfileRequestCount += 1;
+
+      request.reply(
+        myProfileRequestCount === 1
+          ? {
+              statusCode: 401,
+              body: {
+                message: '인증이 필요합니다.',
+              },
+            }
+          : {
+              statusCode: 200,
+              body: {
+                result: MEMBER_PROFILE_INFO,
+              },
+            },
+      );
+    }).as('myProfileRequest');
+
+    cy.visit('/profile');
+
+    cy.wait('@myProfileRequest').its('response.statusCode').should('eq', 401);
+    cy.wait('@refreshRequest').its('response.statusCode').should('eq', 200);
+    cy.wait('@myProfileRequest').its('response.statusCode').should('eq', 200);
+    cy.wait('@unreadNotificationCountRequest');
+    cy.wait('@jobOptionsRequest');
+
+    cy.location('pathname').should('eq', '/profile');
+    cy.contains('button', '프로필 수정').should('be.visible');
+    cy.contains('로그인이 필요한 기능입니다').should('not.exist');
+    cy.get('[data-cy="login-form"]').should('not.exist');
+    cy.window().then((window) => {
+      expect(JSON.parse(window.localStorage.getItem(AUTH_STORAGE_KEY) ?? '{}')).to.deep.equal(
+        AUTH_SESSION,
+      );
+    });
+  });
+
+  it('access token 만료 후 refresh도 실패하면 로그인 필요 흐름을 보여준다', () => {
+    cy.intercept('GET', '**/api/v1/members/me', {
+      statusCode: 401,
+      body: {
+        message: '인증이 필요합니다.',
+      },
+    }).as('myProfileRequest');
+    cy.intercept('POST', '**/api/v1/auth/refresh', {
+      statusCode: 401,
+      body: {
+        message: '인증이 필요합니다.',
+      },
+    }).as('refreshRequest');
+
+    cy.visit('/profile');
+
+    cy.wait('@myProfileRequest').its('response.statusCode').should('eq', 401);
+    cy.wait('@refreshRequest').its('response.statusCode').should('eq', 401);
+    cy.location('pathname').should('eq', '/profile');
+    cy.contains('로그인이 필요한 기능입니다').should('be.visible');
+    cy.get('[data-cy="login-form"]').should('be.visible');
+  });
 });
 
 export {};
