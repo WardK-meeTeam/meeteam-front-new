@@ -6,9 +6,8 @@ import type {
   SignupSuccessResponse,
 } from '@/types/auth';
 
+import { API_BASE_URL, apiFetch } from './apiClient';
 import { extractApiData } from './signupTransform';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
 async function readJson<T>(response: Response) {
   const payload = await response.json();
@@ -23,9 +22,10 @@ async function readJson<T>(response: Response) {
 }
 
 export async function fetchJobOptions() {
-  const response = await fetch(`${API_BASE_URL}/api/v1/jobs/options`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/jobs/options`, {
     method: 'GET',
     cache: 'no-store',
+    skipAuthRefresh: true,
   });
   const payload = await readJson<{
     data?: { fields: JobFieldOption[] };
@@ -37,8 +37,9 @@ export async function fetchJobOptions() {
 
 export async function checkEmailDuplicate(email: string) {
   const encodedEmail = encodeURIComponent(email.trim());
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/email?email=${encodedEmail}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/auth/email?email=${encodedEmail}`, {
     method: 'POST',
+    skipAuthRefresh: true,
   });
   const payload = await readJson<{
     data?: EmailDuplicateResponse;
@@ -56,8 +57,9 @@ export async function registerMember(payload: RegisterRequestPayload, file?: Fil
     formData.append('file', file);
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/auth/register`, {
     method: 'POST',
+    skipAuthRefresh: true,
     body: formData,
   });
   const data = await readJson<{ data?: SignupSuccessResponse; result?: SignupSuccessResponse }>(
@@ -78,9 +80,9 @@ export async function registerSejongMember(
     formData.append('file', file);
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/register/sejong`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/auth/register/sejong`, {
     method: 'POST',
-    credentials: 'include',
+    skipAuthRefresh: true,
     body: formData,
   });
   await readJson<{ data?: null; result?: null }>(response);

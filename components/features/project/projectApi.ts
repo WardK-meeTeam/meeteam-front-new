@@ -7,6 +7,7 @@ import type {
   ProjectRecruitmentStatus,
 } from '@/types/project';
 
+import { API_BASE_URL, apiFetch } from '@/components/features/auth/apiClient';
 import { createApiError } from '@/components/features/auth/authError';
 import { findTechStackByName } from '@/components/features/auth/jobOptionUtils';
 import { extractApiData, normalizeUrl } from '@/components/features/auth/signupTransform';
@@ -15,8 +16,6 @@ import {
   findProjectJobPosition,
 } from '@/components/features/project/projectJobOptions';
 import { formatJobRole } from '@/components/shared/jobRoleFormat';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
 type BackendProjectCreateResponse = {
   id: number;
@@ -692,9 +691,8 @@ export async function createProject(payload: ProjectCreateRequestPayload, file?:
     formData.append('file', file);
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects`, {
     method: 'POST',
-    credentials: 'include',
     body: formData,
   });
 
@@ -717,9 +715,8 @@ export async function updateProject(
     formData.append('file', file);
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
     method: 'PUT',
-    credentials: 'include',
     body: formData,
   });
 
@@ -732,9 +729,8 @@ export async function updateProject(
 }
 
 export async function deleteProject(projectId: string | number) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
     method: 'DELETE',
-    credentials: 'include',
   });
 
   return readEnvelope<BackendProjectDeleteResponse>(
@@ -747,12 +743,11 @@ export async function applyToProject(
   projectId: string | number,
   payload: ProjectApplicationRequestPayload,
 ): Promise<ProjectApplicationResult> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/application`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}/application`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include',
     body: JSON.stringify(payload),
   });
 
@@ -772,10 +767,9 @@ export async function applyToProject(
 export async function fetchProjectApplicationPage(
   projectId: string | number,
 ): Promise<ProjectApplicationPage> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/application`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}/application`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const page = await readApplicationPageEnvelope(response);
@@ -793,10 +787,9 @@ export async function fetchProjectApplicationPage(
 export async function fetchProjectApplications(
   projectId: string | number,
 ): Promise<ProjectApplicant[]> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/applications`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}/applications`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const applications = await readEnvelope<BackendProjectApplicationListResponse[]>(
@@ -811,12 +804,11 @@ export async function fetchProjectApplicationDetail(
   projectId: string | number,
   applicationId: string | number,
 ): Promise<ProjectApplicant> {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/v1/projects/${projectId}/applications/${applicationId}`,
     {
       method: 'GET',
       cache: 'no-store',
-      credentials: 'include',
     },
   );
 
@@ -829,10 +821,12 @@ export async function fetchProjectApplicationDetail(
 }
 
 export async function cancelProjectApplication(applicationId: string | number) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me/applications/${applicationId}`, {
-    method: 'DELETE',
-    credentials: 'include',
-  });
+  const response = await apiFetch(
+    `${API_BASE_URL}/api/v1/members/me/applications/${applicationId}`,
+    {
+      method: 'DELETE',
+    },
+  );
 
   return readEnvelope<BackendApplicationCancelResponse>(
     response,
@@ -845,14 +839,13 @@ export async function decideProjectApplication(
   applicationId: string | number,
   decision: ProjectApplicationDecision,
 ) {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/v1/projects/${projectId}/applications/${applicationId}/decision`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify({ decision }),
     },
   );
@@ -871,12 +864,11 @@ export async function decideProjectApplication(
 }
 
 export async function leaveProject(projectId: string | number) {
-  const response = await fetch(`${API_BASE_URL}/api/project-members/withdraw`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/project-members/withdraw`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include',
     body: JSON.stringify({ projectId: Number(projectId) }),
   });
 
@@ -894,10 +886,9 @@ export async function fetchProjectApplicationPolicy(): Promise<ProjectApplicatio
 }
 
 export async function fetchMyProjectApplications(): Promise<AppliedProject[]> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me/applications`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/members/me/applications`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const applications = await readEnvelope<BackendAppliedProjectResponse[]>(
@@ -919,10 +910,12 @@ export async function fetchMyProjectApplications(): Promise<AppliedProject[]> {
 }
 
 export async function toggleProjectRecruitmentStatus(projectId: string | number) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/recruitment/toggle`, {
-    method: 'POST',
-    credentials: 'include',
-  });
+  const response = await apiFetch(
+    `${API_BASE_URL}/api/v1/projects/${projectId}/recruitment/toggle`,
+    {
+      method: 'POST',
+    },
+  );
 
   return readEnvelope<{
     projectId: number;
@@ -932,10 +925,9 @@ export async function toggleProjectRecruitmentStatus(projectId: string | number)
 }
 
 export async function fetchProjectLikeStatus(projectId: string | number) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/project/like/${projectId}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/project/like/${projectId}`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const status = await readEnvelope<BackendProjectLikeStatusResponse>(
@@ -949,9 +941,8 @@ export async function fetchProjectLikeStatus(projectId: string | number) {
 }
 
 export async function toggleProjectLike(projectId: string | number) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/project/like/${projectId}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/project/like/${projectId}`, {
     method: 'POST',
-    credentials: 'include',
   });
 
   return readEnvelope<BackendProjectLikeToggleResponse>(
@@ -963,10 +954,9 @@ export async function toggleProjectLike(projectId: string | number) {
 export async function fetchProjectTeamManagement(
   projectId: string | number,
 ): Promise<ProjectTeamManagement> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/team`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}/team`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const team = await readEnvelope<BackendTeamManagementResponse>(
@@ -989,10 +979,12 @@ export async function fetchProjectTeamManagement(
 }
 
 export async function expelProjectMember(projectId: string | number, memberId: string | number) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/members/${memberId}`, {
-    method: 'DELETE',
-    credentials: 'include',
-  });
+  const response = await apiFetch(
+    `${API_BASE_URL}/api/v1/projects/${projectId}/members/${memberId}`,
+    {
+      method: 'DELETE',
+    },
+  );
 
   return readEnvelope<{
     projectId: number;
@@ -1004,10 +996,9 @@ export async function expelProjectMember(projectId: string | number, memberId: s
 export async function fetchProjectEditPrefill(
   projectId: string | number,
 ): Promise<ProjectEditPrefill> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/edit`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}/edit`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const project = await readEnvelope<BackendProjectEditPrefillResponse>(
@@ -1060,10 +1051,9 @@ export async function fetchProjectEditPrefill(
 }
 
 export async function fetchProjectDetail(projectId: string | number): Promise<ProjectRecord> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const project = await readEnvelope<BackendProjectDetailResponse>(

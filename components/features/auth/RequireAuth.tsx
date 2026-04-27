@@ -21,12 +21,13 @@ export default function RequireAuth({ children }: RequireAuthProps) {
   const hydrated = useAuthHydrated();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
+  const isSessionRestoring = useAuthStore((state) => state.isSessionRestoring);
   const setSession = useAuthStore((state) => state.setSession);
   const openLoginModal = useLoginModalStore((state) => state.openLoginModal);
   const [isCheckingSession, setIsCheckingSession] = useState(false);
 
   useEffect(() => {
-    if (!hydrated || isAuthenticated || isLoggingOut) {
+    if (!hydrated || isAuthenticated || isLoggingOut || isSessionRestoring) {
       return undefined;
     }
 
@@ -68,9 +69,17 @@ export default function RequireAuth({ children }: RequireAuthProps) {
     return () => {
       active = false;
     };
-  }, [hydrated, isAuthenticated, isLoggingOut, openLoginModal, pathname, setSession]);
+  }, [
+    hydrated,
+    isAuthenticated,
+    isLoggingOut,
+    isSessionRestoring,
+    openLoginModal,
+    pathname,
+    setSession,
+  ]);
 
-  if (!hydrated || isCheckingSession || isLoggingOut) {
+  if (!hydrated || isCheckingSession || isLoggingOut || isSessionRestoring) {
     return null;
   }
 

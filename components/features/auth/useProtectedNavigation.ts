@@ -13,6 +13,7 @@ export function useProtectedNavigation() {
   const router = useRouter();
   const hydrated = useAuthHydrated();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isSessionRestoring = useAuthStore((state) => state.isSessionRestoring);
   const setSession = useAuthStore((state) => state.setSession);
   const openLoginModal = useLoginModalStore((state) => state.openLoginModal);
 
@@ -34,6 +35,10 @@ export function useProtectedNavigation() {
         return true;
       }
 
+      if (isSessionRestoring) {
+        return false;
+      }
+
       try {
         const profile = await fetchMyProfile();
 
@@ -49,7 +54,7 @@ export function useProtectedNavigation() {
         return false;
       }
     },
-    [isAuthenticated, openAuthRequiredModal, setSession],
+    [isAuthenticated, isSessionRestoring, openAuthRequiredModal, setSession],
   );
 
   const maybeOpenLoginModal = useCallback(
@@ -60,7 +65,7 @@ export function useProtectedNavigation() {
         return false;
       }
 
-      if (!hydrated) {
+      if (!hydrated || isSessionRestoring) {
         return false;
       }
 
@@ -72,7 +77,7 @@ export function useProtectedNavigation() {
 
       return true;
     },
-    [hydrated, isAuthenticated, openAuthRequiredModal],
+    [hydrated, isAuthenticated, isSessionRestoring, openAuthRequiredModal],
   );
 
   const navigateWithProtection = useCallback(
@@ -84,7 +89,7 @@ export function useProtectedNavigation() {
         return true;
       }
 
-      if (!hydrated) {
+      if (!hydrated || isSessionRestoring) {
         return false;
       }
 
@@ -97,12 +102,13 @@ export function useProtectedNavigation() {
       router.push(path);
       return true;
     },
-    [ensureBackendSession, hydrated, router],
+    [ensureBackendSession, hydrated, isSessionRestoring, router],
   );
 
   return {
     hydrated,
     isAuthenticated,
+    isSessionRestoring,
     maybeOpenLoginModal,
     navigateWithProtection,
   };

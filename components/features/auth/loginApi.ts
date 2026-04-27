@@ -5,9 +5,9 @@ import type {
   SejongLoginResponse,
 } from '@/types/auth';
 
+import { API_BASE_URL, apiFetch } from './apiClient';
 import { extractApiData } from './signupTransform';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 const LOGIN_REQUEST_ERROR_MESSAGE = '로그인 처리 중 오류가 발생했습니다.';
 
 async function readJson<T>(response: Response) {
@@ -43,12 +43,12 @@ export async function loginMember(payload: LoginRequestPayload): Promise<SejongL
   let response: Response;
 
   try {
-    response = await fetch(`${API_BASE_URL}/api/v1/auth/login/sejong`, {
+    response = await apiFetch(`${API_BASE_URL}/api/v1/auth/login/sejong`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
+      skipAuthRefresh: true,
       body: JSON.stringify({
         studentId: payload.studentId.trim(),
         password: payload.password,
@@ -63,9 +63,9 @@ export async function loginMember(payload: LoginRequestPayload): Promise<SejongL
 }
 
 export async function logoutMember() {
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/logout`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/auth/logout`, {
     method: 'POST',
-    credentials: 'include',
+    skipAuthRefresh: true,
   });
 
   const payload = (await response.json().catch(() => null)) as ApiEnvelope<string> | null;
@@ -76,9 +76,9 @@ export async function logoutMember() {
 }
 
 export async function withdrawMember() {
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/withdraw`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/auth/withdraw`, {
     method: 'DELETE',
-    credentials: 'include',
+    skipAuthRefresh: true,
   });
 
   const payload = (await response.json().catch(() => null)) as ApiEnvelope<string> | null;

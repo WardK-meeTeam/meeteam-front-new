@@ -23,6 +23,7 @@ export function NavBar() {
   const finishLogout = useAuthStore((state) => state.finishLogout);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const isLoggingOut = useAuthStore((state) => state.isLoggingOut);
+  const isSessionRestoring = useAuthStore((state) => state.isSessionRestoring);
   const unreadCount = useNotificationStore((state) => state.unreadCount);
   const closeLoginModal = useLoginModalStore((state) => state.closeLoginModal);
   const [isAtTop, setIsAtTop] = useState(true);
@@ -99,7 +100,7 @@ export function NavBar() {
         </div>
 
         <div className="absolute right-4 top-3 sm:right-6 md:static">
-          {isAuthenticated ? (
+          {isSessionRestoring ? null : isAuthenticated ? (
             <div className="flex items-center gap-2 sm:gap-4">
               <Link href="/notifications">
                 <button

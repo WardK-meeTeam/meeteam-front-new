@@ -16,16 +16,17 @@ export default function RedirectIfAuthenticated({ children }: RedirectIfAuthenti
   const router = useRouter();
   const hydrated = useAuthHydrated();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isSessionRestoring = useAuthStore((state) => state.isSessionRestoring);
 
   useEffect(() => {
-    if (!hydrated || !isAuthenticated) {
+    if (!hydrated || isSessionRestoring || !isAuthenticated) {
       return;
     }
 
     router.replace('/');
-  }, [hydrated, isAuthenticated, router]);
+  }, [hydrated, isAuthenticated, isSessionRestoring, router]);
 
-  if (!hydrated || isAuthenticated) {
+  if (!hydrated || isSessionRestoring || isAuthenticated) {
     return null;
   }
 

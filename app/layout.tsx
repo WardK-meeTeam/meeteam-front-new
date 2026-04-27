@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Jua } from 'next/font/google';
+import AuthSessionBootstrap from '@/components/features/auth/AuthSessionBootstrap';
 import LoginPromptModal from '@/components/features/auth/LoginPromptModal';
 import ToastViewport from '@/components/shared/ToastViewport';
 
@@ -73,6 +74,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${jua.variable} antialiased`}>
+        <AuthSessionBootstrap />
         {children}
         <LoginPromptModal />
         <ToastViewport />

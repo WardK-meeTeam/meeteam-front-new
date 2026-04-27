@@ -1,12 +1,12 @@
 import type { ApiEnvelope } from '@/types/auth';
 
+import { API_BASE_URL, apiFetch } from '@/components/features/auth/apiClient';
 import { createApiError } from '@/components/features/auth/authError';
 import { extractApiData } from '@/components/features/auth/signupTransform';
 
 import type { NotificationCardVariant, NotificationItem, NotificationType } from './types';
 
-export const NOTIFICATION_API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
+export const NOTIFICATION_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? API_BASE_URL;
 
 const NOTIFICATION_PAGE_SIZE = 20;
 
@@ -91,10 +91,9 @@ export async function fetchNotifications(page = 0, size = NOTIFICATION_PAGE_SIZE
     size: String(size),
   });
 
-  const response = await fetch(`${NOTIFICATION_API_BASE_URL}/api/v1/notifications?${params}`, {
+  const response = await apiFetch(`${NOTIFICATION_API_BASE_URL}/api/v1/notifications?${params}`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const result = await readEnvelope<BackendNotificationSlice>(
@@ -110,11 +109,13 @@ export async function fetchNotifications(page = 0, size = NOTIFICATION_PAGE_SIZE
 }
 
 export async function fetchUnreadNotificationCount() {
-  const response = await fetch(`${NOTIFICATION_API_BASE_URL}/api/v1/notifications/unread/count`, {
-    method: 'GET',
-    cache: 'no-store',
-    credentials: 'include',
-  });
+  const response = await apiFetch(
+    `${NOTIFICATION_API_BASE_URL}/api/v1/notifications/unread/count`,
+    {
+      method: 'GET',
+      cache: 'no-store',
+    },
+  );
 
   const result = await readEnvelope<BackendNotificationUnreadCountResponse>(
     response,

@@ -1,9 +1,8 @@
 import type { ApiEnvelope, JobFieldOption } from '@/types/auth';
 
+import { API_BASE_URL, apiFetch } from '@/components/features/auth/apiClient';
 import { createApiError } from '@/components/features/auth/authError';
 import { extractApiData, normalizeUrl } from '@/components/features/auth/signupTransform';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
 export type ProfileGender = 'MALE' | 'FEMALE';
 
@@ -94,20 +93,18 @@ async function readEnvelope<T>(response: Response) {
 }
 
 export async function fetchMyProfile() {
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/members/me`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   return readEnvelope<MemberProfileResponse>(response);
 }
 
 export async function fetchMemberProfile(memberId: number) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/${memberId}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/members/${memberId}`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   return mapMemberDetailToProfile(await readEnvelope<MemberDetailResponse>(response));
@@ -140,9 +137,8 @@ export async function updateMyProfile(payload: UpdateMemberProfilePayload) {
     formData.append('profileImage', payload.profileImage);
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/me`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/members/me`, {
     method: 'PUT',
-    credentials: 'include',
     body: formData,
   });
 

@@ -11,7 +11,8 @@ type AuthLinkProps = Omit<ComponentProps<typeof Link>, 'href'> & {
 };
 
 export default function AuthLink({ href, onClick, ...props }: AuthLinkProps) {
-  const { hydrated, isAuthenticated, navigateWithProtection } = useProtectedNavigation();
+  const { hydrated, isAuthenticated, isSessionRestoring, navigateWithProtection } =
+    useProtectedNavigation();
 
   const handleClick: ComponentProps<typeof Link>['onClick'] = (event) => {
     onClick?.(event);
@@ -22,7 +23,7 @@ export default function AuthLink({ href, onClick, ...props }: AuthLinkProps) {
 
     const normalizedHref = normalizeProtectedPath(href);
 
-    if (!isProtectedPath(normalizedHref) || !hydrated || isAuthenticated) {
+    if (!isProtectedPath(normalizedHref) || !hydrated || isSessionRestoring || isAuthenticated) {
       return;
     }
 

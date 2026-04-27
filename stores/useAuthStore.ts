@@ -13,8 +13,11 @@ type AuthState = {
   email: string | null;
   isAuthenticated: boolean;
   isLoggingOut: boolean;
+  isSessionRestoring: boolean;
   setSession: (session: AuthSession) => void;
   setProfileIdentity: (identity: { name?: string | null; email?: string | null }) => void;
+  beginSessionRestore: () => void;
+  finishSessionRestore: () => void;
   beginLogout: () => void;
   finishLogout: () => void;
   clearSession: () => void;
@@ -30,6 +33,7 @@ const INITIAL_SESSION_STATE = {
 const INITIAL_STATE = {
   ...INITIAL_SESSION_STATE,
   isLoggingOut: false,
+  isSessionRestoring: true,
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -43,6 +47,7 @@ export const useAuthStore = create<AuthState>()(
           email: session.email,
           isAuthenticated: true,
           isLoggingOut: false,
+          isSessionRestoring: false,
         }),
       setProfileIdentity: ({ name, email }) =>
         set((state) => ({
@@ -50,12 +55,15 @@ export const useAuthStore = create<AuthState>()(
           name: name ?? state.name,
           email: email ?? state.email,
         })),
+      beginSessionRestore: () => set({ isSessionRestoring: true }),
+      finishSessionRestore: () => set({ isSessionRestoring: false }),
       beginLogout: () => set({ isLoggingOut: true }),
       finishLogout: () => set({ isLoggingOut: false }),
       clearSession: () =>
         set((state) => ({
           ...INITIAL_SESSION_STATE,
           isLoggingOut: state.isLoggingOut,
+          isSessionRestoring: false,
         })),
     }),
     {
