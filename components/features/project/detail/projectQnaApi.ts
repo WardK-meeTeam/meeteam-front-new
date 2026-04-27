@@ -1,9 +1,8 @@
 import type { ApiEnvelope } from '@/types/auth';
 
+import { API_BASE_URL, apiFetch } from '@/components/features/auth/apiClient';
 import { createApiError } from '@/components/features/auth/authError';
 import { extractApiData } from '@/components/features/auth/signupTransform';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
 type BackendQnaAnswerResponse = {
   answerId: number;
@@ -111,10 +110,9 @@ export async function fetchProjectQnas(
     size: String(size),
     sort: 'createdAt,desc',
   });
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/qna?${params}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}/qna?${params}`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const result = await readEnvelope<BackendProjectQnaPage>(
@@ -135,12 +133,11 @@ export async function createProjectQnaQuestion(
   question: string,
   isSecret = false,
 ) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/qna`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/${projectId}/qna`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    credentials: 'include',
     body: JSON.stringify({ question, isSecret }),
   });
 
@@ -157,14 +154,16 @@ export async function createProjectQnaAnswer(
   qnaId: string | number,
   answer: string,
 ) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/${projectId}/qna/${qnaId}/answer`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  const response = await apiFetch(
+    `${API_BASE_URL}/api/v1/projects/${projectId}/qna/${qnaId}/answer`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ answer }),
     },
-    credentials: 'include',
-    body: JSON.stringify({ answer }),
-  });
+  );
 
   const qna = await readEnvelope<BackendProjectQnaResponse>(
     response,

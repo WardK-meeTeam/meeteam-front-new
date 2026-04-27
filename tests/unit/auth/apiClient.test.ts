@@ -1,0 +1,88 @@
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+import { API_BASE_URL, apiFetch } from '@/components/features/auth/apiClient';
+
+const originalFetch = global.fetch;
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  global.fetch = originalFetch;
+});
+
+describe('apiFetch', () => {
+  it('includes cookies by default', async () => {
+    const response = { ok: true, status: 200 } as Response;
+    global.fetch = vi.fn().mockResolvedValue(response);
+
+    await expect(apiFetch(`${API_BASE_URL}/api/v1/members/me`)).resolves.toBe(response);
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      `${API_BASE_URL}/api/v1/members/me`,
+      expect.objectContaining({ credentials: 'include' }),
+    );
+  });
+
+  it('refreshes auth cookies and retries the original request once after a 401', async () => {
+    const expiredResponse = { ok: false, status: 401 } as Response;
+    const refreshResponse = { ok: true, status: 200 } as Response;
+    const retryResponse = { ok: true, status: 200 } as Response;
+
+    global.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(expiredResponse)
+      .mockResolvedValueOnce(refreshResponse)
+      .mockResolvedValueOnce(retryResponse);
+
+    await expect(apiFetch(`${API_BASE_URL}/api/v1/members/me`, { method: 'GET' })).resolves.toBe(
+      retryResponse,
+    );
+
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      1,
+      `${API_BASE_URL}/api/v1/members/me`,
+      expect.objectContaining({ method: 'GET', credentials: 'include' }),
+    );
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      2,
+      `${API_BASE_URL}/api/v1/auth/refresh`,
+      expect.objectContaining({ method: 'POST', credentials: 'include' }),
+    );
+    expect(global.fetch).toHaveBeenNthCalledWith(
+      3,
+      `${API_BASE_URL}/api/v1/members/me`,
+      expect.objectContaining({ method: 'GET', credentials: 'include' }),
+    );
+  });
+
+  it('returns the original 401 when refresh fails', async () => {
+    const expiredResponse = { ok: false, status: 401 } as Response;
+    const refreshResponse = { ok: false, status: 401 } as Response;
+
+    global.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(expiredResponse)
+      .mockResolvedValueOnce(refreshResponse);
+
+    await expect(apiFetch(`${API_BASE_URL}/api/v1/members/me`)).resolves.toBe(expiredResponse);
+
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not refresh when skipAuthRefresh is set', async () => {
+    const unauthorizedResponse = { ok: false, status: 401 } as Response;
+    global.fetch = vi.fn().mockResolvedValue(unauthorizedResponse);
+
+    await expect(
+      apiFetch(`${API_BASE_URL}/api/v1/auth/login/sejong`, {
+        method: 'POST',
+        skipAuthRefresh: true,
+      }),
+    ).resolves.toBe(unauthorizedResponse);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(global.fetch).toHaveBeenCalledWith(
+      `${API_BASE_URL}/api/v1/auth/login/sejong`,
+      expect.not.objectContaining({ skipAuthRefresh: true }),
+    );
+  });
+});

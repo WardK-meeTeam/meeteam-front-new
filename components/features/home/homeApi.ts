@@ -1,8 +1,7 @@
 import type { ApiEnvelope } from '@/types/auth';
 
+import { API_BASE_URL, apiFetch } from '@/components/features/auth/apiClient';
 import { extractApiData } from '@/components/features/auth/signupTransform';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
 export type HomeProjectCategory = '전체' | '캡스톤' | '창의학기제' | '동아리' | '기타';
 
@@ -184,10 +183,9 @@ export async function fetchHomeProjectsPage(
     params.set('projectCategory', projectCategory);
   }
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/main/projects?${params.toString()}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/main/projects?${params.toString()}`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const result = await readPublicEnvelope<BackendPage<BackendProjectCardResponse>>(
@@ -218,7 +216,7 @@ export async function fetchHomeMembersPage(
     sort: 'createdAt,desc',
   });
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/main/members?${params.toString()}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/main/members?${params.toString()}`, {
     method: 'GET',
     cache: 'no-store',
   });

@@ -1,5 +1,6 @@
 import type { ApiEnvelope } from '@/types/auth';
 
+import { API_BASE_URL, apiFetch } from '@/components/features/auth/apiClient';
 import { extractApiData } from '@/components/features/auth/signupTransform';
 import type {
   CategoryFilter,
@@ -9,8 +10,6 @@ import type {
   RecruitFilter,
   SortFilter,
 } from './types';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
 export type ProjectSearchCard = {
   id: number;
@@ -109,10 +108,9 @@ export async function fetchProjectSearchResults(
 
   params.set('sort', mapSortFilter(filters.sort));
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/projects/search?${params.toString()}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/projects/search?${params.toString()}`, {
     method: 'GET',
     cache: 'no-store',
-    credentials: 'include',
   });
 
   const payload = (await response

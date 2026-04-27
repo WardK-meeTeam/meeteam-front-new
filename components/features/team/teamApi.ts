@@ -1,10 +1,9 @@
 import type { ApiEnvelope } from '@/types/auth';
 import type { Teammate, TeammateSort } from '@/types/team';
 
+import { API_BASE_URL, apiFetch } from '@/components/features/auth/apiClient';
 import { createApiError } from '@/components/features/auth/authError';
 import { extractApiData } from '@/components/features/auth/signupTransform';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8080';
 
 interface MemberCardResponse {
   memberId: number;
@@ -73,7 +72,7 @@ export async function fetchTeammates({
     params.append('techStackNames', techStackName);
   });
 
-  const response = await fetch(`${API_BASE_URL}/api/v1/members/search?${params.toString()}`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/v1/members/search?${params.toString()}`, {
     method: 'GET',
     cache: 'no-store',
   });
