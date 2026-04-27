@@ -58,9 +58,9 @@ export default function StartJourneyModalTrigger() {
       </button>
 
       <BaseModal isOpen={open} onClose={() => setOpen(false)}>
-        <section className="overflow-hidden rounded-3xl border border-mt-border bg-mt-white p-6 shadow-2xl">
+        <section className="rounded-2xl bg-mt-white p-6 shadow-2xl">
           <header className="pb-5">
-            <h2 className="font-brand-display text-2xl text-mt-text-primary">시작하기</h2>
+            <h2 className="text-xl font-extrabold text-mt-text-primary">시작하기</h2>
           </header>
 
           <div className="grid gap-3 sm:grid-cols-2">

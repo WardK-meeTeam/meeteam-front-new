@@ -13,11 +13,7 @@ export type RecruitInterest = Interest & {
 export type ProjectStatus = 'recruiting' | 'closed';
 export type ProjectRecruitmentStatus = 'RECRUITING' | 'CLOSED' | 'SUSPENDED';
 
-export type ProjectCategoryId =
-  | 'capstone'
-  | 'creative-semester'
-  | 'club'
-  | 'other';
+export type ProjectCategoryId = 'capstone' | 'creative-semester' | 'club' | 'other';
 
 export type ReleasePlatform = '웹' | 'iOS' | '안드로이드';
 
@@ -29,7 +25,7 @@ export type ProjectMember = {
   isLeader?: boolean;
 };
 
-export type ProjectApplicantStatus = 'pending' | 'approved' | 'rejected';
+export type ProjectApplicantStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
 
 export type ProjectApplicant = {
   id: number;

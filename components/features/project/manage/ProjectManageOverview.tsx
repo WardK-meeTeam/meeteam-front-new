@@ -1,17 +1,21 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronRight, Crown, Trash2 } from 'lucide-react';
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import {
+  deleteProject,
   expelProjectMember,
   fetchProjectTeamManagement,
   type ProjectTeamManagement,
 } from '@/components/features/project/projectApi';
+import ConfirmModal from '@/components/shared/ConfirmModal';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 import StatusBadge from '@/components/shared/StatusBadge';
 import ToastMessage from '@/components/shared/ToastMessage';
+import { useToastStore } from '@/stores/useToastStore';
 import ProjectManageShell from './ProjectManageShell';
 import { ProjectManageOverviewSkeleton } from './ProjectManageSkeletons';
 import ProjectMemberRemovalModal from './ProjectMemberRemovalModal';
@@ -22,11 +26,16 @@ type ProjectManageOverviewProps = {
 };
 
 export default function ProjectManageOverview({ projectId }: ProjectManageOverviewProps) {
+  const router = useRouter();
   const handleAuthRequired = useAuthRequiredModal();
+  const showToast = useToastStore((state) => state.showToast);
   const [teamManagement, setTeamManagement] = useState<ProjectTeamManagement | null>(null);
   const [selectedMember, setSelectedMember] = useState<ProjectMember | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const loadTeamManagement = useCallback(async () => {
@@ -116,6 +125,42 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
     } finally {
       setIsRemoving(false);
     }
+  };
+
+  const handleConfirmDeleteProject = async () => {
+    if (isDeleting || !deleteConfirmation.trim()) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      setErrorMessage(null);
+
+      await deleteProject(projectId);
+      showToast({ tone: 'success', message: '프로젝트를 삭제했습니다.' });
+      router.replace('/projects');
+    } catch (error) {
+      if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
+        return;
+      }
+
+      setErrorMessage(
+        error instanceof Error ? error.message : '프로젝트 삭제 중 오류가 발생했습니다.',
+      );
+      setIsDeleteModalOpen(false);
+      setDeleteConfirmation('');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const closeDeleteModal = () => {
+    if (isDeleting) {
+      return;
+    }
+
+    setIsDeleteModalOpen(false);
+    setDeleteConfirmation('');
   };
 
   if (isLoading && !teamManagement) {
@@ -254,6 +299,27 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
             </div>
           ) : null}
         </div>
+
+        <section className="rounded-2xl border border-mt-danger/30 bg-mt-danger-soft p-5 shadow-sm">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-base leading-6 font-bold text-mt-danger">프로젝트 삭제</h2>
+              <p className="mt-1 text-sm leading-6 text-mt-text-secondary">
+                프로젝트와 관련된 모집, 지원서, 팀 관리 정보가 삭제됩니다.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsDeleteModalOpen(true)}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-mt-danger px-4 text-sm font-bold text-mt-white shadow-sm transition-colors hover:opacity-90"
+              data-cy="project-delete-button"
+            >
+              <Trash2 className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+              프로젝트 삭제
+            </button>
+          </div>
+        </section>
       </div>
 
       <ProjectMemberRemovalModal
@@ -263,6 +329,32 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
         onClose={() => setSelectedMember(null)}
         onConfirm={handleConfirmRemoval}
       />
+
+      <ConfirmModal
+        isOpen={isDeleteModalOpen}
+        title="프로젝트를 삭제할까요?"
+        description="삭제 후에는 프로젝트 관리 페이지로 돌아올 수 없습니다. 아래 입력칸에 프로젝트 이름을 입력하면 삭제 버튼이 활성화됩니다."
+        closeLabel="취소"
+        confirmLabel={isDeleting ? '삭제 중' : '삭제하기'}
+        isSubmitting={isDeleting}
+        isConfirmDisabled={!deleteConfirmation.trim()}
+        confirmButtonDataCy="project-delete-confirm-button"
+        onClose={closeDeleteModal}
+        onConfirm={handleConfirmDeleteProject}
+      >
+        <label className="block">
+          <span className="text-sm font-bold text-mt-text-primary">프로젝트 이름 확인</span>
+          <input
+            type="text"
+            value={deleteConfirmation}
+            onChange={(event) => setDeleteConfirmation(event.target.value)}
+            disabled={isDeleting}
+            className="mt-2 h-11 w-full rounded-xl border border-mt-border bg-mt-white px-4 text-sm text-mt-text-primary outline-none transition-colors placeholder:text-mt-text-secondary focus:border-mt-primary disabled:cursor-not-allowed disabled:opacity-60"
+            placeholder="프로젝트 이름 입력"
+            data-cy="project-delete-confirm-input"
+          />
+        </label>
+      </ConfirmModal>
     </ProjectManageShell>
   );
 }

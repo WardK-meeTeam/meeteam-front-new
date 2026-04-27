@@ -49,7 +49,6 @@ const SIGNUP_VALUES: SignupFormValues = {
     'BACKEND::JAVA_SPRING': ['React', 'Java'],
     'FRONTEND::WEB_FRONTEND': ['TypeScript', 'React'],
   },
-  projectExperienceCount: '3',
   githubUrl: 'github.com/mee-team',
   blogUrl: '',
   profileImage: null,
@@ -105,7 +104,6 @@ describe('buildRegisterRequestPayload', () => {
           ],
         },
       ],
-      projectExperienceCount: 3,
       githubUrl: 'https://github.com/mee-team',
     });
   });

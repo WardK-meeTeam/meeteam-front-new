@@ -1,4 +1,5 @@
 import RequireAuth from '@/components/features/auth/RequireAuth';
+import ProjectApplicationDetailPage from '@/components/features/project/apply/ProjectApplicationDetailPage';
 
 export default async function Page({
   params,
@@ -9,11 +10,7 @@ export default async function Page({
 
   return (
     <RequireAuth>
-      <section className="space-y-6 md:space-y-8">
-        <h1>
-          프로젝트 {projectId}번 지원서 {applicationId}번 상세 페이지
-        </h1>
-      </section>
+      <ProjectApplicationDetailPage projectId={projectId} applicationId={applicationId} />
     </RequireAuth>
   );
 }

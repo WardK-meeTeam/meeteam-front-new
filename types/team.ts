@@ -8,8 +8,6 @@ export type TeammateRole =
   | '인프라/운영'
   | '기타';
 
-export type TeammateSort = 'experience-desc' | 'name-asc';
-
 export type Teammate = {
   id: number;
   name: string;

@@ -1,5 +1,5 @@
 import type { ApiEnvelope } from '@/types/auth';
-import type { Teammate, TeammateSort } from '@/types/team';
+import type { Teammate } from '@/types/team';
 
 import { createApiError } from '@/components/features/auth/authError';
 import { extractApiData } from '@/components/features/auth/signupTransform';
@@ -11,7 +11,8 @@ interface MemberCardResponse {
   name: string;
   profileImageUrl: string | null;
   jobFieldName: string | null;
-  projectExperienceCount: number;
+  projectCount: number;
+  projectExperienceCount?: number;
   techStacks: MemberTechStackResponse[];
 }
 
@@ -34,7 +35,6 @@ export interface FetchTeammatesParams {
   name?: string;
   jobFieldId?: number;
   techStackNames?: string[];
-  sort?: TeammateSort;
   page?: number;
   size?: number;
 }
@@ -50,14 +50,12 @@ export async function fetchTeammates({
   name = '',
   jobFieldId,
   techStackNames = [],
-  sort = 'experience-desc',
   page = 0,
   size = 15,
 }: FetchTeammatesParams = {}): Promise<FetchTeammatesResult> {
   const params = new URLSearchParams({
     page: String(page),
     size: String(size),
-    sort: mapSortToApi(sort),
   });
 
   const trimmedName = name.trim();
@@ -122,7 +120,7 @@ function mapTeammateCard(member: MemberCardResponse): Teammate {
     id: member.memberId,
     name: member.name,
     role: mapJobFieldToRole(member.jobFieldName),
-    experienceCount: member.projectExperienceCount,
+    experienceCount: member.projectCount ?? member.projectExperienceCount ?? 0,
     skills: mapTopTechStackNames(member.techStacks),
     imageUrl: member.profileImageUrl ?? '',
   };
@@ -152,8 +150,4 @@ function mapJobFieldToRole(jobFieldName: string | null): Teammate['role'] {
     default:
       return '기타';
   }
-}
-
-function mapSortToApi(sort: TeammateSort) {
-  return sort === 'name-asc' ? 'realName,asc' : 'projectExperienceCount,desc';
 }

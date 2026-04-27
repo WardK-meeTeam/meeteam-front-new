@@ -1,34 +1,75 @@
 # Backend Reference
 
 - Remote repository: `https://github.com/WardK-meeTeam/meeteam-backend`
-- Local clone used for backend code inspection in this workspace: `/tmp/meeteam-backend`
-- Last synced commit: `a85a0d3`
-- Last checked at: `2026-04-25`
+- Latest local clone used for backend code inspection in this workspace: `/tmp/meeteam-backend-latest`
+- Previous local clone noted in older sessions: `/tmp/meeteam-backend`
+- Last synced commit: `c4145a7`
+- Last checked at: `2026-04-27`
 
 ## Latest backend sync
 
-Synced `/tmp/meeteam-backend` from `origin/master` by fast-forwarding:
+The previous reference was checked at `a85a0d3` on `2026-04-25`.
 
-- From: `2fdad09` (`feat: 프로젝트 수정 시 모집 마감 방식 변경 기능 추가`)
-- To: `a85a0d3` (`chore: 미사용 OkHttp 의존성 제거`)
+For this sync, `/tmp/meeteam-backend` still existed but was not usable as a Git repository because required `.git` files such as `HEAD` and `config` were missing. A fresh clone was created at `/tmp/meeteam-backend-latest` from `origin/master`.
 
-Rechecked on `2026-04-25`; `/tmp/meeteam-backend` is up to date at `a85a0d3`.
+Latest checked commit:
 
-Commits included:
+- `c4145a7` `refactor: OAuth2/자체로그인 제거 및 세종대 포털 전용 인증 전환`
 
-- `78022a0` `feat: 내정보 수정에 프로젝트 경험 횟수, 기술스택 displayOrder 추가`
-- `ea0bab4` `feat: 프로젝트 등록 시 기술스택 직군 제약 해제`
-- `0b813fc` `refactor: notification API를 v1으로 마이그레이션 및 정리`
-- `0965cc1` `feat: 나의 프로필 API를 v1으로 마이그레이션`
-- `a85a0d3` `chore: 미사용 OkHttp 의존성 제거`
+Commits after the previous `a85a0d3` reference:
+
+- `2c8f425` `fix: 배포 후 미사용 Docker 이미지 자동 정리`
+- `c4145a7` `refactor: OAuth2/자체로그인 제거 및 세종대 포털 전용 인증 전환`
 
 ## Frontend-impacting changes
+
+Changes newly found after `a85a0d3`:
+
+- My application list now returns every application status, not only `PENDING`.
+  - `GET /api/v1/members/me/applications`
+  - `AppliedProjectResponse` now includes:
+    - `applicationId: number`
+    - `projectId: number`
+    - `projectName: string`
+    - `projectImageUrl: string | null`
+    - `jobPositionId: number`
+    - `jobPositionName: string`
+    - `status: "PENDING" | "ACCEPTED" | "REJECTED" | "CANCELLED"`
+    - `statusDisplayName: string`
+    - `appliedAt: string`
+- Applicant-side cancellation was added:
+  - `DELETE /api/v1/members/me/applications/{applicationId}`
+  - Only the applicant can cancel.
+  - Only `PENDING` applications can be cancelled.
+  - Response shape is `ApplicationCancelResponse`:
+    - `applicationId: number`
+    - `projectId: number`
+    - `projectName: string`
+    - `status: "CANCELLED"`
+- `ApplicationStatus` now includes `CANCELLED`.
+- Project deletion is available on the v1 project path:
+  - `DELETE /api/v1/projects/{projectId}`
+  - Existing legacy `DELETE /api/projects/{projectId}` remains deprecated.
+  - When a project is deleted, pending applications are rejected on the backend.
+- Member card responses now expose participation count rather than self-reported project experience count.
+  - `GET /api/v1/main/members` response field changed from `projectExperienceCount` to `projectCount`.
+  - `GET /api/v1/members/search` uses the same main-page member card response.
+  - The count is based on active project memberships.
+  - Important: as of `c4145a7`, `GET /api/v1/members/search` does not support sorting by `projectCount`. Sending `sort=projectCount,desc` causes a backend Querydsl/Spring Data sort failure because `projectCount` is not a real `Member` entity property in the v1 search path.
+- Project member withdrawal and leader expel now decrease the matching recruitment position `currentCount` on the backend.
+  - Leader expel endpoint is unchanged:
+    - `DELETE /api/v1/projects/{projectId}/members/{memberId}`
+  - Member self-withdrawal still uses the existing project-member controller:
+    - `POST /api/project-members/withdraw` with `{ projectId }`
+- Current backend duplicate-application validation checks only whether the same applicant has any existing application for the project. As of `c4145a7`, `REJECTED` and `CANCELLED` applications are still blocked from reapplying.
+
+Previously reflected backend changes from the `2026-04-25` sync:
 
 - My profile APIs were migrated to v1:
   - `GET /api/v1/members/me`
   - `PUT /api/v1/members/me` with `multipart/form-data`
   - Legacy `/api/members` profile endpoints still exist in the backend controller but are marked deprecated.
-- `PUT /api/v1/members/me` request body `memberInfo` now requires:
+- `PUT /api/v1/members/me` request body `memberInfo` requires:
   - `name: string`
   - `age: number`
   - `gender: "MALE" | "FEMALE"`
@@ -44,59 +85,74 @@ Commits included:
   - `GET /api/v1/subscribe` for SSE
 - `NotificationResponse` no longer includes `message`; frontend notification copy should be generated from `type` and `payload`.
 - Project recruitment creation no longer validates that selected tech stacks belong to the selected job field. The frontend may allow any known tech stack for a recruitment position.
-- The backend still has deprecated GitHub repository routes at `POST /api/projects/{projectId}/repos` and `GET /api/projects/{projectId}/repos`, but the frontend no longer calls them.
-- `ProjectCategory` values are now `CAPSTONE`, `CREATIVE_SEMESTER`, `CLUB`, and `ETC`.
-- `GET /api/v1/main/members` member cards now return `techStacks` sorted by `displayOrder` and limited to the top 3 items.
-- `POST /api/v1/projects/{projectId}/qna` request body now accepts:
-  - `question: string`
-  - `isSecret?: boolean` (defaults to `false` on the backend)
-- `GET /api/v1/projects/{projectId}/qna` and Q&A mutation responses now include `isSecret: boolean`.
-- Secret Q&A items are visible only to the questioner and project leader. For unauthorized viewers, the backend masks the item as:
-  - `questionerName: "비밀글"`
-  - `questionerProfileImageUrl: null`
-  - `question: "비밀글입니다."`
-  - `answers: []`
+- Deprecated GitHub repository routes at `POST /api/projects/{projectId}/repos` and `GET /api/projects/{projectId}/repos` should not be used by the frontend.
+- `ProjectCategory` values are `CAPSTONE`, `CREATIVE_SEMESTER`, `CLUB`, and `ETC`.
+- `GET /api/v1/main/members` member cards return `techStacks` sorted by `displayOrder` and limited to the top 3 items.
+- Q&A supports secret questions:
+  - `POST /api/v1/projects/{projectId}/qna` accepts `question` and optional `isSecret`.
+  - Q&A responses include `isSecret`.
+  - Unauthorized viewers receive masked secret Q&A content.
 - Auth API additions:
   - `DELETE /api/v1/auth/withdraw`: soft-deletes the authenticated member, logs out, and clears auth cookies.
-  - `DELETE /api/v1/auth/delete/{memberId}`: hard-deletes a member. This is now an Admin-only backend API and should not be used by the regular frontend member withdrawal flow.
+  - `DELETE /api/v1/auth/delete/{memberId}`: Admin-only hard delete. Regular frontend withdrawal should not call it.
 - Project edit API note:
-  - `PUT /api/v1/projects/{projectId}` now accepts `recruitmentDeadlineType`.
+  - `PUT /api/v1/projects/{projectId}` accepts `recruitmentDeadlineType`.
   - `endDate` is required only for `END_DATE`; `RECRUITMENT_COMPLETED` can omit `endDate`.
-  - Frontend no longer uses the old compatibility `2099-12-31` end date workaround.
-  - Current `GET /api/v1/projects/{projectId}/edit` prefill response does not include `recruitmentDeadlineType`; frontend should infer `RECRUITMENT_COMPLETED` when `endDate` is `null` until the backend adds that response field.
-- Project management APIs are leader-only on the backend:
-  - `GET /api/v1/projects/{projectId}/team`
-  - `GET /api/v1/projects/{projectId}/edit`
-  - `PUT /api/v1/projects/{projectId}`
-  - `POST /api/v1/projects/{projectId}/recruitment/toggle`
-  - `DELETE /api/v1/projects/{projectId}/members/{memberId}`
-  - These paths call `Project.validateLeaderPermission(...)` and return HTTP `403` with `PROJECT_MEMBER403` / "해당 프로젝트 관리 권한이 없습니다." when the requester is not the project leader.
+  - `GET /api/v1/projects/{projectId}/edit` may omit `recruitmentDeadlineType`; frontend should infer `RECRUITMENT_COMPLETED` when `endDate` is `null`.
+- Project management APIs are leader-only and return HTTP `403` with permission errors for non-leaders.
+
+## Excluded in this frontend pass
+
+Per the current task request, login and refresh-token related changes were not applied.
+
+Excluded backend changes include:
+
+- Removal of OAuth2 and custom email/password login code.
+- Sejong portal-only authentication conversion details.
+- Login and token exchange endpoint cleanup.
+- Refresh token behavior changes.
+
+The latest backend also removes `projectExperienceCount` from `SejongRegisterRequest`. Frontend signup/onboarding should not ask for or submit this value.
 
 ## Frontend reflection
 
+Newly reflected in this pass:
+
+- Updated `BACKEND_REFERENCE.md` to latest backend commit `c4145a7`.
+- Updated applicant cancellation helper to call `DELETE /api/v1/members/me/applications/{applicationId}`.
+- Added `CANCELLED` to frontend application status mapping.
+- Updated my-application response typing and mapping for `projectImageUrl`, `status`, and `statusDisplayName`.
+- Replaced frontend member-card usage of `projectExperienceCount` with `projectCount` for home and teammate search responses, keeping a fallback for older mocks/responses.
+- Updated teammate card copy to show participation count: `참여 프로젝트 n개`.
+- Removed teammate search sort UI and no longer sends a sort parameter, because backend v1 search cannot sort by computed `projectCount`.
+- Removed project experience count from signup/onboarding form values, validation, UI, and register payloads.
+- Added `leaveProject` helper for `POST /api/project-members/withdraw`.
+- Added a frontend application policy helper documenting the current backend behavior: all existing application statuses block reapplication.
+- Added an authenticated application-detail page shell that can show an application and cancel pending applications through the new my-application cancellation endpoint.
+- Added project delete UI in the project manage overview. It opens a confirmation modal and calls `DELETE /api/v1/projects/{projectId}`.
+- Updated unit/Cypress contract expectations that referenced the old project-scoped cancellation endpoint.
+
+Already reflected from earlier syncs:
+
 - Switched my-profile fetch/update calls to `/api/v1/members/me`.
 - Updated profile edit `memberInfo` payload to send `techStacks` with `displayOrder`.
-- Removed `projectExperienceCount` from the my-profile UI and profile-edit payload because the backend field is being removed from that API.
+- Removed `projectExperienceCount` from the my-profile UI and profile-edit payload.
 - Switched notification list, unread count, and SSE subscription calls to `/api/v1/...`.
 - Kept notification rendering resilient to the removed backend `message` field by deriving copy from notification `type` and `payload`.
-- Updated Cypress API intercepts for the migrated profile and notification endpoints.
+- Updated Cypress API intercepts for migrated profile and notification endpoints.
 - Removed unused GitHub repository connect/read helpers that called deprecated non-v1 backend routes.
-- Added `ETC`/`기타` project category support in project creation, detail mapping, project search filters, and home project filters.
-- User card rendering now shows up to 3 tech stacks, and member-card API mapping keeps only the top 3 by `displayOrder`.
+- Added `ETC`/`기타` project category support.
 - Added Q&A `isSecret` mapping and a secret-question toggle in the project detail Q&A composer.
 - Added a frontend helper for soft withdrawal only.
-- Added a project edit prefill fallback for the current backend response gap: missing `recruitmentDeadlineType` is treated as `RECRUITMENT_COMPLETED` when `endDate` is `null`.
-- Split frontend handling for authentication vs authorization errors: `401` still opens the login-required flow, while `403` is treated as a permission-denied state so project management pages redirect back to the project detail page and show an error toast instead of a login modal.
+- Added a project edit prefill fallback for missing `recruitmentDeadlineType`.
+- Split frontend handling for authentication vs authorization errors.
 
-Backend-only/ops notes:
+## Backend-only/ops notes
 
-- Backend removed the unused OkHttp dependency from `build.gradle`.
-- Hard delete now explicitly removes related Q&A, applications, likes, notifications, project memberships, created projects, skills, and member job positions before deleting the member.
-- Hard delete was changed to an Admin-only path: `DELETE /api/v1/auth/delete/{memberId}`.
-- Production config was adjusted in backend commits; no direct frontend contract change was found.
-- Backend `CLAUDE.md` documents Sejong portal SSL compatibility details; no direct frontend contract change was found.
+- `2c8f425` only updates deployment cleanup for unused Docker images; no direct frontend contract change.
+- Backend production/deployment details were not reflected in frontend code.
 
-Notes:
+## Notes
 
-- If `/tmp/meeteam-backend` no longer exists in a future session, re-clone from the remote repository above.
-- In a new chat session, mention this file and the agent can use it as the backend location reference.
+- If `/tmp/meeteam-backend-latest` no longer exists in a future session, clone from the remote repository above.
+- The previous `/tmp/meeteam-backend` path may need to be deleted and recloned before it can be used again as a Git repository.

@@ -380,7 +380,7 @@ function installTeammateSearchIntercept() {
             name: '권나은',
             profileImageUrl: null,
             jobFieldName: '프론트',
-            projectExperienceCount: 5,
+            projectCount: 5,
             techStacks: [
               { id: 1, name: 'React', displayOrder: 1 },
               { id: 2, name: 'TypeScript', displayOrder: 2 },
@@ -532,9 +532,7 @@ describe('QA full-service regression and TDD coverage', () => {
     installJobOptionsIntercept();
     installTeammateSearchIntercept();
     cy.visit('/teammates');
-    cy.wait('@teammateSearchRequest')
-      .its('request.url')
-      .should('include', 'sort=projectExperienceCount%2Cdesc');
+    cy.wait('@teammateSearchRequest').its('request.url').should('not.include', 'sort=');
     cy.wait('@jobOptionsRequest');
     cy.get('[data-cy="teammate-total-count"]').should('contain', '1');
     cy.contains('권나은').should('be.visible');
@@ -768,12 +766,14 @@ describe('QA full-service regression and TDD coverage', () => {
         },
       },
     }).as('applicationDetailRequest');
-    cy.intercept('DELETE', `**/api/v1/projects/${PROJECT_ID}/applications/${APPLICATION_ID}`, {
+    cy.intercept('DELETE', `**/api/v1/members/me/applications/${APPLICATION_ID}`, {
       statusCode: 200,
       body: {
         result: {
           applicationId: APPLICATION_ID,
-          cancelled: true,
+          projectId: PROJECT_ID,
+          projectName: '미팀 테스트 프로젝트',
+          status: 'CANCELLED',
         },
       },
     }).as('cancelApplicationRequest');

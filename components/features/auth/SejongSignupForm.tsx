@@ -28,7 +28,6 @@ const INITIAL_FORM_VALUES: OnboardingFormValues = {
   gender: 'male',
   interests: [INITIAL_INTEREST],
   techStacksByInterest: {},
-  projectExperienceCount: '0',
   githubUrl: '',
   blogUrl: '',
   profileImage: null,
@@ -123,7 +122,6 @@ export default function SejongSignupForm() {
       const flattened = result.error.flatten().fieldErrors;
       nextErrors.name = flattened.name?.[0];
       nextErrors.birth = flattened.birth?.[0];
-      nextErrors.projectExperienceCount = flattened.projectExperienceCount?.[0];
     }
 
     const filledInterests = formValues.interests.filter(
@@ -300,20 +298,14 @@ export default function SejongSignupForm() {
       />
 
       <ProfileExtraSection
-        project={formValues.projectExperienceCount}
         githubLink={formValues.githubUrl}
         blogLink={formValues.blogUrl}
-        onChangeProject={(event) => {
-          updateField('projectExperienceCount', event.target.value);
-          setFieldErrors((prev) => ({ ...prev, projectExperienceCount: undefined }));
-        }}
         onChangeGithubLink={(event) => updateField('githubUrl', event.target.value)}
         onChangeBlogLink={(event) => updateField('blogUrl', event.target.value)}
         onChangeProfileImage={(file) => updateField('profileImage', file)}
         onRemoveProfileImage={() => updateField('profileImage', null)}
         profileImageName={formValues.profileImage?.name ?? ''}
         profileImagePreviewUrl={profileImagePreviewUrl}
-        projectError={fieldErrors.projectExperienceCount}
       />
 
       <ToastMessage message={fieldErrors.form} />

@@ -1,7 +1,8 @@
 'use client';
 
-import { ExternalLink, Mail, UserRound } from 'lucide-react';
+import { Mail, UserRound } from 'lucide-react';
 import BaseModal from '@/components/shared/BaseModal';
+import BaseButton from '@/components/shared/BaseButton';
 import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import MarkdownContent from '@/components/shared/MarkdownContent';
 import ToastMessage from '@/components/shared/ToastMessage';
@@ -40,18 +41,18 @@ export default function ProjectApplicantDetailModal({
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      <div className="overflow-hidden rounded-[28px] bg-mt-white shadow-2xl">
+      <div className="rounded-2xl bg-mt-white p-6 shadow-2xl">
         <ToastMessage message={errorMessage} />
 
-        <div className="border-b border-mt-border bg-mt-bg-soft px-6 py-5">
+        <div className="pb-5">
           <p className="text-sm font-bold text-mt-primary">지원서 상세</p>
-          <h2 className="mt-1 text-2xl font-extrabold text-mt-text-primary">{applicant.name}</h2>
+          <h2 className="mt-1 text-xl font-extrabold text-mt-text-primary">{applicant.name}</h2>
           <p className="mt-1 text-sm text-mt-text-secondary">
             {formatJobRole(applicant.position, applicant.specialty)}
           </p>
         </div>
 
-        <div className="space-y-5 px-6 py-6">
+        <div className="space-y-5">
           <div className="flex flex-wrap gap-3 text-sm text-mt-text-secondary">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-mt-badge-bg px-3 py-1 font-medium text-mt-primary">
               <UserRound className="h-4 w-4" aria-hidden strokeWidth={1.8} />
@@ -97,15 +98,10 @@ export default function ProjectApplicantDetailModal({
           </div>
         </div>
 
-        <div className="flex justify-end border-t border-mt-border px-6 py-4">
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-mt-border bg-mt-white px-4 py-2.5 text-sm font-bold text-mt-text-secondary transition-colors hover:bg-mt-bg-soft"
-          >
-            <ExternalLink className="h-4 w-4" aria-hidden strokeWidth={1.8} />
+        <div className="mt-6 flex justify-end">
+          <BaseButton size="M" variant="gray" onClick={onClose}>
             닫기
-          </button>
+          </BaseButton>
         </div>
       </div>
     </BaseModal>

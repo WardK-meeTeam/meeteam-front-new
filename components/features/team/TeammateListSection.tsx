@@ -1,36 +1,30 @@
 import type { RefObject } from 'react';
-import SortSelect from '@/components/shared/SortSelect';
 import ToastMessage from '@/components/shared/ToastMessage';
-import type { TeammateSort } from '@/types/team';
 import type { Teammate } from '@/types/team';
-import { TEAMMATE_LIST_CONFIG, TEAMMATE_PAGE_COPY, TEAMMATE_SORT_OPTIONS } from './constants';
+import { TEAMMATE_LIST_CONFIG, TEAMMATE_PAGE_COPY } from './constants';
 import { TeammateCard } from './TeammateCard';
 import { TeammateCardSkeleton } from './TeammateCardSkeleton';
 
 type TeammateListSectionProps = {
   teammates: Teammate[];
   totalCount: number;
-  sort: TeammateSort;
   isInitialLoading: boolean;
   isLoadingMore: boolean;
   hasMore: boolean;
   errorMessage: string | null;
   loadMoreRef: RefObject<HTMLDivElement | null>;
   onRetry: () => void;
-  onSortChange: (value: TeammateSort) => void;
 };
 
 export function TeammateListSection({
   teammates,
   totalCount,
-  sort,
   isInitialLoading,
   isLoadingMore,
   hasMore,
   errorMessage,
   loadMoreRef,
   onRetry,
-  onSortChange,
 }: TeammateListSectionProps) {
   const shouldShowErrorOnly = !isInitialLoading && Boolean(errorMessage) && teammates.length === 0;
 
@@ -39,20 +33,13 @@ export function TeammateListSection({
       <ToastMessage message={shouldShowErrorOnly ? null : errorMessage} />
 
       {!shouldShowErrorOnly ? (
-        <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="pt-4">
           <p
             data-cy="teammate-total-count"
             className="text-base leading-6 font-semibold text-mt-text-nav"
           >
             총 <span className="text-mt-primary">{totalCount}</span>명의 팀원
           </p>
-
-          <SortSelect
-            value={sort}
-            options={TEAMMATE_SORT_OPTIONS}
-            onChange={onSortChange}
-            dataCy="teammate-sort-select"
-          />
         </div>
       ) : null}
 

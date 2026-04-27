@@ -83,7 +83,6 @@ function fillRequiredSignupFields() {
   cy.get('[data-cy="signup-tech-input"]').type('React{enter}');
   cy.get('[data-cy="signup-tech-selected"]').should('contain', 'React');
 
-  cy.get('[data-cy="signup-project-count"]').clear().type('3');
   cy.get('[data-cy="signup-github-url"]').type('github.com/wardk');
   cy.get('[data-cy="signup-blog-url"]').type('https://blog.example.com');
 }
@@ -146,7 +145,7 @@ describe('회원가입 흐름', () => {
     cy.get('[data-cy="signup-name"]').should('be.visible');
     cy.contains('label', '분야').should('be.visible');
     cy.contains('label', '기술 스택').should('be.visible');
-    cy.contains('프로젝트 경험 횟수').should('be.visible');
+    cy.contains('프로젝트 경험 횟수').should('not.exist');
     cy.get('[data-cy="signup-submit"]').should('be.visible');
 
     cy.get('[data-cy="signup-interest-major-0"]').click();

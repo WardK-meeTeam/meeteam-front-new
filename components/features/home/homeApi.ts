@@ -79,7 +79,8 @@ type BackendMemberCardResponse = {
   profileImageUrl: string | null;
   jobFieldName: string | null;
   name: string;
-  projectExperienceCount: number;
+  projectCount: number;
+  projectExperienceCount?: number;
   techStacks: Array<{
     id: number;
     name: string;
@@ -155,7 +156,7 @@ function mapHomeMember(member: BackendMemberCardResponse): HomeMemberCard {
     userId: member.memberId,
     name: member.name,
     role: mapJobFieldToRole(member.jobFieldName),
-    experience: `프로젝트 ${member.projectExperienceCount}회 경험`,
+    experience: `참여 프로젝트 ${member.projectCount ?? member.projectExperienceCount ?? 0}개`,
     skills: mapTopTechStackNames(member.techStacks),
     imageUrl: member.profileImageUrl ?? '',
   };

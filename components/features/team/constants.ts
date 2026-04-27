@@ -16,11 +16,6 @@ export const TEAMMATE_ROLE_OPTIONS = [
   '인프라/운영',
 ] as const;
 
-export const TEAMMATE_SORT_OPTIONS = [
-  { label: '프로젝트 경험 많은 순', value: 'experience-desc' },
-  { label: '이름순', value: 'name-asc' },
-] as const;
-
 export const TEAMMATE_LIST_CONFIG = {
   initialVisibleCount: 15,
   loadMoreCount: 15,

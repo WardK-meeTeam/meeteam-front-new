@@ -74,7 +74,6 @@ describe('registerMember', () => {
           techStacks: [{ id: 1, displayOrder: 1 }],
         },
       ],
-      projectExperienceCount: 2,
     };
 
     const response: SignupSuccessResponse = { memberId: 1, username: '홍길동' };
@@ -113,7 +112,6 @@ describe('registerSejongMember', () => {
           techStacks: [{ id: 1, displayOrder: 1 }],
         },
       ],
-      projectExperienceCount: 2,
     };
 
     const imageFile = new File(['avatar'], 'avatar.png', { type: 'image/png' });

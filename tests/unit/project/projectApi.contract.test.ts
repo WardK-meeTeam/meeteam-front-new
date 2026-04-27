@@ -691,10 +691,7 @@ describe('missing project lifecycle contracts (TDD)', () => {
   });
 
   it('cancelProjectApplication helper가 내 지원 취소 API 계약을 제공해야 한다', async () => {
-    type CancelProjectApplication = (
-      projectId: string | number,
-      applicationId: string | number,
-    ) => Promise<unknown>;
+    type CancelProjectApplication = (applicationId: string | number) => Promise<unknown>;
     const cancelProjectApplication = (
       projectApi as unknown as {
         cancelProjectApplication?: CancelProjectApplication;
@@ -715,15 +712,17 @@ describe('missing project lifecycle contracts (TDD)', () => {
       json: async () => ({
         result: {
           applicationId: 9001,
-          cancelled: true,
+          projectId: 1201,
+          projectName: 'meeTeam',
+          status: 'CANCELLED',
         },
       }),
     } as Response);
 
-    await cancelProjectApplication(1201, 9001);
+    await cancelProjectApplication(9001);
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:8080/api/v1/projects/1201/applications/9001',
+      'http://localhost:8080/api/v1/members/me/applications/9001',
       expect.objectContaining({
         method: 'DELETE',
         credentials: 'include',
@@ -808,7 +807,7 @@ describe('missing project lifecycle contracts (TDD)', () => {
         }),
       } as Response);
 
-      await expect(projectApi.cancelProjectApplication(1201, 9001)).rejects.toThrow(message);
+      await expect(projectApi.cancelProjectApplication(9001)).rejects.toThrow(message);
     }
   });
 
@@ -838,15 +837,19 @@ describe('missing project lifecycle contracts (TDD)', () => {
     await leaveProject(1201);
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:8080/api/v1/projects/1201/members/me',
+      'http://localhost:8080/api/project-members/withdraw',
       expect.objectContaining({
-        method: 'DELETE',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         credentials: 'include',
+        body: JSON.stringify({ projectId: 1201 }),
       }),
     );
   });
 
-  it('[EX-020] 재지원 정책은 PENDING/ACCEPTED 차단과 REJECTED/CANCELLED 허용 여부를 명시해야 한다', async () => {
+  it('[EX-020] 재지원 정책은 현재 백엔드 중복 지원 정책을 명시해야 한다', async () => {
     type FetchProjectApplicationPolicy = (projectId: string | number) => Promise<{
       blockedStatuses: string[];
       reapplyableStatuses: string[];
@@ -859,7 +862,7 @@ describe('missing project lifecycle contracts (TDD)', () => {
 
     expect(
       fetchProjectApplicationPolicy,
-      'REJECTED/CANCELLED 이후 재지원 허용 여부를 프론트가 일관되게 처리할 수 있는 정책 조회 계약이 필요합니다.',
+      '백엔드가 기존 지원 상태와 관계없이 동일 프로젝트 재지원을 막으므로 프론트 정책도 이를 명시해야 합니다.',
     ).toBeTypeOf('function');
 
     if (typeof fetchProjectApplicationPolicy !== 'function') {
@@ -867,8 +870,8 @@ describe('missing project lifecycle contracts (TDD)', () => {
     }
 
     await expect(fetchProjectApplicationPolicy(1201)).resolves.toEqual({
-      blockedStatuses: ['PENDING', 'ACCEPTED'],
-      reapplyableStatuses: ['REJECTED', 'CANCELLED'],
+      blockedStatuses: ['PENDING', 'ACCEPTED', 'REJECTED', 'CANCELLED'],
+      reapplyableStatuses: [],
     });
   });
 });

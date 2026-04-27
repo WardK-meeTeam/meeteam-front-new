@@ -1,10 +1,9 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, X } from 'lucide-react';
 import { useState } from 'react';
 import { withdrawMember } from '@/components/features/auth/loginApi';
-import BaseModal from '@/components/shared/BaseModal';
+import ConfirmModal from '@/components/shared/ConfirmModal';
 import ToastMessage from '@/components/shared/ToastMessage';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useLoginModalStore } from '@/stores/useLoginModalStore';
@@ -68,59 +67,23 @@ export default function ProfileSettingsPage() {
             type="button"
             onClick={() => setIsConfirmOpen(true)}
             disabled={isWithdrawing}
-            className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-mt-border bg-mt-white px-4 text-sm font-bold text-mt-text-secondary transition-colors hover:border-mt-text-secondary hover:text-mt-text-primary disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-10 shrink-0 items-center justify-center rounded-xl border border-mt-border bg-mt-white px-4 text-sm font-bold text-mt-text-secondary transition-colors hover:border-mt-danger hover:text-mt-danger disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isWithdrawing ? '탈퇴 처리 중' : '회원탈퇴'}
           </button>
         </div>
       </div>
 
-      <BaseModal isOpen={isConfirmOpen} onClose={closeConfirmModal}>
-        <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-3xl border border-mt-border bg-mt-white shadow-2xl">
-          <button
-            type="button"
-            onClick={closeConfirmModal}
-            disabled={isWithdrawing}
-            aria-label="모달 닫기"
-            className="absolute right-5 top-5 text-mt-text-secondary transition-colors hover:text-mt-text-primary disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <X className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-          </button>
-
-          <div className="px-6 pb-6 pt-8 sm:px-8 sm:pb-8">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-mt-danger-soft">
-              <AlertTriangle className="h-6 w-6 text-mt-danger" aria-hidden strokeWidth={1.8} />
-            </div>
-
-            <h2 className="mt-5 text-2xl leading-8 font-bold text-mt-text-primary">
-              회원탈퇴를 진행할까요?
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-mt-text-secondary">
-              탈퇴하면 계정 정보와 활동 내역을 복구할 수 없습니다. 진행 전 필요한 정보가 남아있는지
-              한 번 더 확인해 주세요.
-            </p>
-
-            <div className="mt-7 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <button
-                type="button"
-                onClick={closeConfirmModal}
-                disabled={isWithdrawing}
-                className="inline-flex h-11 items-center justify-center rounded-xl border border-mt-border bg-mt-white px-5 text-sm font-bold text-mt-text-secondary transition-colors hover:bg-mt-bg-soft disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                취소
-              </button>
-              <button
-                type="button"
-                onClick={() => void handleWithdraw()}
-                disabled={isWithdrawing}
-                className="inline-flex h-11 items-center justify-center rounded-xl bg-mt-danger px-5 text-sm font-bold text-mt-white shadow-sm transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {isWithdrawing ? '탈퇴 처리 중' : '탈퇴하기'}
-              </button>
-            </div>
-          </div>
-        </div>
-      </BaseModal>
+      <ConfirmModal
+        isOpen={isConfirmOpen}
+        title="회원탈퇴를 진행할까요?"
+        description="탈퇴하면 계정 정보와 활동 내역을 복구할 수 없습니다. 진행 전 필요한 정보가 남아있는지 한 번 더 확인해 주세요."
+        closeLabel="취소"
+        confirmLabel={isWithdrawing ? '탈퇴 처리 중' : '탈퇴하기'}
+        isSubmitting={isWithdrawing}
+        onClose={closeConfirmModal}
+        onConfirm={() => void handleWithdraw()}
+      />
     </section>
   );
 }

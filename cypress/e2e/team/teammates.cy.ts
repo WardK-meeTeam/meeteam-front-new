@@ -42,7 +42,7 @@ const ALL_TEAMMATES = [
     memberId: 1,
     name: '김도윤',
     jobFieldName: '백엔드',
-    projectExperienceCount: 11,
+    projectCount: 11,
     techStacks: createTechStacks(['Spring Boot', 'MySQL']),
     profileImageUrl: null,
   },
@@ -50,7 +50,7 @@ const ALL_TEAMMATES = [
     memberId: 14,
     name: '권나은',
     jobFieldName: '프론트',
-    projectExperienceCount: 8,
+    projectCount: 8,
     techStacks: createTechStacks(['React Query', 'Next.js']),
     profileImageUrl: null,
   },
@@ -58,7 +58,7 @@ const ALL_TEAMMATES = [
     memberId: 2,
     name: '강예나',
     jobFieldName: '디자인',
-    projectExperienceCount: 7,
+    projectCount: 7,
     techStacks: createTechStacks(['Figma', 'Illustrator']),
     profileImageUrl: null,
   },
@@ -66,7 +66,7 @@ const ALL_TEAMMATES = [
     memberId: 3,
     name: '나지민',
     jobFieldName: '프론트',
-    projectExperienceCount: 6,
+    projectCount: 6,
     techStacks: createTechStacks(['React', 'TypeScript']),
     profileImageUrl: null,
   },
@@ -74,7 +74,7 @@ const ALL_TEAMMATES = [
     memberId: 4,
     name: '다은별',
     jobFieldName: '기획',
-    projectExperienceCount: 6,
+    projectCount: 6,
     techStacks: createTechStacks(['Notion', 'Jira']),
     profileImageUrl: null,
   },
@@ -82,7 +82,7 @@ const ALL_TEAMMATES = [
     memberId: 5,
     name: '라현우',
     jobFieldName: '백엔드',
-    projectExperienceCount: 5,
+    projectCount: 5,
     techStacks: createTechStacks(['NestJS', 'PostgreSQL']),
     profileImageUrl: null,
   },
@@ -90,7 +90,7 @@ const ALL_TEAMMATES = [
     memberId: 6,
     name: '마서준',
     jobFieldName: '디자인',
-    projectExperienceCount: 5,
+    projectCount: 5,
     techStacks: createTechStacks(['Branding', 'Photoshop']),
     profileImageUrl: null,
   },
@@ -98,7 +98,7 @@ const ALL_TEAMMATES = [
     memberId: 7,
     name: '박소율',
     jobFieldName: '프론트',
-    projectExperienceCount: 5,
+    projectCount: 5,
     techStacks: createTechStacks(['SwiftUI', 'UIKit']),
     profileImageUrl: null,
   },
@@ -106,7 +106,7 @@ const ALL_TEAMMATES = [
     memberId: 8,
     name: '배지훈',
     jobFieldName: '백엔드',
-    projectExperienceCount: 4,
+    projectCount: 4,
     techStacks: createTechStacks(['FastAPI', 'Redis']),
     profileImageUrl: null,
   },
@@ -114,7 +114,7 @@ const ALL_TEAMMATES = [
     memberId: 9,
     name: '서하린',
     jobFieldName: '기획',
-    projectExperienceCount: 4,
+    projectCount: 4,
     techStacks: createTechStacks(['Analytics', 'Figma']),
     profileImageUrl: null,
   },
@@ -122,7 +122,7 @@ const ALL_TEAMMATES = [
     memberId: 10,
     name: '송이준',
     jobFieldName: '프론트',
-    projectExperienceCount: 4,
+    projectCount: 4,
     techStacks: createTechStacks(['Kotlin', 'Compose']),
     profileImageUrl: null,
   },
@@ -130,7 +130,7 @@ const ALL_TEAMMATES = [
     memberId: 11,
     name: '신채은',
     jobFieldName: '디자인',
-    projectExperienceCount: 3,
+    projectCount: 3,
     techStacks: createTechStacks(['After Effects', 'Figma']),
     profileImageUrl: null,
   },
@@ -138,7 +138,7 @@ const ALL_TEAMMATES = [
     memberId: 12,
     name: '안도현',
     jobFieldName: '백엔드',
-    projectExperienceCount: 3,
+    projectCount: 3,
     techStacks: createTechStacks(['Java', 'Kafka']),
     profileImageUrl: null,
   },
@@ -146,7 +146,7 @@ const ALL_TEAMMATES = [
     memberId: 13,
     name: '오민재',
     jobFieldName: '프론트',
-    projectExperienceCount: 3,
+    projectCount: 3,
     techStacks: createTechStacks(['Vue', 'Pinia']),
     profileImageUrl: null,
   },
@@ -154,7 +154,7 @@ const ALL_TEAMMATES = [
     memberId: 15,
     name: '유서진',
     jobFieldName: '기획',
-    projectExperienceCount: 3,
+    projectCount: 3,
     techStacks: createTechStacks(['MVP', 'Wireframe']),
     profileImageUrl: null,
   },
@@ -162,7 +162,7 @@ const ALL_TEAMMATES = [
     memberId: 16,
     name: '윤채원',
     jobFieldName: '백엔드',
-    projectExperienceCount: 2,
+    projectCount: 2,
     techStacks: createTechStacks(['Node.js', 'MongoDB']),
     profileImageUrl: null,
   },
@@ -170,7 +170,7 @@ const ALL_TEAMMATES = [
     memberId: 17,
     name: '이가은',
     jobFieldName: '프론트',
-    projectExperienceCount: 2,
+    projectCount: 2,
     techStacks: createTechStacks(['React', 'Cypress']),
     profileImageUrl: null,
   },
@@ -178,7 +178,7 @@ const ALL_TEAMMATES = [
     memberId: 18,
     name: '이우진',
     jobFieldName: '기획',
-    projectExperienceCount: 2,
+    projectCount: 2,
     techStacks: createTechStacks(['Communication', 'Docs']),
     profileImageUrl: null,
   },
@@ -186,7 +186,7 @@ const ALL_TEAMMATES = [
     memberId: 19,
     name: '장하준',
     jobFieldName: '디자인',
-    projectExperienceCount: 2,
+    projectCount: 2,
     techStacks: createTechStacks(['Figma', 'ProtoPie']),
     profileImageUrl: null,
   },
@@ -194,7 +194,7 @@ const ALL_TEAMMATES = [
     memberId: 20,
     name: '정연준',
     jobFieldName: '백엔드',
-    projectExperienceCount: 2,
+    projectCount: 2,
     techStacks: createTechStacks(['Spring', 'Docker']),
     profileImageUrl: null,
   },
@@ -202,7 +202,7 @@ const ALL_TEAMMATES = [
     memberId: 21,
     name: '조민서',
     jobFieldName: '프론트',
-    projectExperienceCount: 1,
+    projectCount: 1,
     techStacks: createTechStacks(['React', 'Tailwind']),
     profileImageUrl: null,
   },
@@ -210,7 +210,7 @@ const ALL_TEAMMATES = [
     memberId: 22,
     name: '최현아',
     jobFieldName: '디자인',
-    projectExperienceCount: 1,
+    projectCount: 1,
     techStacks: createTechStacks(['Illustrator', 'Branding']),
     profileImageUrl: null,
   },
@@ -218,7 +218,7 @@ const ALL_TEAMMATES = [
     memberId: 23,
     name: '하윤서',
     jobFieldName: '기획',
-    projectExperienceCount: 1,
+    projectCount: 1,
     techStacks: createTechStacks(['Research', 'Presentation']),
     profileImageUrl: null,
   },
@@ -226,7 +226,7 @@ const ALL_TEAMMATES = [
     memberId: 24,
     name: '황지후',
     jobFieldName: '백엔드',
-    projectExperienceCount: 1,
+    projectCount: 1,
     techStacks: createTechStacks(['Python', 'Airflow']),
     profileImageUrl: null,
   },
@@ -240,7 +240,7 @@ const OTHER_MEMBER_PROFILE = {
   email: 'kwon@example.com',
   githubUrl: 'https://github.com/kwon',
   blogUrl: 'https://kwon.blog',
-  projectExperienceCount: 8,
+  projectCount: 8,
   representativePosition: '웹 프론트엔드',
   jobPositions: ['웹 프론트엔드'],
   isParticipating: true,
@@ -287,7 +287,6 @@ function installTeammateSearchIntercept() {
     const name = (url.searchParams.get('name') ?? '').toLowerCase();
     const jobFieldId = url.searchParams.get('jobFieldId');
     const techStackNames = url.searchParams.getAll('techStackNames');
-    const sort = url.searchParams.get('sort') ?? 'projectExperienceCount,desc';
     const page = Number(url.searchParams.get('page') ?? '0');
     const size = Number(url.searchParams.get('size') ?? '15');
 
@@ -310,12 +309,6 @@ function installTeammateSearchIntercept() {
         ),
       );
     }
-
-    teammates.sort((left, right) =>
-      sort === 'realName,asc'
-        ? left.name.localeCompare(right.name, 'ko')
-        : right.projectExperienceCount - left.projectExperienceCount,
-    );
 
     const start = page * size;
     const content = teammates.slice(start, start + size);
@@ -345,13 +338,13 @@ describe('팀원 찾기 흐름', () => {
     cy.wait('@jobOptionsRequest');
   });
 
-  it('기본 진입 시 프로젝트 경험 많은 순으로 팀원 목록을 보여준다', () => {
+  it('기본 진입 시 팀원 목록을 보여준다', () => {
     cy.contains('h1', '팀원 찾기').should('be.visible');
     cy.get('[data-cy="teammate-total-count"]').should('contain', '24');
 
     getTeammateCards().should('have.length', 15);
     getTeammateNames().first().should('have.text', '김도윤');
-    cy.get('[data-cy="teammate-card-experience"]').first().should('contain', '11회');
+    cy.get('[data-cy="teammate-card-experience"]').first().should('contain', '참여 프로젝트 11개');
   });
 
   it('이름, 분야, 기술 스택 조건을 함께 적용해 팀원을 필터링하고 기존 조작으로 초기화한다', () => {
@@ -375,17 +368,6 @@ describe('팀원 찾기 흐름', () => {
     cy.get('[data-cy="teammate-search-input"]').should('have.value', '');
     cy.get('[data-cy="teammate-total-count"]').should('contain', '24');
     getTeammateCards().should('have.length', 15);
-  });
-
-  it('정렬을 이름순으로 변경하면 목록 순서가 한글 오름차순으로 바뀐다', () => {
-    cy.get('[data-cy="teammate-sort-select"]').select('name-asc');
-    cy.wait('@teammateSearchRequest');
-
-    cy.get('[data-cy="teammate-total-count"]').should('contain', '24');
-    getTeammateCards().should('have.length', 15);
-    getTeammateNames().first().should('have.text', '강예나');
-    getTeammateNames().eq(1).should('have.text', '권나은');
-    getTeammateNames().eq(2).should('have.text', '김도윤');
   });
 
   it('목록 하단에 도달하면 추가 팀원 카드를 불러온다', () => {

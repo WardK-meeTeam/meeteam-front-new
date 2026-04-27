@@ -14,7 +14,6 @@ export type SignupFormValues = {
   gender: GenderValue;
   interests: Interest[];
   techStacksByInterest: Record<string, string[]>;
-  projectExperienceCount: string;
   githubUrl: string;
   blogUrl: string;
   profileImage: File | null;
@@ -26,7 +25,6 @@ export type OnboardingFormValues = {
   gender: GenderValue;
   interests: Interest[];
   techStacksByInterest: Record<string, string[]>;
-  projectExperienceCount: string;
   githubUrl: string;
   blogUrl: string;
   profileImage: File | null;
@@ -78,7 +76,6 @@ export type RegisterRequestPayload = {
   birthDate: string;
   gender: 'MALE' | 'FEMALE';
   jobPositions: RegisterJobPositionPayload[];
-  projectExperienceCount: number;
   githubUrl?: string;
   blogUrl?: string;
 };
@@ -89,7 +86,6 @@ export type OnboardingRequestPayload = {
   birthDate: string;
   gender: 'MALE' | 'FEMALE';
   jobPositions: RegisterJobPositionPayload[];
-  projectExperienceCount: number;
   githubUrl?: string;
   blogUrl?: string;
 };

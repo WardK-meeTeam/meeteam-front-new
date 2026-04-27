@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronDown, LogOut, Settings, UserRound } from 'lucide-react';
+import { ChevronDown, FileText, LogOut, Settings, UserRound } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { logoutMember } from '@/components/features/auth/loginApi';
 import { fetchMyProfile } from '@/components/features/profile/profileApi';
@@ -15,6 +15,11 @@ const MENU_ITEMS = [
     href: '/profile',
     label: '내 프로필',
     icon: UserRound,
+  },
+  {
+    href: '/profile/applications',
+    label: '내 지원서',
+    icon: FileText,
   },
   {
     href: '/settings',
@@ -152,7 +157,7 @@ export default function ProfileMenu() {
           role="menu"
           aria-label="프로필 메뉴 목록"
         >
-          <div className="border-b border-mt-bg-soft bg-mt-bg-soft/50 px-5 pb-[17px] pt-4">
+          <div className="border-b border-mt-bg-soft bg-mt-bg-soft/50 px-5 py-4">
             <p className="text-sm leading-5 font-bold text-mt-text-primary">{userName}</p>
             <p className="mt-0.5 text-xs leading-4 text-mt-text-secondary">{userEmail}</p>
           </div>
@@ -172,7 +177,7 @@ export default function ProfileMenu() {
             ))}
           </div>
 
-          <div className="border-t border-mt-bg-soft px-2 pb-2 pt-[9px]">
+          <div className="border-t border-mt-bg-soft px-2 py-2">
             <button
               type="button"
               onClick={handleLogout}

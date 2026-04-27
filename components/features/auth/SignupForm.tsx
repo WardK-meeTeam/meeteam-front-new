@@ -28,7 +28,6 @@ const INITIAL_FORM_VALUES: SignupFormValues = {
   gender: 'male',
   interests: [INITIAL_INTEREST],
   techStacksByInterest: {},
-  projectExperienceCount: '0',
   githubUrl: '',
   blogUrl: '',
   profileImage: null,
@@ -113,7 +112,6 @@ export default function SignupForm() {
       nextErrors.passwordConfirm = flattened.passwordConfirm?.[0];
       nextErrors.name = flattened.name?.[0];
       nextErrors.birth = flattened.birth?.[0];
-      nextErrors.projectExperienceCount = flattened.projectExperienceCount?.[0];
     }
 
     const filledInterests = formValues.interests.filter(
@@ -187,11 +185,6 @@ export default function SignupForm() {
     });
 
     setFieldErrors((prev) => ({ ...prev, interests: undefined, form: undefined }));
-  };
-
-  const onChangeProject = (e: React.ChangeEvent<HTMLInputElement>) => {
-    updateField('projectExperienceCount', e.target.value);
-    setFieldErrors((prev) => ({ ...prev, projectExperienceCount: undefined }));
   };
 
   const onChangeGithubLink = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -340,17 +333,14 @@ export default function SignupForm() {
       />
 
       <ProfileExtraSection
-        project={formValues.projectExperienceCount}
         githubLink={formValues.githubUrl}
         blogLink={formValues.blogUrl}
-        onChangeProject={onChangeProject}
         onChangeGithubLink={onChangeGithubLink}
         onChangeBlogLink={onChangeBlogLink}
         onChangeProfileImage={onChangeProfileImage}
         onRemoveProfileImage={onRemoveProfileImage}
         profileImageName={formValues.profileImage?.name ?? ''}
         profileImagePreviewUrl={profileImagePreviewUrl}
-        projectError={fieldErrors.projectExperienceCount}
       />
 
       <ToastMessage message={fieldErrors.form} />

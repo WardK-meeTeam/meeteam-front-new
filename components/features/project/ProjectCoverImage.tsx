@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import { getProjectDetailImageSrc, PROJECT_DETAIL_FALLBACK_IMAGE_SRC } from './projectImage';
 
@@ -10,7 +10,9 @@ type ProjectCoverImageProps = {
   priority?: boolean;
   className?: string;
   imageClassName?: string;
+  fallbackImageClassName?: string;
   overlayClassName?: string;
+  roundedClassName?: string;
 };
 
 export default function ProjectCoverImage({
@@ -19,27 +21,29 @@ export default function ProjectCoverImage({
   priority = false,
   className = '',
   imageClassName = '',
+  fallbackImageClassName = '',
   overlayClassName = '',
+  roundedClassName = 'rounded-4xl',
 }: ProjectCoverImageProps) {
-  const [resolvedSrc, setResolvedSrc] = useState(getProjectDetailImageSrc(src));
+  const requestedSrc = getProjectDetailImageSrc(src);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const resolvedSrc = failedSrc === requestedSrc ? PROJECT_DETAIL_FALLBACK_IMAGE_SRC : requestedSrc;
   const isFallbackImage = resolvedSrc === PROJECT_DETAIL_FALLBACK_IMAGE_SRC;
-
-  useEffect(() => {
-    setResolvedSrc(getProjectDetailImageSrc(src));
-  }, [src]);
 
   return (
     <div
-      className={`relative aspect-[1200/630] w-full overflow-hidden rounded-4xl bg-mt-bg-soft ${className}`}
+      className={`relative aspect-[1200/630] w-full overflow-hidden bg-mt-bg-soft ${roundedClassName} ${className}`}
     >
       <img
         src={resolvedSrc}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
-        className={`absolute inset-0 h-full w-full object-cover ${imageClassName}`}
+        className={`absolute inset-0 h-full w-full object-cover ${imageClassName} ${
+          isFallbackImage ? fallbackImageClassName : ''
+        }`}
         onError={() => {
           if (!isFallbackImage) {
-            setResolvedSrc(PROJECT_DETAIL_FALLBACK_IMAGE_SRC);
+            setFailedSrc(requestedSrc);
           }
         }}
       />

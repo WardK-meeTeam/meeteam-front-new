@@ -7,7 +7,7 @@ export function TeammateCard({ teammate }: { teammate: Teammate }) {
       userId={teammate.id}
       name={teammate.name}
       role={teammate.role}
-      experience={`프로젝트 ${teammate.experienceCount}회 경험`}
+      experience={`참여 프로젝트 ${teammate.experienceCount}개`}
       skills={teammate.skills}
       imageUrl={teammate.imageUrl}
       className="min-h-72"

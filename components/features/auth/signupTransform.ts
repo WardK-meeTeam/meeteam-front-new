@@ -95,7 +95,6 @@ export function buildRegisterRequestPayload(
     birthDate: values.birth.trim(),
     gender: values.gender === 'female' ? 'FEMALE' : 'MALE',
     jobPositions,
-    projectExperienceCount: Number(values.projectExperienceCount || '0'),
     githubUrl: normalizeUrl(values.githubUrl),
     blogUrl: normalizeUrl(values.blogUrl),
   };
@@ -112,7 +111,6 @@ function buildOnboardingRequestPayload(
     birthDate: values.birth.trim(),
     gender: values.gender === 'female' ? 'FEMALE' : 'MALE',
     jobPositions: buildJobPositionPayload(values, jobFields),
-    projectExperienceCount: Number(values.projectExperienceCount || '0'),
     githubUrl: normalizeUrl(values.githubUrl),
     blogUrl: normalizeUrl(values.blogUrl),
   };

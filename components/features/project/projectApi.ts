@@ -124,9 +124,11 @@ type BackendApplicationStatus =
   | 'PENDING'
   | 'ACCEPTED'
   | 'REJECTED'
+  | 'CANCELLED'
   | '대기중'
   | '승인됨'
-  | '거절됨';
+  | '거절됨'
+  | '취소됨';
 
 type BackendApplicationResponse = {
   applicationId: number;
@@ -183,8 +185,14 @@ type BackendProjectDeleteResponse = {
 
 type BackendApplicationCancelResponse = {
   applicationId: number;
-  cancelled?: boolean;
+  projectId?: number;
+  projectName?: string;
   status?: BackendApplicationStatus;
+};
+
+type BackendLeaveProjectResponse = {
+  projectId: number;
+  memberId: number;
 };
 
 type BackendProjectLikeStatusResponse = {
@@ -202,8 +210,11 @@ type BackendAppliedProjectResponse = {
   applicationId: number;
   projectId: number;
   projectName: string;
+  projectImageUrl: string | null;
   jobPositionId: number;
   jobPositionName: string;
+  status: BackendApplicationStatus;
+  statusDisplayName: string;
   appliedAt: string;
 };
 
@@ -283,8 +294,11 @@ export type AppliedProject = {
   applicationId: number;
   projectId: number;
   projectName: string;
+  projectImageUrl: string;
   jobPositionId: number;
   jobPositionName: string;
+  status: ProjectApplicant['status'];
+  statusDisplayName: string;
   appliedAt: string;
 };
 
@@ -306,6 +320,11 @@ export type ProjectApplicationPage = {
     techStacks: string[];
     isClosed: boolean;
   }>;
+};
+
+export type ProjectApplicationPolicy = {
+  blockedStatuses: Array<'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED'>;
+  reapplyableStatuses: Array<'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED'>;
 };
 
 export type ProjectEditPrefill = {
@@ -369,6 +388,9 @@ function mapApplicationStatus(status: BackendApplicationStatus): ProjectApplican
     case 'REJECTED':
     case '거절됨':
       return 'rejected';
+    case 'CANCELLED':
+    case '취소됨':
+      return 'cancelled';
     case 'PENDING':
     case '대기중':
     default:
@@ -791,17 +813,11 @@ export async function fetchProjectApplicationDetail(
   return mapApplicationDetail(application);
 }
 
-export async function cancelProjectApplication(
-  projectId: string | number,
-  applicationId: string | number,
-) {
-  const response = await fetch(
-    `${API_BASE_URL}/api/v1/projects/${projectId}/applications/${applicationId}`,
-    {
-      method: 'DELETE',
-      credentials: 'include',
-    },
-  );
+export async function cancelProjectApplication(applicationId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/members/me/applications/${applicationId}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
 
   return readEnvelope<BackendApplicationCancelResponse>(
     response,
@@ -839,6 +855,29 @@ export async function decideProjectApplication(
   };
 }
 
+export async function leaveProject(projectId: string | number) {
+  const response = await fetch(`${API_BASE_URL}/api/project-members/withdraw`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify({ projectId: Number(projectId) }),
+  });
+
+  return readEnvelope<BackendLeaveProjectResponse>(
+    response,
+    '프로젝트 탈퇴 중 오류가 발생했습니다.',
+  );
+}
+
+export async function fetchProjectApplicationPolicy(): Promise<ProjectApplicationPolicy> {
+  return {
+    blockedStatuses: ['PENDING', 'ACCEPTED', 'REJECTED', 'CANCELLED'],
+    reapplyableStatuses: [],
+  };
+}
+
 export async function fetchMyProjectApplications(): Promise<AppliedProject[]> {
   const response = await fetch(`${API_BASE_URL}/api/v1/members/me/applications`, {
     method: 'GET',
@@ -855,8 +894,11 @@ export async function fetchMyProjectApplications(): Promise<AppliedProject[]> {
     applicationId: application.applicationId,
     projectId: application.projectId,
     projectName: application.projectName,
+    projectImageUrl: application.projectImageUrl ?? '',
     jobPositionId: application.jobPositionId,
     jobPositionName: application.jobPositionName,
+    status: mapApplicationStatus(application.status),
+    statusDisplayName: application.statusDisplayName,
     appliedAt: application.appliedAt,
   }));
 }

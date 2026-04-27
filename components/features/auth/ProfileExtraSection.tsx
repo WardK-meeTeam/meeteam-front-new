@@ -9,31 +9,25 @@ import ImageCropModal from '@/components/shared/ImageCropModal';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
 
 type ProfileExtraSectionProps = {
-  project: string;
   githubLink: string;
   blogLink: string;
-  onChangeProject: ChangeEventHandler<HTMLInputElement>;
   onChangeGithubLink: ChangeEventHandler<HTMLInputElement>;
   onChangeBlogLink: ChangeEventHandler<HTMLInputElement>;
   onChangeProfileImage: (file: File | null) => void;
   onRemoveProfileImage: () => void;
   profileImageName: string;
   profileImagePreviewUrl: string;
-  projectError?: string;
 };
 
 export default function ProfileExtraSection({
-  project,
   githubLink,
   blogLink,
-  onChangeProject,
   onChangeGithubLink,
   onChangeBlogLink,
   onChangeProfileImage,
   onRemoveProfileImage,
   profileImageName,
   profileImagePreviewUrl,
-  projectError,
 }: ProfileExtraSectionProps) {
   const githubIcon = <Github className="h-5 w-5 text-mt-text-secondary" />;
   const hasProfileImage = Boolean(profileImagePreviewUrl);
@@ -58,19 +52,6 @@ export default function ProfileExtraSection({
 
   return (
     <>
-      <BaseField label="프로젝트 경험 횟수" htmlFor="project" errorText={projectError}>
-        <BaseInput
-          id="project"
-          type="number"
-          min="0"
-          value={project}
-          placeholder="0"
-          rightIcon={'회'}
-          onChange={onChangeProject}
-          data-cy="signup-project-count"
-        />
-      </BaseField>
-
       <div className="flex gap-4">
         <BaseField label="GitHub" htmlFor="github" required={false}>
           <BaseInput
@@ -116,14 +97,14 @@ export default function ProfileExtraSection({
                 <span className="text-mt-text-primary text-sm font-bold">
                   나를 표현하는 사진을 올려주세요
                 </span>
-                <span className="text-mt-text-secondary text-[12px] font-normal leading-4">
+                <span className="text-xs leading-4 font-normal text-mt-text-secondary">
                   JPG, PNG (최대 10MB)
                 </span>
               </div>
             </div>
             <label
               htmlFor="profile-upload"
-              className="cursor-pointer select-none rounded-lg px-4 py-2 border border-mt-border bg-mt-white text-[12px] font-bold text-mt-text-nav hover:bg-mt-bg-soft active:scale-[0.99]"
+              className="cursor-pointer select-none rounded-lg border border-mt-border bg-mt-white px-4 py-2 text-xs font-bold text-mt-text-nav hover:bg-mt-bg-soft active:scale-[0.99]"
             >
               업로드
             </label>
@@ -138,12 +119,12 @@ export default function ProfileExtraSection({
                 className="bg-mt-white"
               />
               <div className="flex flex-col min-w-0">
-                <span className="text-mt-text-primary text-[15px] font-bold">
+                <span className="text-sm font-bold text-mt-text-primary">
                   프로필 사진 등록 완료
                 </span>
                 <div className="flex items-center gap-1.5 min-w-0">
                   <CircleCheck className="h-3 w-3 text-mt-primary" />
-                  <span className="text-mt-primary text-[12px] font-bold">{profileImageName}</span>
+                  <span className="text-xs font-bold text-mt-primary">{profileImageName}</span>
                 </div>
               </div>
             </div>

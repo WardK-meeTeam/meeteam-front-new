@@ -42,7 +42,6 @@ describe('signupFormSchema', () => {
     name: '홍길동',
     birth: '1998-03-15',
     gender: 'male',
-    projectExperienceCount: '0',
     githubUrl: '',
     blogUrl: '',
   };
@@ -78,15 +77,7 @@ describe('signupFormSchema', () => {
     ]);
   });
 
-  it('프로젝트 경험 횟수는 0 이상의 숫자 문자열이어야 한다', () => {
-    const result = signupFormSchema.safeParse({
-      ...validSignupValues,
-      projectExperienceCount: '-1',
-    });
-
-    expect(result.success).toBe(false);
-    expect(result.error?.flatten().fieldErrors.projectExperienceCount).toEqual([
-      '프로젝트 경험 횟수는 0 이상의 숫자로 입력해 주세요.',
-    ]);
+  it('프로젝트 경험 횟수 없이 회원가입 입력값을 허용한다', () => {
+    expect(signupFormSchema.safeParse(validSignupValues).success).toBe(true);
   });
 });

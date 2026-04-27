@@ -20,9 +20,6 @@ export const signupFormSchema = z
     name: z.string().trim().min(1, '이름을 입력해 주세요.'),
     birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '생년월일을 선택해 주세요.'),
     gender: z.enum(['male', 'female']),
-    projectExperienceCount: z
-      .string()
-      .regex(/^\d+$/, '프로젝트 경험 횟수는 0 이상의 숫자로 입력해 주세요.'),
     githubUrl: z.string(),
     blogUrl: z.string(),
   })
@@ -40,9 +37,6 @@ export const onboardingFormSchema = z.object({
   name: z.string().trim().min(1, '이름을 입력해 주세요.'),
   birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, '생년월일을 선택해 주세요.'),
   gender: z.enum(['male', 'female']),
-  projectExperienceCount: z
-    .string()
-    .regex(/^\d+$/, '프로젝트 경험 횟수는 0 이상의 숫자로 입력해 주세요.'),
 });
 
 export type SignupFieldErrors = Partial<
@@ -52,7 +46,6 @@ export type SignupFieldErrors = Partial<
     | 'passwordConfirm'
     | 'name'
     | 'birth'
-    | 'projectExperienceCount'
     | 'githubUrl'
     | 'blogUrl'
     | 'interests'
@@ -67,5 +60,5 @@ export type LoginFieldErrors = Partial<
 >;
 
 export type OnboardingFieldErrors = Partial<
-  Record<'name' | 'birth' | 'projectExperienceCount' | 'interests' | 'form', string>
+  Record<'name' | 'birth' | 'interests' | 'form', string>
 >;

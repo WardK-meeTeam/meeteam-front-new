@@ -159,8 +159,8 @@ export default function ImageCropModal({
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      <div className="mx-auto w-full max-w-2xl overflow-hidden rounded-3xl border border-mt-border bg-mt-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-mt-border px-5 py-4">
+      <div className="mx-auto w-full max-w-2xl rounded-2xl bg-mt-white p-6 shadow-2xl">
+        <div className="flex items-center justify-between">
           <div className="flex min-w-0 items-center gap-2.5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-mt-badge-bg text-mt-primary">
               <ImageIcon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
@@ -180,7 +180,7 @@ export default function ImageCropModal({
           </button>
         </div>
 
-        <div className="px-5 py-5">
+        <div className="pt-5">
           <div className="rounded-2xl bg-mt-bg-soft p-4">
             <div
               className={`relative mx-auto w-full max-w-xl overflow-hidden bg-mt-text-primary ${
@@ -253,7 +253,7 @@ export default function ImageCropModal({
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <div className="mt-6 flex justify-end gap-2">
             <BaseButton variant="gray" size="M" onClick={onClose} disabled={isProcessing}>
               취소
             </BaseButton>
