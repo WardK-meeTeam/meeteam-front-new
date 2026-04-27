@@ -103,12 +103,11 @@ function ProjectApplyThumbnail({
   alt: string;
   className?: string;
 }) {
-  const [resolvedSrc, setResolvedSrc] = useState(src?.trim() || PROJECT_APPLY_FALLBACK_IMAGE_SRC);
+  const normalizedSrc = src?.trim() || PROJECT_APPLY_FALLBACK_IMAGE_SRC;
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const resolvedSrc =
+    failedSrc === normalizedSrc ? PROJECT_APPLY_FALLBACK_IMAGE_SRC : normalizedSrc;
   const isFallback = resolvedSrc === PROJECT_APPLY_FALLBACK_IMAGE_SRC;
-
-  useEffect(() => {
-    setResolvedSrc(src?.trim() || PROJECT_APPLY_FALLBACK_IMAGE_SRC);
-  }, [src]);
 
   return (
     <div
@@ -117,10 +116,10 @@ function ProjectApplyThumbnail({
       <img
         src={resolvedSrc}
         alt={alt}
-        className={`absolute inset-0 h-full w-full ${
-          isFallback ? 'scale-125 object-cover object-center' : 'object-cover'
+        className={`absolute inset-0 !h-full !w-full object-cover object-center ${
+          isFallback ? 'scale-125' : ''
         }`}
-        onError={() => setResolvedSrc(PROJECT_APPLY_FALLBACK_IMAGE_SRC)}
+        onError={() => setFailedSrc(normalizedSrc)}
       />
     </div>
   );
@@ -332,7 +331,7 @@ export default function ProjectApplyPage({
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <section className="rounded-3xl border border-mt-border bg-mt-white px-5 py-6 shadow-[0_16px_40px_rgba(48,83,130,0.08)] sm:px-8 sm:py-8">
+          <section className="rounded-3xl border border-mt-border bg-mt-white px-5 py-6 shadow-sm sm:px-8 sm:py-8">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-sm leading-5 font-extrabold text-mt-primary">
@@ -441,6 +440,29 @@ export default function ProjectApplyPage({
                 >
                   프로필 수정
                 </button>
+              </div>
+
+              <div className="mt-5">
+                <p className="text-sm leading-5 font-bold text-mt-text-primary">내 기술스택</p>
+                {applicant?.techStacks.length ? (
+                  <div
+                    className="mt-2 flex flex-wrap gap-2"
+                    data-cy="project-application-my-skills"
+                  >
+                    {applicant.techStacks.map((techStack) => (
+                      <SkillChip
+                        key={techStack.id}
+                        label={techStack.name}
+                        variant="outline"
+                        size="md"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-2 text-sm leading-5 text-mt-text-secondary">
+                    프로필에 등록된 기술스택이 없습니다.
+                  </p>
+                )}
               </div>
             </div>
           </section>

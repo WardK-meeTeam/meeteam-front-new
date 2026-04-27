@@ -27,6 +27,12 @@ export type ProjectMember = {
 
 export type ProjectApplicantStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
 
+export type ProjectApplicantTechStack = {
+  id: number;
+  name: string;
+  displayOrder: number;
+};
+
 export type ProjectApplicant = {
   id: number;
   applicantId?: number;
@@ -40,6 +46,7 @@ export type ProjectApplicant = {
   status: ProjectApplicantStatus;
   age?: number | null;
   gender?: 'MALE' | 'FEMALE' | string | null;
+  techStacks?: ProjectApplicantTechStack[];
   currentCount?: number;
   recruitmentCount?: number;
   isRecruitmentFull?: boolean;

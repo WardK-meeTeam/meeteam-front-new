@@ -38,7 +38,7 @@ export default function ProjectCoverImage({
         src={resolvedSrc}
         alt={alt}
         loading={priority ? 'eager' : 'lazy'}
-        className={`absolute inset-0 h-full w-full object-cover ${imageClassName} ${
+        className={`absolute inset-0 !h-full !w-full object-cover ${imageClassName} ${
           isFallbackImage ? fallbackImageClassName : ''
         }`}
         onError={() => {

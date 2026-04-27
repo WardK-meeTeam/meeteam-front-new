@@ -5,7 +5,7 @@ import { useInfiniteScroll } from '@/components/shared/useInfiniteScroll';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
 import { collectTechStackNames } from '@/components/features/auth/jobOptionUtils';
 import type { Teammate } from '@/types/team';
-import { fetchTeammates } from './teamApi';
+import { fetchTeammates, type TeammateSort } from './teamApi';
 import { TEAMMATE_LIST_CONFIG, TEAMMATE_ROLE_OPTIONS } from './constants';
 
 const TEAMMATE_LIST_ERROR_MESSAGE = '팀원 목록을 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
@@ -34,6 +34,7 @@ export function useTeammateFinder() {
   const [searchValue, setSearchValue] = useState('');
   const [selectedRole, setSelectedRole] = useState<(typeof TEAMMATE_ROLE_OPTIONS)[number]>('전체');
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+  const [sort, setSort] = useState<TeammateSort>('projectCount');
   const [availableSkills, setAvailableSkills] = useState<string[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -87,6 +88,7 @@ export function useTeammateFinder() {
           name: searchValue,
           jobFieldId: selectedJobFieldId,
           techStackNames: selectedSkills,
+          sort,
           page: 0,
           size: TEAMMATE_LIST_CONFIG.initialVisibleCount,
         });
@@ -124,7 +126,7 @@ export function useTeammateFinder() {
     return () => {
       active = false;
     };
-  }, [retryKey, searchValue, selectedJobFieldId, selectedSkills]);
+  }, [retryKey, searchValue, selectedJobFieldId, selectedSkills, sort]);
 
   const handleLoadMore = useCallback(() => {
     if (!hasMore || isLoadingMore || isInitialLoading) {
@@ -140,6 +142,7 @@ export function useTeammateFinder() {
           name: searchValue,
           jobFieldId: selectedJobFieldId,
           techStackNames: selectedSkills,
+          sort,
           page: currentPage + 1,
           size: TEAMMATE_LIST_CONFIG.initialVisibleCount,
         });
@@ -164,6 +167,7 @@ export function useTeammateFinder() {
     searchValue,
     selectedJobFieldId,
     selectedSkills,
+    sort,
   ]);
 
   const loadMoreRef = useInfiniteScroll({
@@ -181,6 +185,7 @@ export function useTeammateFinder() {
     searchValue,
     selectedRole,
     selectedSkills,
+    sort,
     availableSkills,
     visibleTeammates: teammates,
     filteredTeammatesCount: totalCount,
@@ -193,6 +198,7 @@ export function useTeammateFinder() {
     setSearchValue,
     setSelectedRole,
     setSelectedSkills,
+    setSort,
   };
 }
 

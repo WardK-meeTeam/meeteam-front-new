@@ -35,9 +35,12 @@ export interface FetchTeammatesParams {
   name?: string;
   jobFieldId?: number;
   techStackNames?: string[];
+  sort?: TeammateSort;
   page?: number;
   size?: number;
 }
+
+export type TeammateSort = 'projectCount' | 'name';
 
 export interface FetchTeammatesResult {
   teammates: Teammate[];
@@ -50,6 +53,7 @@ export async function fetchTeammates({
   name = '',
   jobFieldId,
   techStackNames = [],
+  sort = 'projectCount',
   page = 0,
   size = 15,
 }: FetchTeammatesParams = {}): Promise<FetchTeammatesResult> {
@@ -70,6 +74,8 @@ export async function fetchTeammates({
   techStackNames.forEach((techStackName) => {
     params.append('techStackNames', techStackName);
   });
+
+  params.append('sort', mapTeammateSort(sort));
 
   const response = await fetch(`${API_BASE_URL}/api/v1/members/search?${params.toString()}`, {
     method: 'GET',
@@ -96,6 +102,16 @@ export async function fetchTeammates({
     page: result.number,
     last: result.last || result.empty,
   };
+}
+
+function mapTeammateSort(sort: TeammateSort) {
+  switch (sort) {
+    case 'name':
+      return 'realName,asc';
+    case 'projectCount':
+    default:
+      return 'projectCount,desc';
+  }
 }
 
 export async function fetchAllTeammates() {

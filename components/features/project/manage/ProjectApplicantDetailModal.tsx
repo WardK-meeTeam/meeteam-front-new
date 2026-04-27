@@ -5,6 +5,7 @@ import BaseModal from '@/components/shared/BaseModal';
 import BaseButton from '@/components/shared/BaseButton';
 import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import MarkdownContent from '@/components/shared/MarkdownContent';
+import SkillChip from '@/components/shared/SkillChip';
 import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectApplicant } from '@/types/project';
 
@@ -78,6 +79,26 @@ export default function ProjectApplicantDetailModal({
                 <dd className="mt-1 text-mt-text-secondary">{getGenderLabel(applicant.gender)}</dd>
               </div>
             </dl>
+
+            <div className="mt-4 border-t border-mt-border pt-4">
+              <p className="text-sm leading-5 font-bold text-mt-text-primary">기술스택</p>
+              {applicant.techStacks?.length ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {applicant.techStacks.map((techStack) => (
+                    <SkillChip
+                      key={techStack.id}
+                      label={techStack.name}
+                      variant="outline"
+                      size="md"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2 text-sm leading-5 text-mt-text-secondary">
+                  등록된 기술스택이 없습니다.
+                </p>
+              )}
+            </div>
           </div>
 
           <div className="rounded-2xl border border-mt-border bg-mt-white p-4">

@@ -13,6 +13,7 @@ import ConfirmModal from '@/components/shared/ConfirmModal';
 import { formatJobRole } from '@/components/shared/jobRoleFormat';
 import MarkdownContent from '@/components/shared/MarkdownContent';
 import ProfileAvatar from '@/components/shared/ProfileAvatar';
+import SkillChip from '@/components/shared/SkillChip';
 import SkeletonBlock from '@/components/shared/SkeletonBlock';
 import ToastMessage from '@/components/shared/ToastMessage';
 import type { ProjectApplicant } from '@/types/project';
@@ -181,6 +182,26 @@ export default function ProjectApplicationDetailPage({
                 <CalendarDays className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                 {application.appliedAt}
               </span>
+            </div>
+
+            <div className="rounded-2xl border border-mt-border bg-mt-white p-5">
+              <p className="text-sm font-bold text-mt-text-primary">내 기술스택</p>
+              {application.techStacks?.length ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {application.techStacks.map((techStack) => (
+                    <SkillChip
+                      key={techStack.id}
+                      label={techStack.name}
+                      variant="outline"
+                      size="md"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-sm leading-5 text-mt-text-secondary">
+                  프로필에 등록된 기술스택이 없습니다.
+                </p>
+              )}
             </div>
 
             <div className="rounded-2xl border border-mt-border bg-mt-white p-5">

@@ -3,7 +3,7 @@
 - Remote repository: `https://github.com/WardK-meeTeam/meeteam-backend`
 - Latest local clone used for backend code inspection in this workspace: `/tmp/meeteam-backend-latest`
 - Previous local clone noted in older sessions: `/tmp/meeteam-backend`
-- Last synced commit: `c4145a7`
+- Last synced commit: `ae8a443`
 - Last checked at: `2026-04-27`
 
 ## Latest backend sync
@@ -14,12 +14,13 @@ For this sync, `/tmp/meeteam-backend` still existed but was not usable as a Git 
 
 Latest checked commit:
 
-- `c4145a7` `refactor: OAuth2/자체로그인 제거 및 세종대 포털 전용 인증 전환`
+- `ae8a443` `feat: projectCount 정렬 필터 및 지원서 기술스택 응답 추가`
 
 Commits after the previous `a85a0d3` reference:
 
 - `2c8f425` `fix: 배포 후 미사용 Docker 이미지 자동 정리`
 - `c4145a7` `refactor: OAuth2/자체로그인 제거 및 세종대 포털 전용 인증 전환`
+- `ae8a443` `feat: projectCount 정렬 필터 및 지원서 기술스택 응답 추가`
 
 ## Frontend-impacting changes
 
@@ -55,13 +56,18 @@ Changes newly found after `a85a0d3`:
   - `GET /api/v1/main/members` response field changed from `projectExperienceCount` to `projectCount`.
   - `GET /api/v1/members/search` uses the same main-page member card response.
   - The count is based on active project memberships.
-  - Important: as of `c4145a7`, `GET /api/v1/members/search` does not support sorting by `projectCount`. Sending `sort=projectCount,desc` causes a backend Querydsl/Spring Data sort failure because `projectCount` is not a real `Member` entity property in the v1 search path.
+  - As of `ae8a443`, `GET /api/v1/members/search` supports `sort=projectCount,desc` through Querydsl subquery sorting.
+  - The v1 search controller also documents `sort=realName,asc` for name sorting.
+- Application page and detail responses now expose applicant tech stacks.
+  - `GET /api/v1/projects/{projectId}/application`
+  - `GET /api/v1/projects/{projectId}/applications/{applicationId}`
+  - Both include `techStacks: Array<{ id: number; name: string; displayOrder: number }>` ordered by `displayOrder`.
 - Project member withdrawal and leader expel now decrease the matching recruitment position `currentCount` on the backend.
   - Leader expel endpoint is unchanged:
     - `DELETE /api/v1/projects/{projectId}/members/{memberId}`
   - Member self-withdrawal still uses the existing project-member controller:
     - `POST /api/project-members/withdraw` with `{ projectId }`
-- Current backend duplicate-application validation checks only whether the same applicant has any existing application for the project. As of `c4145a7`, `REJECTED` and `CANCELLED` applications are still blocked from reapplying.
+- Current backend duplicate-application validation checks only whether the same applicant has any existing application for the project. As of `ae8a443`, `REJECTED` and `CANCELLED` applications are still blocked from reapplying.
 
 Previously reflected backend changes from the `2026-04-25` sync:
 
@@ -118,13 +124,14 @@ The latest backend also removes `projectExperienceCount` from `SejongRegisterReq
 
 Newly reflected in this pass:
 
-- Updated `BACKEND_REFERENCE.md` to latest backend commit `c4145a7`.
+- Updated `BACKEND_REFERENCE.md` to latest backend commit `ae8a443`.
 - Updated applicant cancellation helper to call `DELETE /api/v1/members/me/applications/{applicationId}`.
 - Added `CANCELLED` to frontend application status mapping.
 - Updated my-application response typing and mapping for `projectImageUrl`, `status`, and `statusDisplayName`.
 - Replaced frontend member-card usage of `projectExperienceCount` with `projectCount` for home and teammate search responses, keeping a fallback for older mocks/responses.
 - Updated teammate card copy to show participation count: `참여 프로젝트 n개`.
-- Removed teammate search sort UI and no longer sends a sort parameter, because backend v1 search cannot sort by computed `projectCount`.
+- Restored teammate search sort UI and sends `sort=projectCount,desc` or `sort=realName,asc` now that backend v1 search supports computed `projectCount` sorting.
+- Added applicant tech stack rendering to the application form and application-detail views using existing tech stack chip/icon components.
 - Removed project experience count from signup/onboarding form values, validation, UI, and register payloads.
 - Added `leaveProject` helper for `POST /api/project-members/withdraw`.
 - Added a frontend application policy helper documenting the current backend behavior: all existing application statuses block reapplication.

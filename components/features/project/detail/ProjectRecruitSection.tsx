@@ -84,7 +84,7 @@ export default function ProjectRecruitSection({
           }
 
           event.preventDefault();
-          showToast({ message: '자신의 프로젝트에는 지원할 수 없습니다.' });
+          showToast({ message: '이미 참여중인 프로젝트에는 지원할 수 없습니다.' });
         };
 
         return (

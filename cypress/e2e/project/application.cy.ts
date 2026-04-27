@@ -104,6 +104,18 @@ const APPLICATION_PAGE = {
     age: 28,
     gender: 'MALE',
     email: 'hello@example.com',
+    techStacks: [
+      {
+        id: 1,
+        name: 'React',
+        displayOrder: 1,
+      },
+      {
+        id: 2,
+        name: 'TypeScript',
+        displayOrder: 2,
+      },
+    ],
     profileSummary: 'Frontend Dev',
   },
   recruitments: [
@@ -180,6 +192,9 @@ describe('프로젝트 지원 흐름', () => {
 
     cy.wait('@jobOptionsRequest');
     cy.contains('프론트엔드').should('be.visible');
+    cy.get('[data-cy="project-application-my-skills"]')
+      .should('contain', 'React')
+      .and('contain', 'TypeScript');
 
     cy.get('textarea').type('프론트엔드 구현 경험을 바탕으로 프로젝트에 기여하고 싶습니다.');
     cy.get('[data-cy="project-application-submit"]').click();

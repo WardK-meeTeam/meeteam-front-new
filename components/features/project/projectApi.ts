@@ -167,8 +167,15 @@ type BackendApplicationDetailResponse = {
     jobFieldId: number;
     jobFieldName: string;
   };
+  techStacks?: BackendApplicantTechStackResponse[];
   motivation: string;
   status: BackendApplicationStatus;
+};
+
+type BackendApplicantTechStackResponse = {
+  id: number;
+  name: string;
+  displayOrder: number;
 };
 
 type BackendApplicationDecisionResponse = {
@@ -227,6 +234,7 @@ type BackendApplicationPageResponse = {
     age: number | null;
     gender: string | null;
     email: string;
+    techStacks?: BackendApplicantTechStackResponse[];
     profileSummary: string | null;
   };
   recruitments: Array<{
@@ -311,6 +319,7 @@ export type ProjectApplicationPage = {
     age: number | null;
     gender: string | null;
     email: string;
+    techStacks: BackendApplicantTechStackResponse[];
     profileSummary: string | null;
   };
   recruitments: Array<{
@@ -443,7 +452,12 @@ function mapApplicationDetail(application: BackendApplicationDetailResponse): Pr
     status: mapApplicationStatus(application.status),
     age: application.age,
     gender: application.gender,
+    techStacks: mapApplicantTechStacks(application.techStacks),
   };
+}
+
+function mapApplicantTechStacks(techStacks: BackendApplicantTechStackResponse[] = []) {
+  return [...techStacks].sort((left, right) => left.displayOrder - right.displayOrder);
 }
 
 function mapCategoryIdToApiValue(categoryId: ProjectFormValues['categoryId']) {
@@ -770,6 +784,7 @@ export async function fetchProjectApplicationPage(
     applicant: {
       ...page.applicant,
       profileImageUrl: page.applicant.profileImageUrl ?? '',
+      techStacks: mapApplicantTechStacks(page.applicant.techStacks),
     },
     recruitments: page.recruitments,
   };

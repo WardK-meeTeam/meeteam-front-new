@@ -10,6 +10,7 @@ export default function TeammatesPage() {
     searchValue,
     selectedRole,
     selectedSkills,
+    sort,
     availableSkills,
     visibleTeammates,
     filteredTeammatesCount,
@@ -22,6 +23,7 @@ export default function TeammatesPage() {
     setSearchValue,
     setSelectedRole,
     setSelectedSkills,
+    setSort,
   } = useTeammateFinder();
 
   return (
@@ -43,12 +45,14 @@ export default function TeammatesPage() {
       <TeammateListSection
         teammates={visibleTeammates}
         totalCount={filteredTeammatesCount}
+        sort={sort}
         isInitialLoading={isInitialLoading}
         isLoadingMore={isLoadingMore}
         hasMore={hasMore}
         errorMessage={errorMessage}
         loadMoreRef={loadMoreRef}
         onRetry={retrySearch}
+        onSortChange={setSort}
       />
     </section>
   );

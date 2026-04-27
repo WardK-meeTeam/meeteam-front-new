@@ -287,6 +287,7 @@ function installTeammateSearchIntercept() {
     const name = (url.searchParams.get('name') ?? '').toLowerCase();
     const jobFieldId = url.searchParams.get('jobFieldId');
     const techStackNames = url.searchParams.getAll('techStackNames');
+    const sort = url.searchParams.get('sort');
     const page = Number(url.searchParams.get('page') ?? '0');
     const size = Number(url.searchParams.get('size') ?? '15');
 
@@ -308,6 +309,12 @@ function installTeammateSearchIntercept() {
           teammate.techStacks.some((techStack) => techStack.name === skillName),
         ),
       );
+    }
+
+    if (sort === 'realName,asc') {
+      teammates.sort((left, right) => left.name.localeCompare(right.name, 'ko'));
+    } else {
+      teammates.sort((left, right) => right.projectCount - left.projectCount);
     }
 
     const start = page * size;
@@ -378,6 +385,13 @@ describe('팀원 찾기 흐름', () => {
 
     getTeammateCards().should('have.length', 24);
     cy.get('[data-cy="teammate-load-more-trigger"]').should('not.exist');
+  });
+
+  it('정렬 기준을 이름순으로 변경하면 이름 오름차순으로 다시 불러온다', () => {
+    cy.get('[data-cy="teammate-sort-select"]').select('name');
+    cy.wait('@teammateSearchRequest').its('request.url').should('include', 'sort=realName%2Casc');
+
+    getTeammateNames().first().should('have.text', '강예나');
   });
 
   it('조건에 맞는 팀원이 없으면 빈 상태를 보여준다', () => {

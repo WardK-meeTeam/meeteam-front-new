@@ -12,9 +12,7 @@ type RedirectIfAuthenticatedProps = {
   children: ReactNode;
 };
 
-export default function RedirectIfAuthenticated({
-  children,
-}: RedirectIfAuthenticatedProps) {
+export default function RedirectIfAuthenticated({ children }: RedirectIfAuthenticatedProps) {
   const router = useRouter();
   const hydrated = useAuthHydrated();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
