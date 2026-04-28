@@ -5,6 +5,9 @@ import '../app/globals.css';
 const preview: Preview = {
   decorators: [(Story) => createElement('div', null, createElement(Story))],
   parameters: {
+    nextjs: {
+      appDirectory: true,
+    },
     controls: {
       matchers: {
         color: /(background|color)$/i,

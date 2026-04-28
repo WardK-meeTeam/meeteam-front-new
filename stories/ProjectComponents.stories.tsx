@@ -57,7 +57,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Card: Story = {
   render: () => (
-    <div className="w-full max-w-md">
+    <div className="w-96 max-w-full">
       <ProjectCard project={mockProject} />
     </div>
   ),
@@ -65,7 +65,7 @@ export const Card: Story = {
 
 export const CompactCard: Story = {
   render: () => (
-    <div className="w-full max-w-sm">
+    <div className="w-80 max-w-full">
       <ProjectCard project={mockProject} compact />
     </div>
   ),
@@ -73,7 +73,7 @@ export const CompactCard: Story = {
 
 export const CoverImage: Story = {
   render: () => (
-    <div className="w-full max-w-3xl">
+    <div className="w-screen max-w-3xl px-6">
       <ProjectCoverImage
         src="/campus-hero.jpg"
         alt="프로젝트 대표 이미지"
@@ -85,7 +85,7 @@ export const CoverImage: Story = {
 
 export const Skeleton: Story = {
   render: () => (
-    <div className="w-full max-w-md">
+    <div className="w-96 max-w-full">
       <ProjectCardSkeleton />
     </div>
   ),
