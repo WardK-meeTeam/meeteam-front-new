@@ -24,7 +24,12 @@ const config: StorybookConfig = {
         name: 'meeteam-github-login-icon-mock',
         enforce: 'pre',
         resolveId(source) {
-          if (source === '@/assets/GithubLogin.svg' || source.endsWith('/assets/GithubLogin.svg')) {
+          const [sourcePath] = source.split('?');
+
+          if (
+            sourcePath === '@/assets/GithubLogin.svg' ||
+            sourcePath.endsWith('/assets/GithubLogin.svg')
+          ) {
             return githubLoginIconMock;
           }
 
