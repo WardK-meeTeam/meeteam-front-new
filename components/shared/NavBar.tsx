@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell } from 'lucide-react';
+import { Bell, Headset } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AuthLink from '@/components/features/auth/AuthLink';
 import { useNotificationStore } from '@/components/features/notification/store';
@@ -17,6 +17,9 @@ const navItems = [
   { href: '/projects', label: '프로젝트 찾기' },
   { href: '/projects/create', label: '프로젝트 등록하기', authRequired: true },
 ];
+
+const FEEDBACK_FORM_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSfE0igqGaKFJ-ASXojrFln2OmoQH_v8n9-Y5Mx5Kt2FJVCtOg/viewform?usp=dialog';
 
 export function NavBar() {
   const pathname = usePathname();
@@ -102,21 +105,33 @@ export function NavBar() {
         <div className="absolute right-4 top-3 sm:right-6 md:static">
           {isSessionRestoring ? null : isAuthenticated ? (
             <div className="flex items-center gap-2 sm:gap-4">
-              <Link href="/notifications">
-                <button
-                  type="button"
-                  className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-mt-text-secondary transition-colors hover:bg-mt-border hover:text-mt-primary"
-                  aria-label="알림"
+              <div className="flex items-center gap-1">
+                <a
+                  href={FEEDBACK_FORM_URL}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-full text-mt-text-secondary transition-colors hover:bg-mt-border hover:text-mt-primary"
+                  aria-label="고객센터 설문"
+                  title="고객센터 설문"
                 >
-                  <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
-                  {unreadCount > 0 ? (
-                    <span
-                      className="absolute right-2.5 top-2.5 flex min-h-2 min-w-2 items-center justify-center rounded-full border-2 border-mt-white bg-mt-hero-blue"
-                      aria-hidden
-                    />
-                  ) : null}
-                </button>
-              </Link>
+                  <Headset className="h-5 w-5" aria-hidden strokeWidth={1.8} />
+                </a>
+                <Link href="/notifications">
+                  <button
+                    type="button"
+                    className="relative inline-flex h-10 w-10 items-center justify-center rounded-full text-mt-text-secondary transition-colors hover:bg-mt-border hover:text-mt-primary"
+                    aria-label="알림"
+                  >
+                    <Bell className="h-5 w-5" aria-hidden strokeWidth={1.8} />
+                    {unreadCount > 0 ? (
+                      <span
+                        className="absolute right-2.5 top-2.5 flex min-h-2 min-w-2 items-center justify-center rounded-full border-2 border-mt-white bg-mt-hero-blue"
+                        aria-hidden
+                      />
+                    ) : null}
+                  </button>
+                </Link>
+              </div>
               <span className="hidden h-6 w-px bg-mt-border sm:block" aria-hidden />
               <ProfileMenu />
             </div>

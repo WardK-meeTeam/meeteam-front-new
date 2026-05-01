@@ -38,7 +38,7 @@ export default function ProfileAvatar({
       {resolvedImageUrl ? (
         <img
           alt={name}
-          className={`h-full w-full scale-125 object-cover ${imageClassName}`}
+          className={`h-full w-full object-cover ${imageClassName}`}
           src={resolvedImageUrl}
           onError={() => setHasImageError(true)}
         />
