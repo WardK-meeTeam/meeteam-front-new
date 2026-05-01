@@ -124,7 +124,7 @@ export async function updateMyProfile(payload: UpdateMemberProfilePayload) {
           jobPositionIds: payload.jobPositionIds,
           techStacks: payload.techStacks,
           isParticipating: payload.isParticipating,
-          introduction: payload.introduction?.trim() || '',
+          introduction: payload.introduction?.trim() ? payload.introduction : '',
           githubUrl: normalizeUrl(payload.githubUrl ?? ''),
           blogUrl: normalizeUrl(payload.blogUrl ?? ''),
         }),

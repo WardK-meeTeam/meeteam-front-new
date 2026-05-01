@@ -45,7 +45,7 @@ function parseMarkdownBlocks(value: string) {
       return;
     }
 
-    blocks.push({ type: 'paragraph', content: paragraph.join(' ') });
+    blocks.push({ type: 'paragraph', content: paragraph.join('\n') });
     paragraph = [];
   };
 
@@ -124,7 +124,7 @@ function parseMarkdownBlocks(value: string) {
     }
 
     flushList();
-    paragraph.push(trimmed);
+    paragraph.push(line);
   }
 
   if (inCode && codeLines.length > 0) {
@@ -186,7 +186,7 @@ function renderBlock(block: Block, index: number) {
     case 'paragraph':
     default:
       return (
-        <p key={index} className="whitespace-pre-wrap text-mt-text-nav">
+        <p key={index} className="whitespace-break-spaces text-mt-text-nav">
           {renderInlineMarkdown(block.content)}
         </p>
       );

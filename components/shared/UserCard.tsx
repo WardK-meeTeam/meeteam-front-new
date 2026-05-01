@@ -50,7 +50,7 @@ export default function UserCard({
           shape="rounded"
           textClassName="text-xl"
           className="shadow-sm"
-          imageClassName="transition-transform duration-400 group-hover:scale-135"
+          imageClassName="transition-transform duration-400 group-hover:scale-108"
         />
 
         <span className="absolute top-0 right-0 rounded-lg bg-mt-badge-bg px-2 py-1 text-xs font-medium text-mt-primary">
