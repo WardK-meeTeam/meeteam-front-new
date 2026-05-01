@@ -199,16 +199,16 @@ function ProfileContactLink({ item }: { item: ProfileContactItem }) {
   const Icon = item.icon;
   const hasLink = item.href !== '#';
   const className =
-    'flex min-w-0 items-center justify-between gap-3 text-sm leading-5 font-medium text-mt-text-nav';
+    'flex min-w-0 items-center gap-4 text-sm leading-5 font-medium text-mt-text-nav';
   const content = (
     <>
-      <span className="flex min-w-0 items-center gap-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-mt-logo-blue/30 bg-mt-badge-bg text-mt-primary">
-          <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-        </span>
-        <span className="shrink-0 text-mt-text-secondary">{item.label}</span>
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-mt-logo-blue/30 bg-mt-badge-bg text-mt-primary">
+        <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
       </span>
-      <span className="min-w-0 truncate text-right text-mt-text-primary">{item.value}</span>
+      <span className="flex min-w-0 flex-1 items-center gap-3">
+        <span className="w-16 shrink-0 text-mt-text-secondary">{item.label}</span>
+        <span className="min-w-0 flex-1 truncate text-mt-text-primary">{item.value}</span>
+      </span>
     </>
   );
 
