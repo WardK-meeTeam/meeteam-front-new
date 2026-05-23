@@ -110,7 +110,10 @@ export default function HomeProjectSection() {
   }, [selectedCategory]);
 
   const handleSelectCategory = (category: HomeProjectCategory) => {
-    hasLoadedRef.current = false;
+    if (category === selectedCategory) {
+      return;
+    }
+
     setSelectedCategory(category);
     setVisibleStart(0);
     setLoadedPage(0);
