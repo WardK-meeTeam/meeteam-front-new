@@ -82,7 +82,7 @@ export function ProjectCard({ project, compact = false }: ProjectCardProps) {
           <div className="shrink-0 transition-transform duration-500 ease-out group-hover:-translate-y-1">
             <h3
               data-cy="project-card-title"
-              className={`${titleClass} line-clamp-2 leading-tight font-bold text-mt-white drop-shadow-md`}
+              className={`${titleClass} line-clamp-1 leading-tight font-bold text-mt-white drop-shadow-md`}
             >
               {project.title}
             </h3>
