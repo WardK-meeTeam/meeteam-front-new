@@ -30,7 +30,7 @@ export default function IntroductionCard({
             className="block min-h-56 resize-none rounded-none border-0 px-5 py-5 text-base leading-7 focus:ring-0"
           />
           <div className="flex items-center justify-between border-t border-mt-border bg-mt-bg-soft px-4 py-3 text-sm leading-5 text-mt-text-secondary">
-            <p>프로필에 보여질 짧은 소개를 작성해 주세요.</p>
+            <p>프로필에 나타낼 짧은 소개를 작성해 주세요.</p>
             <span className="font-semibold text-mt-text-nav">{characterCount} / 500자</span>
           </div>
         </div>
@@ -53,9 +53,7 @@ export default function IntroductionCard({
   return (
     <section className="space-y-3">
       <h2 className="text-xl leading-7 font-bold text-mt-text-primary">자기소개</h2>
-      <p className="text-sm leading-6 text-mt-text-secondary">
-        아직 작성된 자기소개가 없어요.
-      </p>
+      <p className="text-sm leading-6 text-mt-text-secondary">아직 작성된 자기소개가 없어요.</p>
     </section>
   );
 }
