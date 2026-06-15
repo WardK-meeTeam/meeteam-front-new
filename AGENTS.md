@@ -96,5 +96,5 @@
 
 ## Validation Rules
 
-- After completing any implementation work, run `npm run build` to verify there are no build errors.
-- Treat the task as incomplete until the build passes, unless the user explicitly asks to skip build verification.
+- Do not run `npm run build` by default; the user will run the project build verification directly.
+- When implementation work is complete, summarize what changed and mention any lighter checks that were run.

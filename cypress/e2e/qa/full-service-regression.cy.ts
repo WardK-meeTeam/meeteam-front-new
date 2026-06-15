@@ -24,13 +24,6 @@ const MEMBER_PROFILE = {
   projectExperienceCount: 3,
   representativePosition: '웹 프론트엔드',
   representativePositionEn: 'Frontend Dev',
-  groupedSkills: [
-    {
-      jobFieldName: '프론트엔드',
-      jobPositionName: '웹 프론트엔드',
-      techStacks: ['React', 'TypeScript'],
-    },
-  ],
   skills: ['React', 'TypeScript'],
   isParticipating: true,
   projectCount: 2,
@@ -934,13 +927,7 @@ describe('QA full-service regression and TDD coverage', () => {
           introduce: '공개 프로필 소개입니다.',
           participatedProjectCount: 1,
           participatedProjects: [],
-          groupedSkills: [
-            {
-              jobFieldName: '프론트엔드',
-              jobPositionName: '웹 프론트엔드',
-              techStacks: ['React'],
-            },
-          ],
+          skills: ['React'],
         },
       },
     }).as('memberProfileRequest');

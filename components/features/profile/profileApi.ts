@@ -6,12 +6,6 @@ import { extractApiData, normalizeUrl } from '@/components/features/auth/signupT
 
 export type ProfileGender = 'MALE' | 'FEMALE';
 
-export interface GroupedSkill {
-  jobFieldName: string;
-  jobPositionName: string;
-  techStacks: string[];
-}
-
 export interface ProfileProjectCard {
   projectId: number;
   projectName: string;
@@ -34,8 +28,7 @@ export interface MemberProfileResponse {
   blogUrl: string | null;
   representativePosition: string | null;
   representativePositionEn?: string | null;
-  groupedSkills: GroupedSkill[];
-  skills?: string[];
+  skills: string[];
   isParticipating: boolean;
   projectCount?: number;
   introduce: string | null;
@@ -59,7 +52,7 @@ interface MemberDetailResponse {
   introduce: string | null;
   participatedProjectCount: number;
   participatedProjects: ProfileProjectCard[];
-  groupedSkills: GroupedSkill[];
+  skills: string[];
 }
 
 export interface UpdateMemberProfilePayload {
@@ -176,8 +169,7 @@ function mapMemberDetailToProfile(detail: MemberDetailResponse): MemberProfileRe
     blogUrl: detail.blogUrl,
     representativePosition: detail.representativePosition,
     representativePositionEn: detail.representativePosition,
-    groupedSkills: detail.groupedSkills,
-    skills: detail.groupedSkills.flatMap((group) => group.techStacks),
+    skills: detail.skills,
     isParticipating: detail.isParticipating,
     projectCount: detail.participatedProjectCount,
     introduce: detail.introduce,
