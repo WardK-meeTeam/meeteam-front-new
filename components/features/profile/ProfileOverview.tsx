@@ -350,18 +350,21 @@ export default function ProfileOverview({
     href: `mailto:${profileForm?.email ?? ''}`,
   };
 
+  const githubUrl = profileForm?.github.trim() ?? '';
+  const blogUrl = profileForm?.blog.trim() ?? '';
+
   const socialContacts = [
     {
       label: 'GitHub',
       icon: Github,
-      value: profileForm?.github || '등록 안 됨',
-      href: profileForm?.github ? ensureUrl(profileForm.github) : '#',
+      value: githubUrl,
+      href: githubUrl ? ensureUrl(githubUrl) : '',
     },
     {
       label: '블로그',
       icon: Link2,
-      value: profileForm?.blog || '등록 안 됨',
-      href: profileForm?.blog ? ensureUrl(profileForm.blog) : '#',
+      value: blogUrl,
+      href: blogUrl ? ensureUrl(blogUrl) : '',
     },
   ];
 
