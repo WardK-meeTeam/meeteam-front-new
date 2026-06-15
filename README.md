@@ -33,11 +33,11 @@ API 요청 주소는 `NEXT_PUBLIC_API_BASE_URL`로 결정됩니다.
 - 테스트 서버: `https://test.meeteam.alom-sejong.com`
 - 로컬 기본값: `http://localhost:8080`
 
-`main`, `test` 브랜치에서는 브랜치 기준 API 주소가 우선 적용됩니다. 그 외 브랜치에서는 배포 플랫폼의 `NEXT_PUBLIC_API_BASE_URL` 값이 있으면 해당 값을 사용하고, 없으면 빌드 모드에 따라 기본값을 선택합니다.
+브랜치 또는 배포 환경 이름이 감지되면 브랜치 기준 API 주소가 우선 적용됩니다. 배포 대상이 `main`이면 운영 서버를 사용하고, `main`이 아니면 테스트 서버를 사용합니다. 브랜치/배포 환경 이름을 감지할 수 없을 때만 `NEXT_PUBLIC_API_BASE_URL` 값을 사용하고, 그 값도 없으면 빌드 모드에 따라 기본값을 선택합니다.
 
-- `test` 브랜치 또는 `NEXT_PUBLIC_DEPLOY_ENV=test`: 테스트 서버 사용
 - `main` 브랜치 또는 `NEXT_PUBLIC_DEPLOY_ENV=main`: 운영 서버 사용
-- 그 외 production build: 운영 서버 사용
+- `main`이 아닌 모든 브랜치 또는 배포 환경: 테스트 서버 사용
+- 브랜치/배포 환경 미감지 production build: 운영 서버 사용
 - development build: 로컬 서버 사용
 
 ## 기본 폴더 구조

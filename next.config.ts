@@ -1,31 +1,55 @@
 import type { NextConfig } from 'next';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 
-const LOCAL_API_BASE_URL = 'http://localhost:8080';
-const PRODUCTION_API_BASE_URL = 'https://api.meeteam.alom-sejong.com';
-const TEST_API_BASE_URL = 'https://test.meeteam.alom-sejong.com';
+const PRODUCTION_DEPLOYMENT_TARGET = 'main';
+
+const API_BASE_URL = {
+  local: 'http://localhost:8080',
+  production: 'https://api.meeteam.alom-sejong.com',
+  test: 'https://test.meeteam.alom-sejong.com',
+} as const;
+
+const DEPLOYMENT_TARGET_ENV_KEYS = [
+  'NEXT_PUBLIC_DEPLOY_ENV',
+  'VERCEL_GIT_COMMIT_REF',
+  'GITHUB_REF_NAME',
+] as const;
+
+function getEnvValue(key: (typeof DEPLOYMENT_TARGET_ENV_KEYS)[number]) {
+  const value = process.env[key]?.trim();
+
+  return value || undefined;
+}
 
 function getCurrentGitBranch() {
   try {
-    return execSync('git branch --show-current', { encoding: 'utf8' }).trim();
+    const branch = execFileSync('git', ['branch', '--show-current'], { encoding: 'utf8' }).trim();
+
+    return branch || undefined;
   } catch {
     return undefined;
   }
 }
 
-function resolveApiBaseUrl() {
-  const deploymentTarget =
-    process.env.NEXT_PUBLIC_DEPLOY_ENV ??
-    process.env.VERCEL_GIT_COMMIT_REF ??
-    process.env.GITHUB_REF_NAME ??
-    getCurrentGitBranch();
+function getDeploymentTarget() {
+  for (const key of DEPLOYMENT_TARGET_ENV_KEYS) {
+    const value = getEnvValue(key);
 
-  if (deploymentTarget === 'test') {
-    return TEST_API_BASE_URL;
+    if (value) {
+      return value;
+    }
   }
 
-  if (deploymentTarget === 'main') {
-    return PRODUCTION_API_BASE_URL;
+  return getCurrentGitBranch();
+}
+
+function resolveApiBaseUrl() {
+  const deploymentTarget = getDeploymentTarget();
+
+  if (deploymentTarget) {
+    return deploymentTarget === PRODUCTION_DEPLOYMENT_TARGET
+      ? API_BASE_URL.production
+      : API_BASE_URL.test;
   }
 
   if (process.env.NEXT_PUBLIC_API_BASE_URL) {
@@ -33,10 +57,10 @@ function resolveApiBaseUrl() {
   }
 
   if (process.env.NODE_ENV === 'production') {
-    return PRODUCTION_API_BASE_URL;
+    return API_BASE_URL.production;
   }
 
-  return LOCAL_API_BASE_URL;
+  return API_BASE_URL.local;
 }
 
 const nextConfig: NextConfig = {
