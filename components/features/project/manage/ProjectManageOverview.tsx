@@ -8,6 +8,7 @@ import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequired
 import {
   deleteProject,
   expelProjectMember,
+  fetchProjectDetail,
   fetchProjectTeamManagement,
   type ProjectTeamManagement,
 } from '@/components/features/project/projectApi';
@@ -30,6 +31,7 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
   const handleAuthRequired = useAuthRequiredModal();
   const showToast = useToastStore((state) => state.showToast);
   const [teamManagement, setTeamManagement] = useState<ProjectTeamManagement | null>(null);
+  const [projectTitle, setProjectTitle] = useState('');
   const [selectedMember, setSelectedMember] = useState<ProjectMember | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
@@ -43,8 +45,12 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
       setIsLoading(true);
       setErrorMessage(null);
 
-      const nextTeamManagement = await fetchProjectTeamManagement(projectId);
+      const [project, nextTeamManagement] = await Promise.all([
+        fetchProjectDetail(projectId),
+        fetchProjectTeamManagement(projectId),
+      ]);
 
+      setProjectTitle(project.title);
       setTeamManagement(nextTeamManagement);
     } catch (error) {
       if (handleAuthRequired(error, { redirectPath: `/projects/${projectId}/manage` })) {
@@ -69,12 +75,16 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
         setIsLoading(true);
         setErrorMessage(null);
 
-        const nextTeamManagement = await fetchProjectTeamManagement(projectId);
+        const [project, nextTeamManagement] = await Promise.all([
+          fetchProjectDetail(projectId),
+          fetchProjectTeamManagement(projectId),
+        ]);
 
         if (!active) {
           return;
         }
 
+        setProjectTitle(project.title);
         setTeamManagement(nextTeamManagement);
       } catch (error) {
         if (!active) {
@@ -127,8 +137,11 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
     }
   };
 
+  const isDeleteConfirmationMatched =
+    projectTitle.length > 0 && deleteConfirmation === projectTitle;
+
   const handleConfirmDeleteProject = async () => {
-    if (isDeleting || !deleteConfirmation.trim()) {
+    if (isDeleting || !isDeleteConfirmationMatched) {
       return;
     }
 
@@ -333,11 +346,11 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
       <ConfirmModal
         isOpen={isDeleteModalOpen}
         title="프로젝트를 삭제할까요?"
-        description="삭제 후에는 프로젝트 관리 페이지로 돌아올 수 없습니다. 아래 입력칸에 프로젝트 이름을 입력하면 삭제 버튼이 활성화됩니다."
+        description="삭제 후에는 프로젝트 관리 페이지로 돌아올 수 없습니다. 아래 입력칸에 프로젝트 이름을 정확히 입력하면 삭제 버튼이 활성화됩니다."
         closeLabel="취소"
         confirmLabel={isDeleting ? '삭제 중' : '삭제하기'}
         isSubmitting={isDeleting}
-        isConfirmDisabled={!deleteConfirmation.trim()}
+        isConfirmDisabled={!isDeleteConfirmationMatched}
         confirmButtonDataCy="project-delete-confirm-button"
         onClose={closeDeleteModal}
         onConfirm={handleConfirmDeleteProject}
@@ -353,6 +366,13 @@ export default function ProjectManageOverview({ projectId }: ProjectManageOvervi
             placeholder="프로젝트 이름 입력"
             data-cy="project-delete-confirm-input"
           />
+          <p
+            className={`mt-2 min-h-4 text-xs leading-4 font-medium text-mt-danger ${
+              deleteConfirmation.length > 0 && !isDeleteConfirmationMatched ? '' : 'invisible'
+            }`}
+          >
+            프로젝트 이름과 정확히 일치해야 합니다.
+          </p>
         </label>
       </ConfirmModal>
     </ProjectManageShell>
