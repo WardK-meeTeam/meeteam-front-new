@@ -207,7 +207,9 @@ describe('프로필 흐름', () => {
 
     cy.contains('홍길동').should('be.visible');
     cy.contains('Frontend Dev').should('be.visible');
-    cy.contains('활동 및 링크').should('be.visible');
+    cy.contains('a[href="https://github.com/meeteam"]', 'GitHub').should('be.visible');
+    cy.contains('a[href="https://blog.example.com"]', '블로그').should('be.visible');
+    cy.contains('기술 스택').should('be.visible');
     cy.contains('안녕하세요. 프론트엔드 개발자입니다.').should('be.visible');
     cy.get('[data-cy="profile-joined-project"]').should('have.attr', 'href', '/projects/301');
     cy.contains('meeTeam 프론트 개편').should('be.visible');

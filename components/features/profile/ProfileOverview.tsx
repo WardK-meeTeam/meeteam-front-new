@@ -1,18 +1,15 @@
 'use client';
 
-import { Github, Link2, Mail } from 'lucide-react';
+import { Github, Link2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import AuthRequiredFallback from '@/components/features/auth/AuthRequiredFallback';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
-import BasicInfoCard from '@/components/features/profile/BasicInfoCard';
 import IntroductionCard from '@/components/features/profile/IntroductionCard';
 import JoinedProjectCard from '@/components/features/profile/JoinedProjectCard';
-import ParticipationStatusCard from '@/components/features/profile/ParticipationStatusCard';
-import ProfileHeader from '@/components/features/profile/ProfileHeader';
 import ProfileOverviewSkeleton from '@/components/features/profile/ProfileOverviewSkeleton';
-import SkillsCard from '@/components/features/profile/SkillsCard';
+import ProfileSidebar from '@/components/features/profile/ProfileSidebar';
 import ToastMessage from '@/components/shared/ToastMessage';
 import {
   fetchMemberProfile,
@@ -334,22 +331,6 @@ export default function ProfileOverview({
     }
   }
 
-  const profileInfoItems = profileForm
-    ? [
-        {
-          label: '참여 중인 프로젝트',
-          value: `${profile?.projectCards.length ?? 0}개`,
-        },
-      ]
-    : [];
-
-  const emailContact = {
-    label: '이메일',
-    icon: Mail,
-    value: profileForm?.email ?? '-',
-    href: `mailto:${profileForm?.email ?? ''}`,
-  };
-
   const githubUrl = profileForm?.github.trim() ?? '';
   const blogUrl = profileForm?.blog.trim() ?? '';
 
@@ -410,58 +391,37 @@ export default function ProfileOverview({
     <section className="bg-mt-white px-4 py-6 sm:px-6 sm:py-8">
       <ToastMessage message={errorMessage} />
 
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        <ProfileHeader
+      <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <ProfileSidebar
           name={profileForm.name}
           role={roleLabel}
           email={profileForm.email}
           profileImageUrl={imagePreviewUrl ?? profileForm.profileImageUrl}
           isParticipating={profileForm.isParticipating}
-          projectCount={joinedProjects.length}
           skills={editableSkills.length > 0 ? editableSkills : profile.skills}
+          socialContacts={socialContacts}
           actionLabel={currentActionLabel}
           isEditing={isEditing}
           onAction={canEdit ? handleAction : undefined}
-          onCancel={isEditing ? handleCancelEdit : undefined}
           onImageChange={handleImageChange}
           actionDisabled={isSaving}
+          onToggleParticipation={handleToggleParticipation}
+          categoryOptions={categoryOptions}
+          roleOptions={roleOptions}
+          formData={profileForm}
+          onFieldChange={handleFieldChange}
+          skillGroups={isEditing ? editableSkillGroups : viewSkillGroups}
+          availableSkills={availableSkills}
+          onSkillsChange={(_groupIndex, nextSkills) => setEditableSkills(nextSkills)}
         />
 
-        <div className="grid gap-6 lg:grid-cols-[309px_minmax(0,1fr)]">
-          <div className="flex flex-col gap-6">
-            {canEdit && isEditing ? (
-              <ParticipationStatusCard
-                editable
-                isParticipating={profileForm.isParticipating}
-                onToggle={handleToggleParticipation}
-              />
-            ) : null}
-            <BasicInfoCard
-              editable={isEditing}
-              infoItems={profileInfoItems}
-              emailContact={emailContact}
-              socialContacts={socialContacts}
-              categoryOptions={categoryOptions}
-              roleOptions={roleOptions}
-              formData={profileForm}
-              onFieldChange={handleFieldChange}
-            />
-            <SkillsCard
-              editable={isEditing}
-              skillGroups={isEditing ? editableSkillGroups : viewSkillGroups}
-              availableSkills={availableSkills}
-              onSkillsChange={(_groupIndex, nextSkills) => setEditableSkills(nextSkills)}
-            />
-          </div>
-
-          <div className="flex flex-col gap-8">
-            <IntroductionCard
-              editable={isEditing}
-              value={profileForm.introduction}
-              onChange={(value) => handleFieldChange('introduction', value)}
-            />
-            <JoinedProjectCard projects={joinedProjects} disabled={isEditing} />
-          </div>
+        <div className="flex min-w-0 flex-col gap-8">
+          <IntroductionCard
+            editable={isEditing}
+            value={profileForm.introduction}
+            onChange={(value) => handleFieldChange('introduction', value)}
+          />
+          <JoinedProjectCard projects={joinedProjects} disabled={isEditing} />
         </div>
 
         {isEditing ? (
