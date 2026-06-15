@@ -40,7 +40,6 @@ export default function Page() {
 
           <div className="relative flex min-h-52 items-center justify-center hero-fade-up hero-delay-2">
             <div className="absolute right-8 top-3 h-52 w-52 rounded-full bg-mt-bg-soft md:h-72 md:w-72" />
-            <div className="absolute bottom-4 right-14 h-10 w-40 rounded-full bg-mt-shadow-blue/70 blur-xl" />
             <div className="relative hero-character-float">
               <Image
                 src="/brand/meeteam_character_hat.png"
