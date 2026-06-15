@@ -21,3 +21,8 @@
 - Use `lucide-react` for all icons by default.
 - Do not add or use custom SVG icon files or inline `<svg>` icons unless explicitly requested.
 - Keep icon stroke and size consistent with adjacent UI elements (for example: `h-4 w-4`, `strokeWidth={1.8}` or `2`).
+
+## Validation Rules
+
+- Do not run `npm run build` by default; the user will run the project build verification directly.
+- When implementation work is complete, summarize what changed and mention any lighter checks that were run.

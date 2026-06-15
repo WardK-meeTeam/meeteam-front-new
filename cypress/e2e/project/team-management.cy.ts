@@ -23,7 +23,6 @@ const MEMBER_PROFILE = {
   projectExperienceCount: 3,
   representativePosition: 'PM',
   representativePositionEn: 'PM',
-  groupedSkills: [],
   skills: ['Notion'],
   isParticipating: true,
   projectCount: 2,

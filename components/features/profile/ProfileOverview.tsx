@@ -23,7 +23,7 @@ import {
   updateMyProfile,
 } from '@/components/features/profile/profileApi';
 import { useAuthStore } from '@/stores/useAuthStore';
-import type { JobFieldOption } from '@/types/auth';
+import type { JobFieldOption, JobPositionOption } from '@/types/auth';
 
 interface ProfileOverviewProps {
   memberId?: number;
@@ -62,7 +62,7 @@ export default function ProfileOverview({
   const [jobFields, setJobFields] = useState<JobFieldOption[]>([]);
   const [profileForm, setProfileForm] = useState<ProfileFormState | null>(null);
   const [viewSkillGroups, setViewSkillGroups] = useState<
-    Array<{ category: string; role: string; skills: string[] }>
+    Array<{ category?: string; role?: string; skills: string[] }>
   >([]);
   const [editableSkills, setEditableSkills] = useState<string[]>([]);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -174,17 +174,12 @@ export default function ProfileOverview({
   );
 
   function applyProfile(nextProfile: MemberProfileResponse, nextJobFields: JobFieldOption[]) {
+    const primaryPosition = findPrimaryPosition(nextProfile, nextJobFields);
+
     setProfile(nextProfile);
     setJobFields(nextJobFields);
-    setViewSkillGroups(
-      nextProfile.groupedSkills.map((group) => ({
-        category: group.jobFieldName,
-        role: group.jobPositionName,
-        skills: group.techStacks,
-      })),
-    );
+    setViewSkillGroups([{ skills: nextProfile.skills }]);
 
-    const primaryGroup = nextProfile.groupedSkills[0];
     const ageLabel =
       typeof nextProfile.age === 'number'
         ? `${nextProfile.age}세`
@@ -192,13 +187,13 @@ export default function ProfileOverview({
           ? `${calculateAge(nextProfile.birthDate)}세`
           : '-';
 
-    setEditableSkills(primaryGroup?.techStacks ?? []);
+    setEditableSkills(nextProfile.skills);
     setProfileForm({
       name: nextProfile.name,
       age: ageLabel,
       gender: nextProfile.gender === 'FEMALE' ? '여성' : '남성',
-      fieldCategory: primaryGroup?.jobFieldName ?? '',
-      fieldRole: primaryGroup?.jobPositionName ?? nextProfile.representativePosition ?? '',
+      fieldCategory: primaryPosition?.field.name ?? '',
+      fieldRole: primaryPosition?.position.name ?? nextProfile.representativePosition ?? '',
       email: nextProfile.email,
       github: nextProfile.githubUrl ?? '',
       blog: nextProfile.blogUrl ?? '',
@@ -420,11 +415,7 @@ export default function ProfileOverview({
           profileImageUrl={imagePreviewUrl ?? profileForm.profileImageUrl}
           isParticipating={profileForm.isParticipating}
           projectCount={joinedProjects.length}
-          skills={
-            editableSkills.length > 0
-              ? editableSkills
-              : viewSkillGroups.flatMap((group) => group.skills)
-          }
+          skills={editableSkills.length > 0 ? editableSkills : profile.skills}
           actionLabel={currentActionLabel}
           isEditing={isEditing}
           onAction={canEdit ? handleAction : undefined}
@@ -516,4 +507,32 @@ function mapGenderLabelToValue(gender: string): ProfileGender {
 
 function ensureUrl(value: string) {
   return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
+function findPrimaryPosition(
+  profile: MemberProfileResponse,
+  jobFields: JobFieldOption[],
+): { field: JobFieldOption; position: JobPositionOption } | null {
+  if (jobFields.length === 0) {
+    return null;
+  }
+
+  const positionNames = [profile.representativePosition, profile.representativePositionEn].filter(
+    (positionName): positionName is string => Boolean(positionName),
+  );
+
+  for (const field of jobFields) {
+    const position = field.positions.find((item) => positionNames.includes(item.name));
+
+    if (position) {
+      return { field, position };
+    }
+  }
+
+  const fallbackField = jobFields[0];
+  const fallbackPosition = fallbackField?.positions[0];
+
+  return fallbackField && fallbackPosition
+    ? { field: fallbackField, position: fallbackPosition }
+    : null;
 }

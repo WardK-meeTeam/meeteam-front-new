@@ -21,13 +21,6 @@ const MY_PROFILE = {
   projectExperienceCount: 3,
   representativePosition: '웹 프론트엔드',
   representativePositionEn: 'Frontend Dev',
-  groupedSkills: [
-    {
-      jobFieldName: '프론트엔드',
-      jobPositionName: '웹 프론트엔드',
-      techStacks: ['React', 'TypeScript'],
-    },
-  ],
   skills: ['React', 'TypeScript'],
   isParticipating: true,
   projectCount: 1,
@@ -52,13 +45,6 @@ const UPDATED_PROFILE = {
   ...MY_PROFILE,
   githubUrl: 'https://github.com/meeteam-updated',
   blogUrl: 'https://velog.io/@meeteam',
-  groupedSkills: [
-    {
-      jobFieldName: '백엔드',
-      jobPositionName: 'Node.js',
-      techStacks: ['Node.js', 'PostgreSQL'],
-    },
-  ],
   skills: ['Node.js', 'PostgreSQL'],
   isParticipating: false,
   introduce: 'Node.js와 PostgreSQL 기반으로 서비스를 운영해왔습니다.',
@@ -93,13 +79,7 @@ const OTHER_MEMBER_PROFILE = {
       recruitmentCount: 6,
     },
   ],
-  groupedSkills: [
-    {
-      jobFieldName: '프론트엔드',
-      jobPositionName: '웹 프론트엔드',
-      techStacks: ['Next.js', 'React Query'],
-    },
-  ],
+  skills: ['Next.js', 'React Query'],
 };
 
 const TEAMMATES = [
