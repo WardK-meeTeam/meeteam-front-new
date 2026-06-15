@@ -22,13 +22,6 @@ const MEMBER_PROFILE = {
   projectExperienceCount: 3,
   representativePosition: '웹 프론트엔드',
   representativePositionEn: 'Frontend Dev',
-  groupedSkills: [
-    {
-      jobFieldName: '프론트엔드',
-      jobPositionName: '웹 프론트엔드',
-      techStacks: ['React', 'TypeScript'],
-    },
-  ],
   skills: ['React', 'TypeScript'],
   isParticipating: true,
   projectCount: 2,

@@ -1,18 +1,15 @@
 'use client';
 
-import { Github, Link2, Mail } from 'lucide-react';
+import { Github, Link2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 import { useAuthRequiredModal } from '@/components/features/auth/useAuthRequiredModal';
 import AuthRequiredFallback from '@/components/features/auth/AuthRequiredFallback';
 import { fetchJobOptions } from '@/components/features/auth/signupApi';
-import BasicInfoCard from '@/components/features/profile/BasicInfoCard';
 import IntroductionCard from '@/components/features/profile/IntroductionCard';
 import JoinedProjectCard from '@/components/features/profile/JoinedProjectCard';
-import ParticipationStatusCard from '@/components/features/profile/ParticipationStatusCard';
-import ProfileHeader from '@/components/features/profile/ProfileHeader';
 import ProfileOverviewSkeleton from '@/components/features/profile/ProfileOverviewSkeleton';
-import SkillsCard from '@/components/features/profile/SkillsCard';
+import ProfileSidebar from '@/components/features/profile/ProfileSidebar';
 import ToastMessage from '@/components/shared/ToastMessage';
 import {
   fetchMemberProfile,
@@ -23,7 +20,7 @@ import {
   updateMyProfile,
 } from '@/components/features/profile/profileApi';
 import { useAuthStore } from '@/stores/useAuthStore';
-import type { JobFieldOption } from '@/types/auth';
+import type { JobFieldOption, JobPositionOption } from '@/types/auth';
 
 interface ProfileOverviewProps {
   memberId?: number;
@@ -62,7 +59,7 @@ export default function ProfileOverview({
   const [jobFields, setJobFields] = useState<JobFieldOption[]>([]);
   const [profileForm, setProfileForm] = useState<ProfileFormState | null>(null);
   const [viewSkillGroups, setViewSkillGroups] = useState<
-    Array<{ category: string; role: string; skills: string[] }>
+    Array<{ category?: string; role?: string; skills: string[] }>
   >([]);
   const [editableSkills, setEditableSkills] = useState<string[]>([]);
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -174,17 +171,12 @@ export default function ProfileOverview({
   );
 
   function applyProfile(nextProfile: MemberProfileResponse, nextJobFields: JobFieldOption[]) {
+    const primaryPosition = findPrimaryPosition(nextProfile, nextJobFields);
+
     setProfile(nextProfile);
     setJobFields(nextJobFields);
-    setViewSkillGroups(
-      nextProfile.groupedSkills.map((group) => ({
-        category: group.jobFieldName,
-        role: group.jobPositionName,
-        skills: group.techStacks,
-      })),
-    );
+    setViewSkillGroups([{ skills: nextProfile.skills }]);
 
-    const primaryGroup = nextProfile.groupedSkills[0];
     const ageLabel =
       typeof nextProfile.age === 'number'
         ? `${nextProfile.age}세`
@@ -192,13 +184,13 @@ export default function ProfileOverview({
           ? `${calculateAge(nextProfile.birthDate)}세`
           : '-';
 
-    setEditableSkills(primaryGroup?.techStacks ?? []);
+    setEditableSkills(nextProfile.skills);
     setProfileForm({
       name: nextProfile.name,
       age: ageLabel,
       gender: nextProfile.gender === 'FEMALE' ? '여성' : '남성',
-      fieldCategory: primaryGroup?.jobFieldName ?? '',
-      fieldRole: primaryGroup?.jobPositionName ?? nextProfile.representativePosition ?? '',
+      fieldCategory: primaryPosition?.field.name ?? '',
+      fieldRole: primaryPosition?.position.name ?? nextProfile.representativePosition ?? '',
       email: nextProfile.email,
       github: nextProfile.githubUrl ?? '',
       blog: nextProfile.blogUrl ?? '',
@@ -339,34 +331,21 @@ export default function ProfileOverview({
     }
   }
 
-  const profileInfoItems = profileForm
-    ? [
-        {
-          label: '참여 중인 프로젝트',
-          value: `${profile?.projectCards.length ?? 0}개`,
-        },
-      ]
-    : [];
-
-  const emailContact = {
-    label: '이메일',
-    icon: Mail,
-    value: profileForm?.email ?? '-',
-    href: `mailto:${profileForm?.email ?? ''}`,
-  };
+  const githubUrl = profileForm?.github.trim() ?? '';
+  const blogUrl = profileForm?.blog.trim() ?? '';
 
   const socialContacts = [
     {
       label: 'GitHub',
       icon: Github,
-      value: profileForm?.github || '등록 안 됨',
-      href: profileForm?.github ? ensureUrl(profileForm.github) : '#',
+      value: githubUrl,
+      href: githubUrl ? ensureUrl(githubUrl) : '',
     },
     {
       label: '블로그',
       icon: Link2,
-      value: profileForm?.blog || '등록 안 됨',
-      href: profileForm?.blog ? ensureUrl(profileForm.blog) : '#',
+      value: blogUrl,
+      href: blogUrl ? ensureUrl(blogUrl) : '',
     },
   ];
 
@@ -412,62 +391,37 @@ export default function ProfileOverview({
     <section className="bg-mt-white px-4 py-6 sm:px-6 sm:py-8">
       <ToastMessage message={errorMessage} />
 
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-8">
-        <ProfileHeader
+      <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <ProfileSidebar
           name={profileForm.name}
           role={roleLabel}
           email={profileForm.email}
           profileImageUrl={imagePreviewUrl ?? profileForm.profileImageUrl}
           isParticipating={profileForm.isParticipating}
-          projectCount={joinedProjects.length}
-          skills={
-            editableSkills.length > 0
-              ? editableSkills
-              : viewSkillGroups.flatMap((group) => group.skills)
-          }
+          skills={editableSkills.length > 0 ? editableSkills : profile.skills}
+          socialContacts={socialContacts}
           actionLabel={currentActionLabel}
           isEditing={isEditing}
           onAction={canEdit ? handleAction : undefined}
-          onCancel={isEditing ? handleCancelEdit : undefined}
           onImageChange={handleImageChange}
           actionDisabled={isSaving}
+          onToggleParticipation={handleToggleParticipation}
+          categoryOptions={categoryOptions}
+          roleOptions={roleOptions}
+          formData={profileForm}
+          onFieldChange={handleFieldChange}
+          skillGroups={isEditing ? editableSkillGroups : viewSkillGroups}
+          availableSkills={availableSkills}
+          onSkillsChange={(_groupIndex, nextSkills) => setEditableSkills(nextSkills)}
         />
 
-        <div className="grid gap-6 lg:grid-cols-[309px_minmax(0,1fr)]">
-          <div className="flex flex-col gap-6">
-            {canEdit && isEditing ? (
-              <ParticipationStatusCard
-                editable
-                isParticipating={profileForm.isParticipating}
-                onToggle={handleToggleParticipation}
-              />
-            ) : null}
-            <BasicInfoCard
-              editable={isEditing}
-              infoItems={profileInfoItems}
-              emailContact={emailContact}
-              socialContacts={socialContacts}
-              categoryOptions={categoryOptions}
-              roleOptions={roleOptions}
-              formData={profileForm}
-              onFieldChange={handleFieldChange}
-            />
-            <SkillsCard
-              editable={isEditing}
-              skillGroups={isEditing ? editableSkillGroups : viewSkillGroups}
-              availableSkills={availableSkills}
-              onSkillsChange={(_groupIndex, nextSkills) => setEditableSkills(nextSkills)}
-            />
-          </div>
-
-          <div className="flex flex-col gap-8">
-            <IntroductionCard
-              editable={isEditing}
-              value={profileForm.introduction}
-              onChange={(value) => handleFieldChange('introduction', value)}
-            />
-            <JoinedProjectCard projects={joinedProjects} disabled={isEditing} />
-          </div>
+        <div className="flex min-w-0 flex-col gap-8">
+          <IntroductionCard
+            editable={isEditing}
+            value={profileForm.introduction}
+            onChange={(value) => handleFieldChange('introduction', value)}
+          />
+          <JoinedProjectCard projects={joinedProjects} disabled={isEditing} />
         </div>
 
         {isEditing ? (
@@ -516,4 +470,32 @@ function mapGenderLabelToValue(gender: string): ProfileGender {
 
 function ensureUrl(value: string) {
   return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+}
+
+function findPrimaryPosition(
+  profile: MemberProfileResponse,
+  jobFields: JobFieldOption[],
+): { field: JobFieldOption; position: JobPositionOption } | null {
+  if (jobFields.length === 0) {
+    return null;
+  }
+
+  const positionNames = [profile.representativePosition, profile.representativePositionEn].filter(
+    (positionName): positionName is string => Boolean(positionName),
+  );
+
+  for (const field of jobFields) {
+    const position = field.positions.find((item) => positionNames.includes(item.name));
+
+    if (position) {
+      return { field, position };
+    }
+  }
+
+  const fallbackField = jobFields[0];
+  const fallbackPosition = fallbackField?.positions[0];
+
+  return fallbackField && fallbackPosition
+    ? { field: fallbackField, position: fallbackPosition }
+    : null;
 }

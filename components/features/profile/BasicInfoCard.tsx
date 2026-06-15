@@ -54,6 +54,7 @@ export default function BasicInfoCard({
   const EmailIcon = emailContact.icon;
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const [isRoleOpen, setIsRoleOpen] = useState(false);
+  const visibleSocialContacts = socialContacts.filter((item) => item.href && item.value.trim());
 
   if (!editable || !formData || !onFieldChange) {
     return (
@@ -75,12 +76,16 @@ export default function BasicInfoCard({
             </dl>
           </div>
 
-          <div className="space-y-3 border-t border-mt-border pt-4">
-            <h3 className="text-sm leading-5 font-bold text-mt-text-secondary">외부 링크</h3>
-            {socialContacts.map((item) => (
-              <ProfileContactLink key={item.label} item={item} />
-            ))}
-          </div>
+          {visibleSocialContacts.length > 0 ? (
+            <div className="space-y-3 border-t border-mt-border pt-4">
+              <h3 className="text-sm leading-5 font-bold text-mt-text-secondary">외부 링크</h3>
+              <div className="flex flex-wrap gap-x-4 gap-y-2">
+                {visibleSocialContacts.map((item) => (
+                  <ProfileContactLink key={item.label} item={item} />
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       </ProfileCard>
     );
@@ -173,7 +178,7 @@ export default function BasicInfoCard({
               field === 'github' ? 'https://github.com/username' : 'https://your-blog.com';
 
             return (
-              <div key={`${field}-${item.href}-${item.value}`} className="space-y-2">
+              <div key={field} className="space-y-2">
                 <label className="flex items-center gap-2 text-sm leading-5 font-bold text-mt-text-secondary">
                   <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
                   {label}
@@ -197,33 +202,17 @@ export default function BasicInfoCard({
 
 function ProfileContactLink({ item }: { item: ProfileContactItem }) {
   const Icon = item.icon;
-  const hasLink = item.href !== '#';
-  const className =
-    'flex min-w-0 items-center gap-4 text-sm leading-5 font-medium text-mt-text-nav';
-  const content = (
-    <>
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-mt-logo-blue/30 bg-mt-badge-bg text-mt-primary">
-        <Icon className="h-4 w-4" aria-hidden strokeWidth={1.8} />
-      </span>
-      <span className="flex min-w-0 flex-1 items-center gap-3">
-        <span className="w-16 shrink-0 text-mt-text-secondary">{item.label}</span>
-        <span className="min-w-0 flex-1 truncate text-mt-text-primary">{item.value}</span>
-      </span>
-    </>
-  );
-
-  if (!hasLink) {
-    return <div className={className}>{content}</div>;
-  }
 
   return (
     <a
       href={item.href}
-      className={`${className} transition-colors hover:text-mt-text-primary`}
+      className="inline-flex min-w-0 items-center gap-2 text-sm leading-5 font-medium text-mt-text-secondary transition-colors hover:text-mt-primary hover:underline"
       target="_blank"
       rel="noreferrer"
+      aria-label={`${item.label} 링크 열기`}
     >
-      {content}
+      <Icon className="h-4 w-4 shrink-0" aria-hidden strokeWidth={1.8} />
+      <span className="truncate">{item.label}</span>
     </a>
   );
 }

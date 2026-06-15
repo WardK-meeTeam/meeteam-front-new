@@ -248,13 +248,7 @@ const OTHER_MEMBER_PROFILE = {
   participatedProjectCount: 0,
   profileImageUrl: null,
   participatedProjects: [],
-  groupedSkills: [
-    {
-      jobFieldName: '프론트엔드',
-      jobPositionName: '웹 프론트엔드',
-      techStacks: ['React Query', 'Next.js'],
-    },
-  ],
+  skills: ['React Query', 'Next.js'],
 };
 
 const JOB_FIELD_BY_ID: Record<string, string> = {

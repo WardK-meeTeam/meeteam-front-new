@@ -21,13 +21,6 @@ const MY_PROFILE = {
   projectExperienceCount: 3,
   representativePosition: '웹 프론트엔드',
   representativePositionEn: 'Frontend Dev',
-  groupedSkills: [
-    {
-      jobFieldName: '프론트엔드',
-      jobPositionName: '웹 프론트엔드',
-      techStacks: ['React', 'TypeScript'],
-    },
-  ],
   skills: ['React', 'TypeScript'],
   isParticipating: true,
   projectCount: 1,
@@ -52,13 +45,6 @@ const UPDATED_PROFILE = {
   ...MY_PROFILE,
   githubUrl: 'https://github.com/meeteam-updated',
   blogUrl: 'https://velog.io/@meeteam',
-  groupedSkills: [
-    {
-      jobFieldName: '백엔드',
-      jobPositionName: 'Node.js',
-      techStacks: ['Node.js', 'PostgreSQL'],
-    },
-  ],
   skills: ['Node.js', 'PostgreSQL'],
   isParticipating: false,
   introduce: 'Node.js와 PostgreSQL 기반으로 서비스를 운영해왔습니다.',
@@ -93,13 +79,7 @@ const OTHER_MEMBER_PROFILE = {
       recruitmentCount: 6,
     },
   ],
-  groupedSkills: [
-    {
-      jobFieldName: '프론트엔드',
-      jobPositionName: '웹 프론트엔드',
-      techStacks: ['Next.js', 'React Query'],
-    },
-  ],
+  skills: ['Next.js', 'React Query'],
 };
 
 const TEAMMATES = [
@@ -227,7 +207,9 @@ describe('프로필 흐름', () => {
 
     cy.contains('홍길동').should('be.visible');
     cy.contains('Frontend Dev').should('be.visible');
-    cy.contains('활동 및 링크').should('be.visible');
+    cy.contains('a[href="https://github.com/meeteam"]', 'GitHub').should('be.visible');
+    cy.contains('a[href="https://blog.example.com"]', '블로그').should('be.visible');
+    cy.contains('기술 스택').should('be.visible');
     cy.contains('안녕하세요. 프론트엔드 개발자입니다.').should('be.visible');
     cy.get('[data-cy="profile-joined-project"]').should('have.attr', 'href', '/projects/301');
     cy.contains('meeTeam 프론트 개편').should('be.visible');
@@ -296,7 +278,7 @@ describe('프로필 흐름', () => {
     cy.get('body').should('contain', 'Node.js');
     cy.get('body').should('contain', 'PostgreSQL');
     cy.contains('Node.js와 PostgreSQL 기반으로 서비스를 운영해왔습니다.').should('be.visible');
-    cy.contains('https://velog.io/@meeteam').should('be.visible');
+    cy.contains('a[href="https://velog.io/@meeteam"]', '블로그').should('be.visible');
     cy.get('[data-cy="profile-action-button"]').should('contain', '프로필 수정');
   });
 

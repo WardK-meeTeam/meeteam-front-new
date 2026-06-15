@@ -7,8 +7,8 @@ import SkillChip from '@/components/shared/SkillChip';
 import TechStackPicker from '@/components/shared/TechStackPicker';
 
 interface SkillGroupData {
-  category: string;
-  role: string;
+  category?: string;
+  role?: string;
   skills: string[];
 }
 
@@ -37,20 +37,28 @@ export default function SkillsCard({
       <div className="mt-4 space-y-5">
         {skillGroups.map((group, groupIndex) => (
           <div key={`${group.category}-${group.role}-${groupIndex}`} className="space-y-3">
-            <div className="flex items-center gap-1.5 text-sm leading-5 text-mt-text-secondary">
-              <CodeXml className="h-3 w-3" aria-hidden strokeWidth={2} />
-              <p>{formatJobRole(group.category, group.role)}</p>
-            </div>
+            {group.category && group.role ? (
+              <div className="flex items-center gap-1.5 text-sm leading-5 text-mt-text-secondary">
+                <CodeXml className="h-3 w-3" aria-hidden strokeWidth={2} />
+                <p>{formatJobRole(group.category, group.role)}</p>
+              </div>
+            ) : null}
 
             {!editable ? (
               <div className="flex flex-wrap gap-2">
-                {group.skills.map((skill, skillIndex) => (
-                  <SkillChip
-                    key={`${group.category}-${skill}-${skillIndex}`}
-                    label={skill}
-                    size="md"
-                  />
-                ))}
+                {group.skills.length > 0 ? (
+                  group.skills.map((skill, skillIndex) => (
+                    <SkillChip
+                      key={`${group.category ?? 'skill'}-${skill}-${skillIndex}`}
+                      label={skill}
+                      size="md"
+                    />
+                  ))
+                ) : (
+                  <p className="text-sm leading-5 text-mt-text-secondary">
+                    등록된 기술 스택이 없습니다.
+                  </p>
+                )}
               </div>
             ) : null}
 

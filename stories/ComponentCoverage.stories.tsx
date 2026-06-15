@@ -397,13 +397,7 @@ function installStorybookFetchMock() {
         githubUrl: 'https://github.com/meeteam',
         blogUrl: 'https://meeteam.dev',
         representativePosition: '프론트엔드',
-        groupedSkills: [
-          {
-            jobFieldName: '개발',
-            jobPositionName: '프론트엔드',
-            techStacks: ['React', 'Next.js', 'TypeScript'],
-          },
-        ],
+        skills: ['React', 'Next.js', 'TypeScript'],
         isParticipating: true,
         projectCount: 3,
         introduce: '함께 성장하는 팀을 좋아하는 프론트엔드 개발자입니다.',
@@ -450,13 +444,7 @@ function installStorybookFetchMock() {
             recruitmentCount: projectCard.maxMembers,
           },
         ],
-        groupedSkills: [
-          {
-            jobFieldName: '개발',
-            jobPositionName: '프론트엔드',
-            techStacks: ['React', 'Next.js', 'TypeScript'],
-          },
-        ],
+        skills: ['React', 'Next.js', 'TypeScript'],
       });
     }
 
@@ -895,7 +883,12 @@ function DetailTabsExample() {
       <ProjectDetailTabs activeTab={tab} onTabChange={setTab} />
       <div className="flex gap-6">
         <ProjectDetailTabButton tab="intro" label="소개 단일 버튼" isActive onSelect={setTab} />
-        <ProjectDetailTabButton tab="qna" label="Q&A 단일 버튼" isActive={false} onSelect={setTab} />
+        <ProjectDetailTabButton
+          tab="qna"
+          label="Q&A 단일 버튼"
+          isActive={false}
+          onSelect={setTab}
+        />
       </div>
     </div>
   );
@@ -1195,7 +1188,11 @@ export const ProjectApplyAndManage: Story = {
           onClose={() => undefined}
           onConfirm={() => undefined}
         />
-        <ProjectManageShell projectId={projectRecord.id} activeTab="members" pendingApplicantsCount={2}>
+        <ProjectManageShell
+          projectId={projectRecord.id}
+          activeTab="members"
+          pendingApplicantsCount={2}
+        >
           <ProjectManageOverviewSkeleton />
         </ProjectManageShell>
         <ProjectManageOverview projectId={projectRecord.id} />
