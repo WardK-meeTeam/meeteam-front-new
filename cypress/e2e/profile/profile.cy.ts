@@ -276,7 +276,7 @@ describe('프로필 흐름', () => {
     cy.get('body').should('contain', 'Node.js');
     cy.get('body').should('contain', 'PostgreSQL');
     cy.contains('Node.js와 PostgreSQL 기반으로 서비스를 운영해왔습니다.').should('be.visible');
-    cy.contains('https://velog.io/@meeteam').should('be.visible');
+    cy.contains('a[href="https://velog.io/@meeteam"]', '블로그').should('be.visible');
     cy.get('[data-cy="profile-action-button"]').should('contain', '프로필 수정');
   });
 
