@@ -202,7 +202,9 @@ function getNotificationCopy(
           message ??
           `${applicantName}님이 '${projectName}' 프로젝트에 지원했습니다. 프로필과 지원서를 확인해보세요.`,
         variant: 'applicant',
-        actionHref: payload.projectId ? `/projects/${payload.projectId}/manage` : '/projects',
+        actionHref: payload.projectId
+          ? `/projects/${payload.projectId}/manage/applicants`
+          : '/projects',
         actionLabel: '지원자 확인',
       };
     }
