@@ -1,15 +1,11 @@
-'use client';
-
-import RedirectIfAuthenticated from '@/components/features/auth/RedirectIfAuthenticated';
-import AuthSignupShell from '@/components/features/auth/AuthSignupShell';
-import SignupForm from '@/components/features/auth/SignupForm';
+import PlannedPage from '@/components/features/home/PlannedPage';
 
 export default function Page() {
   return (
-    <RedirectIfAuthenticated>
-      <AuthSignupShell title="회원가입">
-        <SignupForm />
-      </AuthSignupShell>
-    </RedirectIfAuthenticated>
+    <PlannedPage
+      title="회원가입"
+      description="회원가입 화면의 경로를 구성했습니다."
+      access="공개"
+    />
   );
 }

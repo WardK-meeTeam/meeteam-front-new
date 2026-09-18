@@ -1,12 +1,11 @@
-import RequireAuth from '@/components/features/auth/RequireAuth';
-import ProjectManageOverview from '@/components/features/project/manage/ProjectManageOverview';
+import PlannedPage from '@/components/features/home/PlannedPage';
 
-export default async function Page({ params }: { params: Promise<{ projectId: string }> }) {
-  const { projectId } = await params;
-
+export default function Page() {
   return (
-    <RequireAuth>
-      <ProjectManageOverview projectId={projectId} />
-    </RequireAuth>
+    <PlannedPage
+      title="프로젝트 관리"
+      description="프로젝트 관리 화면의 경로입니다."
+      access="인증 필요"
+    />
   );
 }

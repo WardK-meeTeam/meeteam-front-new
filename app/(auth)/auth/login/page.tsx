@@ -1,27 +1,11 @@
-'use client';
-
-import Link from 'next/link';
-
-import RedirectIfAuthenticated from '@/components/features/auth/RedirectIfAuthenticated';
-import LoginForm from '@/components/features/auth/LoginForm';
-import AppLogo from '@/components/shared/AppLogo';
+import PlannedPage from '@/components/features/home/PlannedPage';
 
 export default function Page() {
   return (
-    <RedirectIfAuthenticated>
-      <section className="flex w-full max-w-md flex-col rounded-3xl bg-mt-white p-10 shadow-xl">
-        <div className="flex flex-col items-center justify-end pt-16 gap-2">
-          <Link
-            href="/"
-            className="inline-flex items-center justify-center transition-opacity hover:opacity-80"
-            aria-label="meeTeam 홈"
-          >
-            <AppLogo className="h-14 w-60" priority />
-          </Link>
-        </div>
-
-        <LoginForm />
-      </section>
-    </RedirectIfAuthenticated>
+    <PlannedPage
+      title="로그인"
+      description="인증 화면의 경로와 공통 레이아웃을 구성했습니다."
+      access="공개"
+    />
   );
 }

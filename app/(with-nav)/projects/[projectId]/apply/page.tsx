@@ -1,28 +1,11 @@
-import RequireAuth from '@/components/features/auth/RequireAuth';
-import ProjectApplyPage from '@/components/features/project/apply/ProjectApplyPage';
+import PlannedPage from '@/components/features/home/PlannedPage';
 
-export default async function Page({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ projectId: string }>;
-  searchParams: Promise<{
-    jobField?: string;
-    jobPosition?: string;
-    jobPositionCode?: string;
-  }>;
-}) {
-  const { projectId } = await params;
-  const { jobField, jobPosition, jobPositionCode } = await searchParams;
-
+export default function Page() {
   return (
-    <RequireAuth>
-      <ProjectApplyPage
-        projectId={projectId}
-        initialJobField={jobField}
-        initialJobPosition={jobPosition}
-        initialJobPositionCode={jobPositionCode}
-      />
-    </RequireAuth>
+    <PlannedPage
+      title="프로젝트 지원"
+      description="프로젝트 지원 화면의 경로입니다."
+      access="인증 필요"
+    />
   );
 }

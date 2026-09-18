@@ -1,10 +1,5 @@
-import RequireAuth from '@/components/features/auth/RequireAuth';
-import ProfileSettingsPage from '@/components/features/profile/ProfileSettingsPage';
+import PlannedPage from '@/components/features/home/PlannedPage';
 
 export default function Page() {
-  return (
-    <RequireAuth>
-      <ProfileSettingsPage />
-    </RequireAuth>
-  );
+  return <PlannedPage title="설정" description="설정 화면의 경로입니다." access="인증 필요" />;
 }
